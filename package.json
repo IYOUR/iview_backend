@@ -1,8 +1,8 @@
 {
-  "name": "vue-admin-echarts",
+  "name": "idata-web",
   "version": "1.0.0",
-  "description": "admin echarts",
-  "author": "hanjiangxueying <724518201@qq.com>",
+  "description": "iData-admin",
+  "author": "iyour",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",

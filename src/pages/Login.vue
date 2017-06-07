@@ -52,7 +52,7 @@
                     sessionStorage.setItem('user', JSON.stringify(this.formLogin.username));
                     if (valid) {
                         this.$Message.success('提交成功!');
-                        this.$router.push({ path: '/table' });
+                        this.$router.push({ path: '/situation' });
                     } else {
                         this.$Message.error('表单验证失败!');
                     }
