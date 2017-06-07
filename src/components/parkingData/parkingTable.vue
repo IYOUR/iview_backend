@@ -7,13 +7,14 @@
 	<div>
 		<Row class="tableButton">
 			<Col span="2" offset="20">
-				<Button type="ghost">隐藏表格</Button>
+				<Button type="ghost" @click="isHidden = !isHidden" v-if="isHidden">隐藏表格</Button>
+                <Button type="ghost" @click="isHidden = !isHidden" v-if="!isHidden">显示表格</Button>
 			</Col>
 			<Col span="2">
 				<Button type="primary">导出Excel</Button>
 			</Col>
 		</Row>
-		<Table border :columns="tableData.columns1" :data="tableData.data1"></Table>	
+		<Table v-show="isHidden" border :columns="tableData.columns1" :data="tableData.data1"></Table>	
 	</div>
 </template>
 <script>
@@ -27,7 +28,8 @@
         },
         data (){
             return {
-                tableData: this.tableShowdata
+                tableData: this.tableShowdata,
+                isHidden: true
             }
         }
     }

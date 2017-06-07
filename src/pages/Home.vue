@@ -78,12 +78,11 @@
     .userinfo .iconfont{
         font-size: 14px;
     }
-    .userinfo .ivu-dropdown{
-        margin-top: 50px;
+    .userinfo span{
+        cursor: pointer;
     }
-    .ivu-dropdown {
-        margin-right: 25px;
-        margin-top: 22px;
+    .userinfo i{
+        padding-right: 3px;
     }
     .ivu-menu-submenu-title{
         padding: 14px;
@@ -142,12 +141,12 @@
                             </Col>
                             <Col span="10">
                                 <div>
-                                    <span><i class="iconfont irain-shezhi2"></i>修改密码</span>
+                                    <span @click="modifyPassWord"><i class="iconfont irain-shezhi2"></i>修改密码</span>
                                 </div>
                             </Col>
                             <Col span="6">
                                 <div>
-                                    <span><i class="iconfont irain-exit"></i>注销</span>
+                                    <span @click="logout"><i class="iconfont irain-exit"></i>注销</span>
                                 </div>
                             </Col>
                         </Row>
@@ -165,7 +164,7 @@
             </i-col>
         </Row>
 
-          <Modal v-model="modal1" title="修改密码" @on-ok.prevent="comfirmModifyPS"  @on-cancel="cancel" >
+          <Modal v-model="modal1" title="修改密码" @on-ok="comfirmModifyPS"  @on-cancel="cancel" >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
                 <Form-item label="原密码" prop="oldPassword">
                     <Input v-model="formValidate.oldPassword" placeholder="请输入原始密码"></Input>

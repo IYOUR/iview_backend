@@ -27,7 +27,18 @@
 		padding: 15px;
 		padding-top: 20px;
 	}
-
+	.layout-content-tablePie{
+		padding: 15px;
+	}
+	.layout-content-tablePie p{
+		padding-bottom: 10px;
+	}
+	.layout-content-rankList{
+		padding: 15px;
+	}
+	.layout-content-rankList p{
+		padding-bottom: 10px;
+	}
 </style>
 <template>
 <div>
@@ -39,6 +50,19 @@
 	<div class="layout-content-table">
 		<parking-table :table-showdata="tableData"></parking-table>
 	</div>
+	<div class="divisionLine"></div>
+	<div class="layout-content-tablePie">
+		<Row :gutter="16">
+			<Col span="12">
+				<p>进场车辆类型分布</p>
+				<table-pie></table-pie>
+			</Col>
+			<Col span="12">
+				<p>停车时长分布</p>
+				<table-pie></table-pie>
+			</Col>
+		</Row>	
+	</div>	
 </div> 
 </template>
 
@@ -46,6 +70,7 @@
 import tabCharts from '../../components/parkingData/tabCharts.vue'
 import conditionQuery from '../../components/parkingData/conditionQuery.vue'
 import parkingTable from '../../components/parkingData/parkingTable.vue'
+import tablePie from '../../components/parkingData/tablePie.vue'
 export default {
 
 	data (){
@@ -96,7 +121,8 @@ export default {
 	components: {
 		'tab-charts': tabCharts,
 		'condition-query': conditionQuery,
-		'parking-table': parkingTable
+		'parking-table': parkingTable,
+		'table-pie': tablePie
 	}  
 }
 </script>

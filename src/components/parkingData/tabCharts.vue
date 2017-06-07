@@ -9,9 +9,16 @@
     line-height: 60px;
     text-align: center;
 }
+.hint button{
+    width: 115px;
+}
 .parkingTable{
     padding: 15px;
     margin-top: 30px;
+}
+.datePicker{
+    width: 115px;
+    margin:0 auto;
 }
 </style>
 <template>
@@ -23,10 +30,11 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Poptip trigger="hover" title="提示标题" content="一天之内完成的停车总数"  placement="top-start">
+                        <Poptip trigger="hover" title="提示标题" content="一天之内完成的停车总数"  placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
-                        </Poptip>                    
+                        </Poptip>        
                     </div>
+                    <Date-picker v-if="datePicker" class="datePicker" type="date" placement="bottom-end" placeholder="选择日期"></Date-picker> 
                 </Col>
             </Row>
             <div id="chartLine" style="width:100%; height:400px;"></div>       
@@ -83,7 +91,12 @@ import echarts from 'echarts'
                     }
                 ]
             }
-        },        
+        },  
+        computed: {
+            datePicker: function() {
+                return this.$route.path==='/realTimeData'?true:false;
+            }
+        },    
         mounted:function(){
             var _this=this;
             this.chartLine = echarts.init(document.getElementById('chartLine'));

@@ -4,26 +4,73 @@
 		background-color: #f5f7f9;
 		width: auto;
 	}
-    .layout-content-filtrate{
+	.layout-content-filtrate{
 		padding: 15px;
 		margin-bottom: -20px;
     }
     .filtrate-title{
 		text-align: center;
 		font-size: 14px;
-	}	
+	}
 	.layout-content-situation{
 		padding: 15px;
 	}
 	.layout-content-table{
 		padding: 15px;
 		padding-top: 20px;
+	}	
+	.currentDate{
+		text-align: center;
+		font-size: 1.5vw;
+    	font-weight: bold;
 	}
-
 </style>
 <template>
 <div>
-	<condition-query></condition-query>
+	<div class="layout-content-filtrate">
+		<Form label-position="right" :label-width="100">
+			<row>
+				<Col span="2" class="filtrate-title">
+					<span>条件选择:</span>
+				</col>
+				<Col span="7">
+					<Form-item label="省份:">
+						<Select placeholder="请选择">
+						</Select>
+					</Form-item>
+					<Form-item label="停车场:">
+						<Select placeholder="请选择">
+						</Select>
+					</Form-item>
+				</col>
+				<Col span="7">
+					<Form-item label="城市:">
+						<Select placeholder="请选择">
+						</Select>
+					</Form-item>
+					<Form-item label="集团:">
+						<Select placeholder="请选择">
+						</Select>
+					</Form-item>			
+				</col>
+				<Col span="7">
+					<Form-item>
+						<p class="currentDate">{{currentDate}}</p>
+					</Form-item>
+					<Form-item>
+						<row :gutter="16">
+							<Col span="12">
+								<Button type="primary" style="width:100%;">查询</Button>
+							</Col>
+							<Col span="12">
+								<Button type="ghost"  style="width:100%;">重置</Button>
+							</Col>
+						</row>	
+					</Form-item>			
+				</col>
+			</row>	
+		</Form>
+	</div>
 	<div class="divisionLine"></div>
 	<div class="layout-content-situation">
 		<situation-panel></situation-panel>
@@ -43,11 +90,13 @@ import tabCharts from '../../components/parkingData/tabCharts.vue'
 import conditionQuery from '../../components/parkingData/conditionQuery.vue'
 import parkingTable from '../../components/parkingData/parkingTable.vue'
 import situationPanel from '../../components/parkingData/situationPanel.vue'
+import formatDate from '../../common/formatDate.js';
 export default {
 
 	data (){
 		return {
-			tabItems:['当日完成停车数量','当日完成停车数','总收入','平均每辆车付费','平均每次停车付费','车位数量','停车数量'],
+			currentDate: '2017-01-01 00:00:00',
+			tabItems:['实时进车次数','实时出车次数','实时完成停车数','实时停放数量','实时车位使用率','实时收入','实时新增车辆数'],
 			tableData: {
 				columns1: [
 					{
@@ -88,6 +137,11 @@ export default {
 			}
 		}
 	},
+	// computed: {
+	// 	datePicker: function() {
+	// 		return this.$route.path==='/realTimeData'?true:false;
+	// 	}
+	// },
 	methods: {
 	},
 	components: {
@@ -95,6 +149,15 @@ export default {
 		'condition-query': conditionQuery,
 		'parking-table': parkingTable,
 		'situation-panel':situationPanel
-	}  
+	},
+	mounted () {
+		 this.interval= setInterval(() => {
+				this.currentDate = formatDate.getNowFormatDate();
+		 }, 1000);
+		 console.log(this.$route.path)
+	 },
+	beforeDestroy () {
+		clearInterval(this.interval)
+    }	   
 }
 </script>

@@ -62,7 +62,6 @@ import echarts from 'echarts'
             }
         },        
         mounted:function(){
-            var _this=this;
             this.chartPie = echarts.init(document.getElementById('chartPie'));
             this.chartPie.setOption({
                 title : {

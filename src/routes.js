@@ -6,7 +6,7 @@ import Table from './pages/total/Table.vue'
 import Form from './pages/total/Form.vue'
 import user from './pages/total/user.vue'
 import Situation from './pages/parkingData/situation.vue'
-import CurrentTimeData from './pages/parkingData/currentTimeData.vue'
+import RealTimeData from './pages/parkingData/realTimeData.vue'
 import ParkingDetail from './pages/parkingData/parkingDetail.vue'
 import PaymentDetail from './pages/parkingData/paymentDetail.vue'
 import Page6 from './pages/cPortData/Page6.vue'
@@ -42,7 +42,7 @@ let routes = [{
         name: '停车场数据',
         children: [
             { path: '/situation', component: Situation, name: '停车场数据概况' },
-            { path: '/CurrentTimeData', component: CurrentTimeData, name: '实时数据' },
+            { path: '/realTimeData', component: RealTimeData, name: '实时数据' },
             { path: '/parkingDetail', component: ParkingDetail, name: '停车数据详情' },
             { path: '/paymentDetail', component: PaymentDetail, name: '支付数据详情' }
         ]
