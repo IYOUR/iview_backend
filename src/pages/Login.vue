@@ -1,19 +1,77 @@
+<style scoped>
+    .layout-container{
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+    }
+    .card-box {
+        padding: 20px;
+        box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);
+        -moz-border-radius: 5px;
+        background-clip: padding-box;
+        background-color: #fff;
+        margin: 30px auto;
+        margin-bottom: 15px;
+        width: 300px;
+        border: 1px solid #dddee1;
+    }
+    .title {
+        margin: 0px auto 40px auto;
+        text-align: center;
+        color: #505458;
+    }
+    .formLogin-title {
+        padding-top: 50px;
+        text-align: center;
+        font-size: 28px;
+    }
+    .formLogin-title p{
+        font-size: 30px;
+    }
+    .formLogin-title .title-line{
+        width: 270px;
+        height: 1px;
+        margin: 0 auto;
+        background: rgba(34, 34, 34, 0.03);
+    }
+    .login-no-bottom {
+        margin-bottom: 10px;
+    }
+    .login-input-bottom {
+        margin-bottom: 15px;
+    }
+    .login-input-bottom span{
+        font-size: 14px;
+        padding-left: 2px;
+    }
+    .login-input-bottom i{
+        padding-right: 3px;
+    }
+    .footer{
+        margin: 0 auto;
+        width: 300px;
+    }
+    .footer p{
+        text-align: center;
+        color: #999;
+    }
+</style>
 
 <template>
+<div class="layout-container">  
+    <div class="formLogin-title">
+        <p>登录到iData</p>
+        <div class="title-line"></div>
+    </div>
     <Form ref="formLogin" :model="formLogin" :rules="formLoginRules" label-position="top"  class="card-box">
-    <Form-item class="formLogin-title">
-        <h3>系统登录</h3>
-    </Form-item>
-     
-        <Form-item prop="username">
-      <!--  <label><Icon type="person"></Icon>用户名</label> -->
+        <Form-item prop="username" class="login-input-bottom">
+        <label><span><Icon type="android-person"></Icon>用户名</span></label>
             <i-input size="large" type="text" v-model="formLogin.username" placeholder="用户名">
-                <Icon type="ios-person-outline" slot="prepend"></Icon>
             </i-input>
         </Form-item>
-        <Form-item prop="password">
-            <i-input size="large"  type="password" v-model="formLogin.password" placeholder="密码">
-                <Icon type="ios-locked-outline" slot="prepend"></Icon>
+        <Form-item prop="password" class="login-input-bottom">
+            <label><span><Icon type="android-lock"></Icon>登录密码</span></label>
+            <i-input size="large" type="password" v-model="formLogin.password" @keyup.enter.native="handleSubmit('formLogin')" placeholder="密码">
             </i-input>
         </Form-item>
           <Form-item class="login-no-bottom">
@@ -25,6 +83,10 @@
             <Button type="primary" @click="handleSubmit('formLogin')" long>登录</Button>
         </Form-item>
     </Form>
+    <div class="footer">
+        <p>copyright parkingwang.com 2016</p>
+    </div>
+</div>
 </template>
 <script>
     export default {
@@ -43,7 +105,8 @@
                         { required: true, message: '请填写密码', trigger: 'blur' },
                         { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
                     ]
-                }
+                },
+                pwdVisibility: false
             }
         },
         methods: {
@@ -81,35 +144,3 @@
 </script>
 
 
-<style scoped>
-  .card-box {
-    padding: 20px;
-    box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    background-clip: padding-box;
-    margin-bottom: 20px;
-    background-color: #fff;
-    margin: 80px auto;
-    width: 300px;
-    border: 1px solid #dddee1;
-  }
-  
-  .title {
-    margin: 0px auto 40px auto;
-    text-align: center;
-    color: #505458;
-  }
-  .formLogin-title {
-      text-align: center;
-      font-seze: 28px;
-  }
-  .formLogin-title h3{
-      font-size: 18px;
-  }
-  .login-no-bottom {
-      	margin-bottom: 10px;
-  }
- 
-</style>

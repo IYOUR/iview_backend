@@ -23,7 +23,7 @@
 </style>
 <template>
 <div>
-	<condition-query></condition-query>
+	<condition-query v-on:queryResult="showResult"></condition-query>
 	<div class="divisionLine"></div>
 	<div class="layout-content-situation">
 		<situation-panel></situation-panel>
@@ -89,6 +89,9 @@ export default {
 		}
 	},
 	methods: {
+		showResult(data) {
+			console.log(data)
+		}
 	},
 	components: {
 		'tab-charts': tabCharts,

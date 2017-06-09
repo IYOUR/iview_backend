@@ -38,17 +38,18 @@
 						<Select placeholder="请选择">
 						</Select>
 					</Form-item>
-					<Form-item label="停车场:">
+					<Form-item label="集团:">
 						<Select placeholder="请选择">
 						</Select>
-					</Form-item>
+					</Form-item>	
 				</col>
 				<Col span="7">
+				
 					<Form-item label="城市:">
 						<Select placeholder="请选择">
 						</Select>
 					</Form-item>
-					<Form-item label="集团:">
+					<Form-item label="停车场:">
 						<Select placeholder="请选择">
 						</Select>
 					</Form-item>			

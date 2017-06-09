@@ -1,10 +1,7 @@
 import Login from './pages/Login.vue'
 import NotFound from './pages/404.vue'
 import Home from './pages/Home.vue'
-import Main from './pages/Main.vue'
-import Table from './pages/total/Table.vue'
-import Form from './pages/total/Form.vue'
-import user from './pages/total/user.vue'
+import Main from './pages/total/Main.vue'
 import Situation from './pages/parkingData/situation.vue'
 import RealTimeData from './pages/parkingData/realTimeData.vue'
 import ParkingDetail from './pages/parkingData/parkingDetail.vue'
@@ -31,9 +28,6 @@ let routes = [{
         name: '汇总',
         children: [
             { path: '/main', component: Main, name: '主页'},
-            // { path: '/table', component: Table, name: '表格' },
-            // { path: '/form', component: Form, name: '表单' },
-            // { path: '/user', component: user, name: '列表' },
         ]
     },
     {

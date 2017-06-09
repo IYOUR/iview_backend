@@ -28,6 +28,9 @@
         background: #464c5b;
         min-width:120px;
     }
+    .layout-menu-left ul{
+        height: 100%;
+    }
     .layout-container-right{
        overflow:hidden;
     }
@@ -44,14 +47,15 @@
 
     }
     .layout-logo-left{
-        width: 90%;
+        width: 100%;
         height: 60px;
         line-height: 60px;
         font-size: 28px;
         text-align: center;
-      /*  background: #5b6270;
-        border-radius: 3px;
-        margin: 15px auto;*/
+    }
+    .layout-logo-left img{
+        max-width: 100%;
+        padding: 15px;
     }
     .layout-ceiling-main a{
         color: #9ba7b5;
@@ -87,21 +91,6 @@
     .ivu-menu-submenu-title{
         padding: 14px;
     }
-
-    .head-img {
-        width: 100%;
-        height: 60px;
-        line-height: 60px;
-        float: right;
-        margin-top: -50px;
-    }
-    .head-img img{
-        border-radius: 20px;
-        margin: 10px 0px 10px 10px;
-        width: 40px;
-        height: 40px;
-        float: right;
-    }
     .menu-item-child{
         font-size: 13px;
     }
@@ -113,8 +102,7 @@
             <i-col span="3" :xs="9" :sm="7" :md="5" :lg="3" class="layout-menu-left">
                 <Menu :mode="modeType" theme="dark" width="auto" :active-name="this.$route.path" :open-names="openNames" @on-select="menuSelect" accordion>
                      <div class="layout-logo-left">
-                         <Icon type="paper-airplane" :size="logoSize" v-show="logoIsDisplay"></Icon>
-                         <span class="layout-text"> 停车王 </span>
+                         <img src="../assets/images/IOP logo@3X.png" alt="图片无法正常加载。请刷新重试！">
                      </div>
                    <template v-for="(item,index) in $router.options.routes" v-if="!item.hidden">  
                         <Submenu :name="item.name" v-if="!item.leaf">

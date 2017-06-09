@@ -23,7 +23,7 @@
 </style>
 <template>
     <Tabs type="card">
-        <Tab-pane :label="item" v-for="item in tabItems" class="parkingTimes">
+        <Tab-pane :label="item" v-for="(item,idx) in tabItems" :key="idx" class="parkingTimes">
              <Row>
                 <Col span="5">
                     <div class="headTitle"><span>{{item}}</span></div>

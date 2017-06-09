@@ -6,7 +6,7 @@
         <Tab-pane label="图表">
             <div id="chartPie" style="width:100%; height:400px;"></div>
         </Tab-pane>
-        <Button type="ghost" size="small" slot="extra">导出Ecxel</Button>
+        <Button type="ghost" size="small" slot="extra">导出Excel</Button>
         <Tab-pane label="表格">
             <Table border :columns="columns1" :data="data1"></Table></Tab-pane>
     </Tabs>
