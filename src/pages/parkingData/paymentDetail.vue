@@ -63,6 +63,19 @@
 			</Col>
 		</Row>	
 	</div>	
+	<div class="divisionLine"></div>
+	<div class="layout-content-rankList">
+		<Row :gutter="16">
+			<Col span="12">
+				<p>收入排行榜</p>
+				<Table border :columns="tableData.columns1" :data="tableData.data1"></Table>
+			</Col>
+			<Col span="12">
+				<p>车位平均价值排行</p>
+				<Table border :columns="tableData.columns1" :data="tableData.data1"></Table>
+			</Col>
+		</Row>		
+	</div>
 </div> 
 </template>
 

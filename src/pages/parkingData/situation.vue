@@ -26,7 +26,7 @@
 	<condition-query v-on:queryResult="showResult"></condition-query>
 	<div class="divisionLine"></div>
 	<div class="layout-content-situation">
-		<situation-panel></situation-panel>
+		<situation-panel :situation-panel-data="situationData"></situation-panel>
 	</div>
 	<div class="divisionLine"></div>	
 	<div class="layout-content-charts">
@@ -47,43 +47,81 @@ export default {
 
 	data (){
 		return {
-			tabItems:['当日完成停车数量','当日完成停车数','总收入','平均每辆车付费','平均每次停车付费','车位数量','停车数量'],
+			situationData: [
+				{
+					title:'车位数量',
+					num: '12341',
+					lastDay:['8812','86%',true],	
+					lastWeek:['8812','86%',true],
+					lastMonth:['8812','86%',false]
+				},
+				{
+					title:'停车场数量',
+					num: '12341',
+					lastDay:['8812','86%',true],	
+					lastWeek:['8812','86%',true],
+					lastMonth:['8812','86%',true]
+				},
+				{
+					title:'当日完成停车辆数',
+					num: '12341',
+					lastDay:['8812','86%',false],	
+					lastWeek:['8812','86%',true],
+					lastMonth:['8812','86%',true]
+				},
+				{
+					title:'总收入',
+					num: '12099',
+					lastDay:['8812','86%',true],	
+					lastWeek:['8812','86%',false],
+					lastMonth:['8812','86%',true]
+				},		
+				{
+					title:'平均每辆车付费',
+					num: '19.99',
+					lastDay:['8812','86%',true],	
+					lastWeek:['8812','86%',true],
+					lastMonth:['8812','86%',true]
+				}															
+			],
+			tabItems:['当日完成停车数量','当日完成停车次数','总收入','平均每辆车付费','平均每次停车付费','车位数量','停车数量'],
 			tableData: {
 				columns1: [
 					{
-						title: '姓名',
+						title: '日期',
 						key: 'name'
 					},
 					{
-						title: '年龄',
+						title: '完成停车数量',
 						key: 'age'
 					},
 					{
-						title: '地址',
+						title: '完成停车次数',
 						key: 'address'
-					}
+					},
+					{
+						title: '总收入(元)',
+						key: 'income'
+					},
+					{
+						title: '平均每辆车付费(元)',
+						key: 'eachPay' 
+					},
+					{
+						title: '平均每次停车付费(元)',
+						key: 'eachParkPay'
+					},
+					{
+						title: '车位数量',
+						key: 'space'
+					},
+					{
+						title: '停车场数量',
+						key: 'parkNum'
+					}																				
 				],
 				data1: [
-					{
-						name: '王小明',
-						age: 18,
-						address: '北京市朝阳区芍药居'
-					},
-					{
-						name: '张小刚',
-						age: 25,
-						address: '北京市海淀区西二旗'
-					},
-					{
-						name: '李小红',
-						age: 30,
-						address: '上海市浦东新区世纪大道'
-					},
-					{
-						name: '周小伟',
-						age: 26,
-						address: '深圳市南山区深南大道'
-					}
+
 				]
 			}
 		}

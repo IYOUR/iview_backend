@@ -108,7 +108,7 @@ import echarts from 'echarts'
                     trigger: 'axis'
                 },
                 legend: {
-                    data:['搜索引擎']
+                    data:['每日完成停车数']
                 },
                 grid: {
                     left: '3%',
@@ -126,7 +126,7 @@ import echarts from 'echarts'
                 },
                 series: [
                     {
-                        name:'搜索引擎',
+                        name:'每日完成停车数',
                         type:'line',
                         stack: '总量',
                         data:[820, 932, 901, 934, 1290, 1330, 1320]
