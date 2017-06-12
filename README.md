@@ -1,6 +1,6 @@
 # iData
 
-> frontend project of iData
+> frontend project
 
 ## Build Setup
 
