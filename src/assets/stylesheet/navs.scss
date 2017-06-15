@@ -1,0 +1,22 @@
+.navs {
+  height: 40px;
+  padding: 7px 0 0 64px;
+  font-size: 0;
+  color: #fff;
+  border-bottom: 3px solid #5faee3;
+
+  &-item{
+    color: #34495e;
+    padding: 5px 18px;
+    display: inline-block;
+    font-size: 15px;
+
+    //路由跳转后样式
+    &.active {
+      border-radius: 5px 5px 0 0;
+      background-color: #5faee3;
+      color: #fff;
+    }
+  }
+
+}

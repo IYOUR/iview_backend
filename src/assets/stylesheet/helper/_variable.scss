@@ -1,0 +1,53 @@
+//project name
+$iran-prefix: 'irain';
+
+// Base
+$text-color: #1f332d;
+$font-size-base: 14px;
+$font-size-small: $font-size-base - 2;
+$background-color-base: #f7feff;
+
+// text color
+$color-glob-text: #fff;
+
+//nav
+$nav-bg-color: #292d30;
+$nav-height: 80px;
+$nav-line-height: 20px;
+$nav-active-bg: #23262b;
+
+// Border color
+$border-color-base: #cccccc; // outside
+$border-color-split: $border-color-base; // inside
+$border-width-base: 1px; // width of the border for a component
+$border-style-base: solid; // style of a components border
+
+//background color
+$table-thead-bg: $background-color-base;
+$table-td-stripe-bg: $background-color-base;
+$table-font-size: $font-size-base;
+$main-colors: (success:#29a67c, primary:#348899, info:#67ade6, danger:#e66067, gray:#1f332d); //页面主体文字，按钮，颜色
+$tooltip-bg-color:rgba(30, 45, 61, 0.85); // tooltip bg color
+
+//border radius
+$border-radius-base: 4px;
+
+//tag
+$tag-font-size: $font-size-base - 1;
+
+// Animation
+$ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+$ease-in: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+$ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+$ease-out-back: cubic-bezier(0.12, 0.4, 0.29, 1.46);
+$ease-in-back: cubic-bezier(0.71, -0.46, 0.88, 0.6);
+$ease-in-out-back: cubic-bezier(0.71, -0.46, 0.29, 1.46);
+$ease-out-circ: cubic-bezier(0.08, 0.82, 0.17, 1);
+$ease-in-circ: cubic-bezier(0.6, 0.04, 0.98, 0.34);
+$ease-in-out-circ: cubic-bezier(0.78, 0.14, 0.15, 0.86);
+$ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+$ease-in-quint: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+$ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+
+
+

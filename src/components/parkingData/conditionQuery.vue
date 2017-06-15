@@ -22,8 +22,8 @@
 				</col>
 				<Col span="7">
 					<Form-item label="省份:">
-						<Select v-model="queryParam.province" placeholder="请选择">
-							<Option v-for="item in cityList" :value="item.value" :key="item">{{ item.label }}</Option>
+						<Select v-model="queryParam.province" on-change="selectProvince(value)" placeholder="请选择">
+							<Option v-for="item in provinceList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
 					<Form-item label="停车场:">
@@ -44,7 +44,7 @@
 				</col>
 				<Col span="7">			
 					<Form-item label="集团:">
-						<Select v-model="queryParam.group_code" placeholder="请选择">
+						<Select v-model="queryParam.company" placeholder="请选择">
 							<Option v-for="item in cityList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
@@ -64,7 +64,10 @@
 	</div>
 </template>
 <script>
-    import * as ParkService from '../../api/situation';
+    import * as situationService from '../../api/situation';
+	import CONSTANT from '../../commons/utils/code';
+	import DateFormat from '../../commons/utils/formatDate.js';
+	import {mapState, mapActions, mapGetters} from 'vuex';
     export default {
 		data() {
 			return {
@@ -73,58 +76,57 @@
 					park_code: '',
 					city: '',
 					date: [],
-					group_code: ''
+					company: ''
 				},
-                cityList: [
-                    {
-                        value: 'beijing',
-                        label: '北京市'
-                    },
-                    {
-                        value: 'shanghai',
-                        label: '上海市'
-                    },
-                    {
-                        value: 'shenzhen',
-                        label: '深圳市'
-                    },
-                    {
-                        value: 'hangzhou',
-                        label: '杭州市'
-                    },
-                    {
-                        value: 'nanjing',
-                        label: '南京市'
-                    },
-                    {
-                        value: 'chongqing',
-                        label: '重庆市'
-                    }
-                ],
-				provinceList: []
+				provinceList: [],
+                cityList: [],
+				searchParam: {
+                    page: 1,
+                    expire_time: [],
+                    username: '',
+                },
+				customSearchParam: {
+                    vpl: '',
+                    pay_time: [],
+                    park_code_list: [],
+                    channel: -1,
+                    card_id: -1,
+                },
 			}
 		},
 		computed: {
+			// ...mapState({
+            //     provinceList: 'cardConfigs',
+            //     companyList: 'companyList',
+            // }),
 			datePicker: function() {
 				return this.$route.path==='/realTimeData'?true:false;
 			}
 		},
         created () {
-			// this.getParksList().then(() => {
-			// 	this.setDefault();
-			// 	this.query();
-			// });
-        },		
+			//console.log(this.getQueryResult(this.paramsProcess('defaultDay')))
+			//this.handleResult();
+            this.getProvinceList()	
+			
+        },	
+		watch: {
+
+
+		},	
 		methods: {
+            // ...mapActions({
+            //     getProvinceList: 'getProvinceList',
+			// 	getCompanyList: 'getCompanyList'
+            // }),	
+			selectProvince() {
+				console.log("pr")
+			},		
 			//点击查询
 			query() {
-				for (let item in this.queryParam) {
-					if(this.queryParam[item].length === 0) {
-						this.$Message.warning('请选择查询数据!');
-						return;
-					}
-				};	
-				console.log(this.paramsProcess())	
+				console.log(this.handleResult());
+				//console.log(this.getQueryResult(this.paramsProcess('defaultDay')))
+				//this.getQueryResult(this.paramsProcess());
+				//console.log(DateFormat.format(DateFormat.addMonth(new Date(), -1), 'yyyy-MM-dd'))
 			},
 			//点击重置
             reset () {
@@ -133,7 +135,7 @@
 					park_code: '',
 					city: '',
 					date: [],
-					group_code: ''
+					company: ''
 				}
             },
 			//格式化日期
@@ -141,56 +143,110 @@
                 let year = now.getFullYear();
                 let month = now.getMonth() + 1;
                 let date = now.getDate();
+		        if (month >= 1 && month <= 9) {
+					month = "0" + month;
+				}
+				if (date >= 0 && date <= 9) {
+					date = "0" + date;
+				}		
                 return year + "-" + month + "-" + date;
-            },
+            },		
             //参数处理
-            paramsProcess(){
-                let queryParam = Object.assign({}, this.queryParam), params = {};
-                params.province = queryParam.province;
-                params.park_code = queryParam.province;
-				params.city = queryParam.city;
-				params.group_code = queryParam.group_code;
-				params.query_date_start = this.changeDate(queryParam.date[0]);
-                params.query_date_end = this.changeDate(queryParam.date[1]);
-                return params;
+            paramsProcess(type){
+                let queryParam = Object.assign({}, this.queryParam), request = {url:'',param:{}},queryDate;
+				if (queryParam.date.length === 0 || queryParam.date[0] === null) {
+					request.url = 'province/0/day';
+					switch (type) {
+						case 'defaultDay':
+							request.param.date = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
+							break;
+						case 'lastDay':
+							request.param.date = DateFormat.format(DateFormat.addDay(new Date(), -2), 'yyyy-MM-dd');
+							break;
+						case 'lastWeek':
+							request.param.date = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
+							break;
+						case 'lastMonth':
+							request.param.date = DateFormat.format(DateFormat.addMonth(new Date(), -1), 'yyyy-MM-dd');
+							break;
+					}						
+				} 
+				else {	
+					request.url = 'province/0/range';	
+					switch (type) {
+						case 'defaultDay':
+							
+							request.param.sdate = DateFormat.changeDate(queryParam.date[0]);
+							request.param.edate = DateFormat.changeDate(queryParam.date[1]);
+							break;
+						case 'lastDay':
+							
+							request.param.sdate = DateFormat.changeDate(DateFormat.addDayStr(DateFormat.changeDate(queryParam.date[0]),-1));
+							request.param.edate = DateFormat.changeDate(DateFormat.addDayStr(DateFormat.changeDate(queryParam.date[1]),-1));
+							break;
+						case 'lastWeek':
+							
+							request.param.sdate = DateFormat.changeDate(DateFormat.addDayStr(DateFormat.changeDate(queryParam.date[0]),-7));
+							request.param.edate = DateFormat.changeDate(DateFormat.addDayStr(DateFormat.changeDate(queryParam.date[1]),-7));
+							break;
+						case 'lastMonth':
+							
+							request.param.sdate = DateFormat.changeDate(DateFormat.addMonthStr(DateFormat.changeDate(queryParam.date[0]),-1));
+							request.param.edate = DateFormat.changeDate(DateFormat.addMonthStr(DateFormat.changeDate(queryParam.date[1]),-1));
+							break;
+					}								
+				}	
+				if (queryParam.park_code.length !== 0) {
+					request.url = `park/${queryParam.park_code}/range`;
+					return request;
+				}
+				if (queryParam.company.length !== 0) {
+					request.url = `company/${queryParam.company}/range`;
+					return request;
+				}
+				if (queryParam.city.length !== 0) {
+					request.url = `city/${queryParam.city}/range`;
+					return request;
+				}
+				if (queryParam.province.length !== 0) {
+					request.url = `province/${queryParam.province}/range`;
+					return request;
+				}
+                return request;
             },
-            //获取车场列表
-            getParksList() {
-                return ParkService.getParksList(this.ParksListParams || {}).then(res => {
-                    if (res.code !== this.HTTP_STATUS.SUCCESS.CODE) {
-                        this.$Message.error(res.message || this.HTTP_STATUS.ERROR.MSG);
-                        return;
-                    };
-                    let data = [];
-                    for (let i = 0; i < res.data.length; i++) {
-                        let obj = {};
-                        obj.label = res.data[i].parking_name;
-                        obj.value = res.data[i].park_code;
-                        data[i] = obj;
-                    };
-                    this.carList = data;
-                });
-            },
-			//设置默认参数
-            setDefault(){
-				this.queryParam.province = this.cityList[0].value;
-                this.queryParam.date = [new Date(), new Date()];
-                this.queryParam.park_code = this.cityList[0].value;
-                this.queryParam.city = this.cityList[0].value;
-                this.queryParam.group_code = this.cityList[0].value;
-                return this.queryParam;
-            },
+			//处理查询返回的数据
+			handleResult(){
+				let resultData = {};
+				//默认显示数据
+				resultData.defaultDay = this.getQueryResult(this.paramsProcess('defaultDay')) || {};
+				//前一天数据
+				resultData.lastDay = this.getQueryResult(this.paramsProcess('lastDay')) || {};
+				//上周数据
+				resultData.lastWeek = this.getQueryResult(this.paramsProcess('lastWeek')) || {};
+				//上月数据
+				resultData.lastMonth = this.getQueryResult(this.paramsProcess('lastMonth')) || {};
+				return resultData
+			},
 			//获取查询结果
-            getQueryResult() {
-                TableService.getQueryResult(this.paramsProcess()).then(res => {
-                    if (res.code !== this.HTTP_STATUS.SUCCESS.CODE) {
-                        this.$Message.error(res.message || this.HTTP_STATUS.ERROR.MSG);
+            getQueryResult(searchParam) {
+				var ResultData;
+                return situationService.getQueryResult(searchParam).then(res => {
+                    if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
+                        this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
                         return;
                     };
-                    //传递数据给父组件
-					this.$emit('queryResult',res.data);
+					return res.data
                 });
-            },															
+            },	
+            getProvinceList() {
+                return situationService.getProvinceList().then(res => {
+                    if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
+                        this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
+                        return;
+                    }; 
+					this.provinceList = res.data.data;
+                });
+            },																		
 		}
 
     }

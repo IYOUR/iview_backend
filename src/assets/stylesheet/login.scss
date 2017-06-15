@@ -1,0 +1,84 @@
+
+$color-login-glob-bg: #4d91bf;
+$color-login-glob-text: #fff;
+
+$size-login-form-width: 900px;
+$size-login-form-height: $size-login-form-width/2;
+
+//change placeholder color
+::-webkit-input-placeholder, /* WebKit browsers */
+::-moz-placeholder, /* Mozilla Firefox 19+ */
+:-ms-input-placeholder, /* Internet Explorer 10+ */
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color: $color-login-glob-text;
+}
+
+.login-container {
+  height: 100%;
+  width: 100%;
+  background: #2c3e50;
+
+  .ivu-row {
+    @include layout-center($size-login-form-width, $size-login-form-height);
+    @include linear-gradient(left, #70d0af, $color-login-glob-bg);
+    border-radius: 10px;
+    box-shadow: 0 0 50px 5px rgba(0, 0, 0, 0.62);
+    overflow: hidden;
+
+    .login-left-img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .login-right-form {
+      height: 100%;
+
+      form {
+        @include layout-center();
+
+        .ivu-form-item {
+
+          img.logo {
+            vertical-align: bottom;
+            @include size(60px, 50px);
+          }
+          span.system-name {
+            color: $color-login-glob-text;
+            font-size: 15px;
+            font-weight: bold;
+          }
+
+          //重置颜色，设置圆角
+          button:not([type="submit"]),
+          input {
+            background: transparent;
+            color: $color-login-glob-text;
+            border-radius: 14px;
+            //第一组表单元素
+            &[name="username"] {
+              border-top-left-radius: 0;
+              border-bottom-left-radius: 0;
+            }
+          }
+          //提交按钮
+          button[type="submit"] {
+            border-radius: 14px;
+            border: none;
+            outline: none;
+          }
+
+          button[type="submit"] {
+            //background: $color-login-glob-text;
+            color: $color-login-glob-bg;
+            //font-size: 13px;
+            //height: 28px;
+            //padding: 0;
+            //margin: 0;
+            //border: none;
+          }
+
+        }
+      }
+    }
+  }
+}

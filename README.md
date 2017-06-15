@@ -1,6 +1,6 @@
-# iData
+# vue-iData
 
-> frontend project
+> A frontend project of iData
 
 ## Build Setup
 
@@ -17,3 +17,4 @@ npm run build
 # build for production and view the bundle analyzer report
 npm run build --report
 ```
+

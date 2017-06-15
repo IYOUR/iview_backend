@@ -1,0 +1,57 @@
+$fontFamily:MicrosoftYaHei;
+.setup-container{
+  	.revise-container{
+  		padding:60px 0 60px 100px;
+  		width: 70%;
+		border-radius:4px;
+		background:#fff;
+		box-shadow:0 0 4px rgba(0,0,0,0.1);
+		margin:40px 0 0 64px;
+  		.revise-form{
+			height: 35px;
+		}
+		input {
+			font-size: 13px;
+			width: 384px;
+			height: 35px;
+		}
+		// 覆写样式
+		.ivu-form-item-error-tip{
+			top: 10px;
+			left: 400px;
+			font-size: 13px;
+		}
+		.ivu-form .ivu-form-item-label{
+			font-size: 13px;
+		}
+		.ivu-btn{
+			font-size: 13px;
+			padding: 8px 46px;
+		}
+		// 确认按钮
+		.confirm{
+			border-radius: 5px;
+			background-color: #5faee3;
+			border: solid 1px #5faee3;
+			padding: 6px 42px;
+			color: #fff;
+			font-size: 13px;
+		}
+		//取消按钮
+		.cancel{
+			border-radius: 5px;
+			background-color: #ffffff;
+			border: solid 1px #547799;
+			padding: 6px 41px;
+			color: #547799;
+			font-size: 14px;
+			margin-left: 24px;
+		}
+		.cancel:hover{
+			background-color: #5faee3;
+			color: #fff;
+			border: solid 1px #5faee3;
+		}
+  	}
+}
+	

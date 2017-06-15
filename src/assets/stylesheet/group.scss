@@ -1,0 +1,129 @@
+$fontFamily:MicrosoftYaHei;
+//导航栏
+.group-container{
+  	//编辑用户
+  	.editUser-container{
+  		padding: 30px 64px 0 64px;
+		.userList{
+			border-radius: 4px;
+			box-shadow: 0 0 4px 0 rgba(13, 27, 36, 0.1);
+			height: 50px;
+			line-height: 50px;
+			margin-bottom: 20px;
+			border-radius: 8px;
+			text-indent: 64px;
+			font-size: 15px;
+		}
+		.addBtn{
+			width: 75px;
+			height: 28px;
+			background: #5eaee3;
+			color: #fff;
+			padding: 8px 20px;
+			border-radius: 5px;
+			font-size: 14px;
+			margin-left: calc( 100% - 250px );
+		}
+		.table{
+			.ivu-table td .demo-table-info-column{
+		   		 font-size: 13px;
+			}
+			.ivu-table{
+			    font-size: 14px;
+			    font-family: $fontFamily;
+			}
+		} 
+	    .ivu-table{
+	     	font-size: 14px;
+	     	font-family: $fontFamily;
+	     	.ivu-btn{
+	     		color: #547799;
+	     		font-size: 13px;
+	     		border: none;
+	     		background-color:transparent;
+	     	}
+	     }
+	}
+
+  	//新增用户
+  	.addUser-container{
+  		font-size: 13px;
+  		padding:60px 0 60px 100px;
+		width: 70%;
+		border-radius:4px;
+		background:#fff;
+		box-shadow:0 0 4px rgba(0,0,0,0.1);
+		margin:50px 0 0 80px;
+		// 覆写form表单样式
+		.ivu-form-item-label{
+			font-size: 13px;
+		}
+		.ivu-input{
+			font-size: 13px;
+		}
+		.ivu-form-item-error-tip{
+			top: 2px;;
+			left: 420px;
+		}
+		.ivu-form-item-error-tip{
+			font-size: 13px;
+		}
+		.ivu-checkbox-wrapper{
+			font-size: 13px;
+		}
+		.yard .ivu-form-item-error-tip{
+			left: 25px;
+			top: 80px;
+		}
+		.addUser-form{
+			height: 35px;
+		}
+		.uname , .password , .phone {
+			width: 384px;
+			height: 35px;
+		}
+		.formInfo{
+			font-size: 13px;
+			color: #949997;
+			padding-left: 10px;
+		}
+		.yard{
+			height: 100px;
+		}
+		//分割线
+		.line{
+			width: calc( 100% - 120px);
+			height: 1px;
+			border:none;
+			border-top:1px solid rgba(224, 224, 224, 0.3);
+			padding-bottom:24px;
+		}
+		label{
+			margin: 5px 10px;
+		}
+		// 确认按钮
+		.confirm{
+			border-radius: 5px;
+			background-color: #5faee3;
+			border: solid 1px #5faee3;
+			padding: 6px 42px;
+			color: #fff;
+			font-size: 13px;
+		}
+		//取消按钮
+		.cancel{
+			border-radius: 5px;
+			background-color: #ffffff;
+			border: solid 1px #547799;
+			padding: 6px 41px;
+			color: #547799;
+			font-size: 14px;
+			margin-left: 24px;
+		}
+		.cancel:hover{
+			background-color: #5faee3;
+			color: #fff;
+			border: solid 1px #5faee3;
+		}
+  	}
+}

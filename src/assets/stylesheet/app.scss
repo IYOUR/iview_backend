@@ -1,0 +1,119 @@
+$menu-width: 160px;
+.main {
+  .left-box{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: $menu-width;
+    background: #2c3e50;
+    height: 100%;
+    .left-content {
+      float: left;
+      width: $menu-width;
+    }
+  }
+  .right-content {
+    margin-left: $menu-width;
+  }
+  //左侧菜单
+  .menus {
+    display: block;
+    text-align: center;
+    img{
+      margin: 15px 23px;
+      width: 112px;
+      height: 33px;
+    }
+    //跳转后样式
+    .menu-active{
+        .menu-item{
+          background: #34495e;
+          &:after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            background: #5faee3;
+          }
+          p{
+            color: #5faee3;
+          }
+        }
+      }
+    .menu-item {
+      padding: 10px 0;
+      position: relative;
+      cursor: pointer;
+      p {
+        margin: 6px 0;
+        font-size: 16px;
+        color: #95a0aa;
+      } 
+      p i{
+        font-size: 24px;
+      }
+    }
+    .logo{
+      height: 80px;
+
+      border-bottom: 1px solid #34495e;
+    }
+  }
+
+  //头部导航
+  .header{
+    text-align: center;
+    height: 80px;
+    border-bottom: 1px solid #e0e0e0;
+    .header-left{
+      border-right:1px solid #e0e0e0;
+      height: 100%;
+      width: 70%;
+      float: left;
+    }
+    .header-right{
+      width: 30%;
+      height: 100%;
+      float: right;
+    }
+    .title{
+      font-size: 20px;
+      color: #34495e;
+      float: left;
+      line-height: 80px;
+      padding-left: 64px;
+    }
+    .select{
+      float: right;
+      padding: 30px 10px 30px 0;
+      width: 200px;
+    }
+    .select span{
+      font-size: 14px;
+      color: #34495e;
+    }
+    .ivu-select-selection{
+      border: none;
+    }
+    .header-list{
+      width: 70%;
+      margin: 30px auto;
+      text-align: center;
+    }
+    .header-list li{
+      float: left;
+      text-align: center;
+      padding-right: 20px;
+      font-size: 14px;
+    }
+    .header-list a{
+      text-decoration:none;
+      color: #34495e;
+    }
+    .iconfont{
+      font-size: 15px;
+    }
+  }
+}

@@ -1,19 +1,20 @@
-import babelpolyfill from 'babel-polyfill'
+//import babelpolyfill from 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import VueRouter from 'vue-router'
-import store from './vuex/store'
+import store from './store'
 import Vuex from 'vuex'
-import routes from './routes'
+import './api/axios.config'; 
+import routes from './router/routes'
 import Mock from './mock'
 import iview from 'iview'
 import 'iview/dist/styles/iview.css'
-import VueClipboard from 'vue-clipboard2'
+//import VueClipboard from 'vue-clipboard2'
 import '../static/iconfont/iconfont.css';//iconfont
 
-Mock.bootstrap();
+// Mock.bootstrap();
 
-Vue.use(VueClipboard)
+//Vue.use(VueClipboard)
 Vue.use(VueRouter)
 Vue.use(Vuex)
 Vue.use(iview)
