@@ -7,10 +7,6 @@ import * as UserService from '../api/user';
 
 export default {
 
-    //分页信息
-    PAGER: {
-        page_items: 15
-    },
 
     //省份列表
     provinceList: [],
@@ -18,4 +14,6 @@ export default {
     //省份列表
     companyList: [],
 
+    //查询结果
+    queryResult: {},
 };

@@ -4,14 +4,17 @@
  * @brief
  */
 
-import * as types from './mutation-types';
 
 export default {
-    [types.GET_PROVINCE_LIET](state, data){
-        state.provinceList = data;
-    },
 
-    [types.GET_COMPANY_LITE](state, data){
-        state.companyList = data;
-    }
+    SET_PROVINCE_LIST: (state, data) => {
+        //console.log(list)
+      state.provinceList = data
+    },
+    SET_COMPANY_LIST: (state, data) => {
+      state.companyList = list
+    },   
+    SET_QUERY_RESULT: (state, data) => {
+      state.queryResult = data
+    }  
 }

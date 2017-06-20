@@ -9,17 +9,16 @@ import createLogger from 'vuex/dist/logger';
 import actions from './actions';
 import getters from './getters';
 import mutations from './mutations';
-
-import commonState from './commonState';
+import state from './state';
 
 Vue.use(Vuex);
 
 let store = new Vuex.Store({
   actions:actions,
   getters:getters,
-  state:commonState,
+  state:state,
   mutations:mutations,
-  plugins: [createLogger()],
+//  plugins: [createLogger()],
 });
 
 

@@ -23,10 +23,10 @@
 </style>
 <template>
     <Tabs type="card">
-        <Tab-pane :label="item" v-for="(item,idx) in tabItems" :key="idx" class="parkingTimes">
+        <Tab-pane :label="item.label" v-for="(item,idx) in tabItems.tabOption" :key="idx" class="parkingTimes">
              <Row>
                 <Col span="5">
-                    <div class="headTitle"><span>{{item}}</span></div>
+                    <div class="headTitle"><span>{{item.label}}</span></div>
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
@@ -37,7 +37,7 @@
                     <Date-picker v-if="datePicker" class="datePicker" type="date" placement="bottom-end" placeholder="选择日期"></Date-picker> 
                 </Col>
             </Row>
-            <div id="chartLine" style="width:100%; height:400px;"></div>       
+            <div :id="item.id" style="width:100%; height:400px;"></div>       
         </Tab-pane>
     </Tabs>
 </template>
@@ -46,15 +46,23 @@ import echarts from 'echarts'
     export default {
         props: {
             tabItem: {
-            type: Array,
+            type: Object,
             required: true
             }
         },
         data (){
             return {
                 tabItems: this.tabItem,
-                chartLine: null,
-                columns1: [
+                chartLine: {
+                    dedup_finish:{val:null,data:{}},
+                    finish:{val:null,data:{}},
+                    charge:{val:null,data:{}},
+                    averageCharge:{val:null,data:{}},
+                    eachCharge:{val:null,data:{}},
+                    space:{val:null,data:{}},
+                    parks:{val:null,data:{}}
+                },
+                chartcolumns1: [
                     {
                         title: '姓名',
                         key: 'name'
@@ -98,41 +106,48 @@ import echarts from 'echarts'
             }
         },    
         mounted:function(){
-            var _this=this;
-            this.chartLine = echarts.init(document.getElementById('chartLine'));
-            this.chartLine.setOption({
-                title: {
-                    text: ''
-                },
-                tooltip: {
-                    trigger: 'axis'
-                },
-                legend: {
-                    data:['每日完成停车数']
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
-                },
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: false,
-                    data: ['周一','周二','周三','周四','周五','周六','周日']
-                },
-                yAxis: {
-                    type: 'value'
-                },
-                series: [
-                    {
-                        name:'每日完成停车数',
-                        type:'line',
-                        stack: '总量',
-                        data:[820, 932, 901, 934, 1290, 1330, 1320]
-                    }
-                ]
-            });
+            this.createCharts();
+        },
+        methods: {
+            createCharts() {
+                console.log(this.tabItems)
+                for (let item in this.chartLine){
+                    this.chartLine[item].val = echarts.init(document.getElementById([item]));
+                    this.chartLine[item].val.setOption({
+                        title: {
+                            text: ''
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data:['每日完成停车数']
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: ['周一','周二','周三','周四','周五','周六','周日']
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [
+                            {
+                                name:'每日完成停车数',
+                                type:'line',
+                                stack: '总量',
+                                data:[820, 932, 901, 934, 1290, 1330, 1320]
+                            }
+                        ]
+                    });
+                }
+            }
         }
     }
 </script>

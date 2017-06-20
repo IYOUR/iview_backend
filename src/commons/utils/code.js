@@ -3,7 +3,7 @@
  * Created by haner on 2017/4/25.
  * @brief
  */
-import CommonState from '../../store/commonState';
+import state from '../../store/state';
 
 //状态
 export const HTTP_STATUS = {
@@ -26,6 +26,5 @@ export const HTTP_STATUS = {
 };
 
 export default {
-    PAGE_SIZE: CommonState.PAGER.page_items,
     HTTP_STATUS:HTTP_STATUS,
 };

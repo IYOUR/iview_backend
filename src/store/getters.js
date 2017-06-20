@@ -4,5 +4,8 @@
  */
 
 export default {
-	
+    
+    completedProjects: state => {
+    return state.projects.filter(project => project.completed).length
+    }
 }
