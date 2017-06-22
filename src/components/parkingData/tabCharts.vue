@@ -23,14 +23,14 @@
 </style>
 <template>
     <Tabs type="card">
-        <Tab-pane :label="item.label" v-for="(item,idx) in tabItems.tabOption" :key="idx" class="parkingTimes">
+        <Tab-pane :label="item.label" v-for="(item,idx) in situationTabs.tabOption" :key="idx" class="parkingTimes">
              <Row>
                 <Col span="5">
                     <div class="headTitle"><span>{{item.label}}</span></div>
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Poptip trigger="hover" title="提示标题" content="一天之内完成的停车总数"  placement="left">
+                        <Poptip trigger="hover" title="item.label" :content="item.label"  placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                         </Poptip>        
                     </div>
@@ -42,86 +42,56 @@
     </Tabs>
 </template>
 <script>
-import echarts from 'echarts'
+import echarts from 'echarts';
+import {mapState, mapActions, mapGetters} from 'vuex';
+
     export default {
-        props: {
-            tabItem: {
-            type: Object,
-            required: true
-            }
-        },
         data (){
             return {
-                tabItems: this.tabItem,
                 chartLine: {
-                    dedup_finish:{val:null,data:{}},
-                    finish:{val:null,data:{}},
-                    charge:{val:null,data:{}},
-                    averageCharge:{val:null,data:{}},
-                    eachCharge:{val:null,data:{}},
-                    space:{val:null,data:{}},
-                    parks:{val:null,data:{}}
+                    dedup_finish:{val:null,data:['date','dedup_finish'],name:'每日完成停车数量'},
+                    finish:{val:null,data:['date','finish'],name:'每日完成停车次数'},
+                    charge:{val:null,data:['date','charge'],name:'每日总收入(元)'},
+                    averageCharge:{val:null,data:['date','eachCarPay'],name:'每日平均每辆车付费(元)'},
+                    eachCharge:{val:null,data:['date','eachTimesPay'],name:'每日平均每次付费(元)'},
+                    space:{val:null,data:['date','space'],name:'车位数量'},
+                    parks:{val:null,data:['date','parks'],name:'停车场数量'}
                 },
-                chartcolumns1: [
-                    {
-                        title: '姓名',
-                        key: 'name'
-                    },
-                    {
-                        title: '年龄',
-                        key: 'age'
-                    },
-                    {
-                        title: '地址',
-                        key: 'address'
-                    }
-                ],
-                data1: [
-                    {
-                        name: '王小明',
-                        age: 18,
-                        address: '北京市朝阳区芍药居'
-                    },
-                    {
-                        name: '张小刚',
-                        age: 25,
-                        address: '北京市海淀区西二旗'
-                    },
-                    {
-                        name: '李小红',
-                        age: 30,
-                        address: '上海市浦东新区世纪大道'
-                    },
-                    {
-                        name: '周小伟',
-                        age: 26,
-                        address: '深圳市南山区深南大道'
-                    }
-                ]
             }
         },  
         computed: {
             datePicker: function() {
                 return this.$route.path==='/realTimeData'?true:false;
-            }
+            },
+            ...mapState({
+                queryResult: 'queryResult',
+                situationTabs: 'situationTabs'
+            }),	               
         },    
-        mounted:function(){
-            this.createCharts();
-        },
+        // mounted:function(){
+        //     this.createCharts();
+        // },
+        watch:{
+            'queryResult':{
+                deep:true,
+                handler:function(newVal,oldVal){
+                    this.createCharts();
+                },
+            }
+        },        
         methods: {
+            showCharts(name) {
+                console.log("as")
+            },
             createCharts() {
-                console.log(this.tabItems)
                 for (let item in this.chartLine){
                     this.chartLine[item].val = echarts.init(document.getElementById([item]));
                     this.chartLine[item].val.setOption({
-                        title: {
-                            text: ''
-                        },
                         tooltip: {
                             trigger: 'axis'
                         },
                         legend: {
-                            data:['每日完成停车数']
+                            data:[this.chartLine[item].name]
                         },
                         grid: {
                             left: '3%',
@@ -132,21 +102,42 @@ import echarts from 'echarts'
                         xAxis: {
                             type: 'category',
                             boundaryGap: false,
-                            data: ['周一','周二','周三','周四','周五','周六','周日']
+                            data: this.filterChartData(['date','date'])
                         },
                         yAxis: {
                             type: 'value'
                         },
                         series: [
                             {
-                                name:'每日完成停车数',
+                                name:this.chartLine[item].name,
                                 type:'line',
                                 stack: '总量',
-                                data:[820, 932, 901, 934, 1290, 1330, 1320]
+                                data:this.filterChartData(this.chartLine[item].data)
                             }
                         ]
                     });
                 }
+            },
+            filterChartData(item) {
+                let chartLine = Object.assign({}, this.queryResult.pastWeek)
+
+                return chartLine.data.map((ele)=> {
+                    switch (item[1]) {
+ 						case 'charge':
+                            return (ele.charge/100).toFixed(2);
+							break;   
+ 						case 'eachCarPay':
+                            return (ele.charge/ele.dedup_finish/100).toFixed(2);
+							break;  
+ 						case 'eachTimesPay':
+                            return (ele.charge/ele.finish/100).toFixed(2);
+							break; 
+ 						case 'date':
+                            return ele.date;
+							break;                                                                                                            
+                    }
+                    return ele[item[1]];
+                });
             }
         }
     }

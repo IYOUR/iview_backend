@@ -26,9 +26,15 @@
 							<Option v-for="item in provinceList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
-					<Form-item label="停车场:">
+					<Form-item label="停车场:" v-if="!currentPage">
 						<Select v-model="queryParam.park_code" clearable placeholder="请选择">
 							<Option v-for="item in parkList" :value="item.value" :key="item">{{ item.label }}</Option>
+						</Select>
+					</Form-item>
+					<!-- 实时页面显示 -->
+					<Form-item label="集团:" v-if="currentPage">
+						<Select v-model="queryParam.company" clearable placeholder="请选择">
+							<Option v-for="item in companyList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
 				</col>
@@ -38,16 +44,26 @@
 							<Option v-for="item in cityList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
-					<Form-item label="选择日期:">
+					<Form-item label="选择日期:" v-if="!currentPage">
 						<Date-picker v-model="queryParam.date" format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="开始时间 - 结束时间 "></Date-picker>
+					</Form-item>
+					<!-- 实时页面显示 -->
+					<Form-item label="停车场:" v-if="currentPage">
+						<Select v-model="queryParam.park_code" clearable placeholder="请选择">
+							<Option v-for="item in parkList" :value="item.value" :key="item">{{ item.label }}</Option>
+						</Select>
 					</Form-item>								
 				</col>
 				<Col span="7">			
-					<Form-item label="集团:">
+					<Form-item label="集团:" v-if="!currentPage">
 						<Select v-model="queryParam.company" clearable placeholder="请选择">
 							<Option v-for="item in companyList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
+					<!-- 实时页面显示 -->
+					<Form-item v-if="currentPage">
+						<p class="currentDate">{{currentDate}}</p>
+					</Form-item>					
 					<Form-item>
 						<row :gutter="16">
 							<Col span="12">
@@ -68,10 +84,10 @@
 	import CONSTANT from '../../commons/utils/code';
 	import DateFormat from '../../commons/utils/formatDate.js';
 	import {mapState, mapActions, mapGetters} from 'vuex';
-	import axios from 'axios';
     export default {
 		data() {
 			return {
+				currentDate: '2017-01-01 00:00:00',
 				queryParam: {
 					province: '',
 					park_code: '',
@@ -79,45 +95,54 @@
 					date: [],
 					company: ''
 				},
-				provinceList: [],
                 cityList: [],
-				companyList: [],
 				parkList: [],
 				resultData: {}
 			}
 		},
 		computed: {
-			datePicker: function() {
+			//判断当前
+			currentPage () {
 				return this.$route.path==='/realTimeData'?true:false;
-			}
+			},
+            ...mapState({
+                provinceList: 'provinceList',
+                companyList: 'companyList',
+				//parkList: 'parkList'
+            }),			
 		},
         created () {
-            this.getProvinceList();
-			this.getCompanyList();
-			this.getParkList();
-			//this.sendEachQuery();	
-			//this.$store.dispatch('getProvinceList');
+
+			this.loadAreaInfo();
+			this.$store.commit('SET_QUERY_PARAM',this.packQueryParams());
+
+			
 			
         },
 		methods: {
+            ...mapActions({
+                getProvinceList: 'getProvinceList',
+				getCompanyList: 'getCompanyList',
+				getParkList: 'getParkList'
+            }),			
 			selectProvince(value) {
-				this.getCityList({leveltype:'2',parent:value});
-				this.getParkList({province:value})	
+				if(value !==''){
+					this.getCityList({leveltype:'2',parent:value});
+					this.getParkList({province:value})	
+				}
 			},		
 			selectCity(value) {
-				if(value == ''){
-					this.getParkList({province:this.queryParam.province});	
-					return
+				if(value !== ''){
+					this.getParkList({city:value});	
 				}
-				this.getParkList({city:value})		
 			},				
 			//点击查询
 			query() {
-				this.sendEachQuery();
+				this.$store.commit('SET_QUERY_PARAM',this.packQueryParams())
 				
 			},
 			//点击重置
-            reset () {
+            reset() {
 				this.queryParam = {
 					province: '',
 					park_code: '',
@@ -126,6 +151,14 @@
 					company: ''
 				}
             },
+			//加载查询条件信息
+			loadAreaInfo() {
+				if(this.provinceList.length === 0){
+					this.getProvinceList();
+					this.getCompanyList();
+					//this.getParkList();
+				}
+			},
             //参数处理
             paramsProcess(type){
                 let queryParam = Object.assign({}, this.queryParam), request = {url:'',param:{}},queryDate;
@@ -150,7 +183,7 @@
 							break;
 						//过去的一周时间内	
 						case 'pastWeek':
-							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -7), 'yyyy-MM-dd');
+							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
 							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
 							break;							
 					}						
@@ -199,60 +232,17 @@
 				}
                 return request;
             },
-			//发送各个查询条件
-			sendEachQuery(){
-				axios.all([
-					this.getQueryResult({name: 'defaultDay',val:this.paramsProcess('defaultDay')}), 
-					this.getQueryResult({name: 'lastDay',val:this.paramsProcess('lastDay')}),
-					this.getQueryResult({name: 'lastWeek',val:this.paramsProcess('lastWeek')}),
-					this.getQueryResult({name: 'lastMonth',val:this.paramsProcess('lastMonth')}),
-					this.getQueryResult({name: 'pastWeek',val:this.paramsProcess('pastWeek')})
-				]).then(axios.spread((acct, perms) => {
-					this.$emit('queryResult',Object.assign({}, perms));
-				}));
-			},
-			//获取查询结果
-            getQueryResult(searchParam) {
-            	return situationService.getQueryResult(searchParam.val).then(res => {
-                    if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
-                        this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
-                        return;
-                    };
-					this.resultData[searchParam.name] = res.data;
-					return this.resultData;
-                });
-            },
-			// //获取图表相关数据
-            // getChartsData(searchParam) {
-            // 	return situationService.getQueryResult(searchParam).then(res => {
-            //         if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
-            //             this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
-            //             return;
-            //         };
-			// 		console.log(res.data)
-			// 		this.$emit('chartsData',res.data);
-            //     });
-            // },					
-			//获取集团列表
-            getCompanyList() {
-                return situationService.getCompanyList().then(res => {
-                    if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
-                        this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
-                        return;
-                    }; 
-					this.companyList = res.data.data;
-                });
-            },	
-			//获取省份列表			
-            getProvinceList() {
-                return situationService.getProvinceList().then(res => {
-                    if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
-                        this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
-                        return;
-                    }; 
-					this.provinceList = res.data.data;
-                });
-            },	
+			//包装各个日期的查询参数
+			packQueryParams() {
+				let param = {
+					defaultDay: this.paramsProcess('defaultDay'),
+					lastDay: this.paramsProcess('lastDay'),
+					lastWeek: this.paramsProcess('lastWeek'),
+					lastMonth: this.paramsProcess('lastMonth'),
+					pastWeek: this.paramsProcess('pastWeek'),
+				};
+				return param;
+			},				
 			//获取城市列表	
             getCityList(params) {
                 return situationService.getCityList(params).then(res => {
@@ -262,18 +252,29 @@
                     }; 
 					this.cityList = res.data.data;
                 });
-            },	
-			//获取车场列表	
-            getParkList(params) {
-                return situationService.getParkList(params).then(res => {
+            },
+			getParkList(params) {
+				return situationService.getParkList(params).then(res => {
                     if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
                         this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
                         return;
                     }; 
 					this.parkList = res.data.data;
-                });
-            },																						
-		}
+				});
+			},																									
+		},
+		mounted () {
+			if(this.currentPage) {
+				this.interval= setInterval(() => {
+						this.currentDate = DateFormat.format(new Date(), 'yyyy-MM-dd hh:mm:ss');
+				}, 1000);
+			}
 
+		},
+		beforeDestroy () {
+			if(this.currentPage) {
+				clearInterval(this.interval)
+			}
+		}	  		
     }
 </script>

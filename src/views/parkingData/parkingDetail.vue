@@ -42,7 +42,9 @@
 </style>
 <template>
 <div>
-	<condition-query></condition-query>
+	<keep-alive>
+		<condition-query></condition-query>
+	</keep-alive>
 	<div class="divisionLine"></div>
 	<div class="layout-content-charts">
 		<tab-charts :tab-item="tabItems"></tab-charts>
@@ -92,7 +94,19 @@ export default {
 
 	data (){
 		return {
-			tabItems:['进场车数量','出场车数量','过夜数量','车位使用率','平均停车时长','单位小时进出车辆数','新增车辆数'],
+			tabItems:{
+				tabOption:[
+					{label:'进场车数量',id:'dedup_finish'},
+					{label:'出场车数量',id:'finish'},
+					{label:'过夜数量',id:'charge'},
+					{label:'车位使用率',id:'averageCharge'},
+					{label:'平均停车时长',id:'eachCharge'},
+					{label:'单位小时进出车辆数',id:'space'},
+					{label:'新增车辆数',id:'parks'}
+				],
+				tabChartsData:{}
+			},			
+			//tabItems:['进场车数量','出场车数量','过夜数量','车位使用率','平均停车时长','单位小时进出车辆数','新增车辆数'],
 			tableData: {
 				columns1: [
 					{

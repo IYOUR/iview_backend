@@ -7,11 +7,14 @@
 	.situation-item .comparison{
 		font-size: 9px;;
 	}
-    .isup{
+    .up{
         color: #19be6b;
     }
-    .isdown{
+    .down{
         color: #ed3f14;
+    }
+    .no,.same{
+        color: #657180;
     }
 </style>
 <template>
@@ -42,32 +45,23 @@
                             <table style="float:right;">
                                 <tr>
                                     <td>环比:</td>
-                                    <td>
-                                        <p v-if="(item.lastDay[2] != null)" :class="[(item.lastMonth[2]) ? 'isup' : 'isdown']">
-                                            {{item.lastDay[1]}}
-                                            <Icon :type="(item.lastDay[2])? 'arrow-up-c':'arrow-down-c'"></Icon>
-                                        </p>
-                                        <p v-else>暂无</p>
+                                        <td :class="item.lastDay[1].state">
+                                        {{item.lastDay[1].val}}
+                                        <Icon :type="item.lastDay[1].icon"></Icon>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>同比:</td>
-                                    <td>
-                                        <p v-if="(item.lastWeek[2] != null)" :class="[(item.lastWeek[2]) ? 'isup' : 'isdown']">
-                                            {{item.lastWeek[1]}}
-                                            <Icon :type="(item.lastWeek[2])? 'arrow-up-c':'arrow-down-c'"></Icon>
-                                        </p>
-                                        <p v-else>暂无</p>
+                                    <td :class="item.lastWeek[1].state">
+                                        {{item.lastWeek[1].val}}
+                                        <Icon :type="item.lastWeek[1].icon"></Icon>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>同比:</td>
-                                    <td>
-                                        <p v-if="(item.lastMonth[2] != null)" :class="[(item.lastMonth[2]) ? 'isup' : 'isdown']">
-                                            {{item.lastMonth[1]}}
-                                            <Icon :type="(item.lastMonth[2])? 'arrow-up-c':'arrow-down-c'"></Icon>
-                                        </p>
-                                        <p v-else>暂无</p>
+                                    <td :class="item.lastMonth[1].state">
+                                        {{item.lastMonth[1].val}}
+                                        <Icon :type="item.lastMonth[1].icon"></Icon>
                                     </td>
                                 </tr>																		
                             </table>								
@@ -99,23 +93,110 @@
     </Row>
 </template>
 <script>
+	import {mapState, mapActions, mapGetters} from 'vuex';
 
     export default {
-        props: {
-            situationPanelData: {
-            type: Array,
-            required: true
-            }
-        },
         data (){
             return {
-                situationData: this.situationPanelData
+
             }
         },
         computed: {
             isShowPanel: function() {
                 return this.$route.path==='/realTimeData'?true:false;
+            },
+            ...mapState({
+                queryResult: 'queryResult',
+                situationData: 'situationData',
+                queryParam: 'queryParam'
+            }),	            
+        }, 
+        watch: {
+            'queryResult':{
+                deep:true,
+                handler:function(newVal,oldVal){
+                    console.warn(newVal===oldVal)
+                    this.showResult(newVal);
+                },
             }
-        }        
+        },
+        methods: {
+            showResult(res) {
+                this.situationData.forEach((element,index,array)=>{
+                    switch (index) {
+                        case 0:
+                            this.handleResultData(index,array,res,'space')
+                            break;
+                        case 1:
+                            this.handleResultData(index,array,res,'parks')
+                            break;
+                        case 2:
+                            this.handleResultData(index,array,res,'dedup_finish')
+                            break;
+                        case 3:
+                            this.handleResultData(index,array,res,'charge')
+                            break;
+                        case 4:
+                            this.handleResultData(index,array,res,'average')
+                            break;						
+                    }			
+                })
+            },
+            //处理返回数据
+            handleResultData(index,array,res,item) {				
+                if (item === 'charge'){
+                    let defaultDay,lastDay,lastWeek,lastMonth;
+                    defaultDay = (res.defaultDay.data.length>0) ? (res.defaultDay.data[0][item]/100).toFixed(2):'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? (res.lastDay.data[0][item]/100).toFixed(2):'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? (res.lastWeek.data[0][item]/100).toFixed(2):'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? (res.lastMonth.data[0][item]/100).toFixed(2):'暂无';
+                    array[index].num = defaultDay;
+                    array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
+                    array[index].lastWeek = [lastWeek,this.checkResultData(defaultDay,lastWeek)];
+                    array[index].lastMonth = [lastMonth,this.checkResultData(defaultDay,lastMonth)];			
+                }
+                else if (item === 'average') {
+                    let defaultDay,lastDay,lastWeek,lastMonth;
+                    defaultDay = (res.defaultDay.data.length>0) ? (res.defaultDay.data[0].charge/res.defaultDay.data[0].dedup_finish/100).toFixed(2):'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? (res.lastDay.data[0].charge/res.lastDay.data[0].dedup_finish/100).toFixed(2):'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? (res.lastWeek.data[0].charge/res.lastWeek.data[0].dedup_finish/100).toFixed(2):'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? (res.lastMonth.data[0].charge/res.lastMonth.data[0].dedup_finish/100).toFixed(2):'暂无';
+                    
+                    array[index].num = defaultDay;
+                    array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
+                    array[index].lastWeek = [lastWeek,this.checkResultData(defaultDay,lastWeek)];
+                    array[index].lastMonth = [lastMonth,this.checkResultData(defaultDay,lastMonth)];
+                }
+                else{
+                    let defaultDay,lastDay,lastWeek,lastMonth;
+                    defaultDay = (res.defaultDay.data.length>0) ? res.defaultDay.data[0][item]:'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[0][item]:'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? res.lastWeek.data[0][item]:'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? res.lastMonth.data[0][item]:'暂无';
+
+                    array[index].num = defaultDay;
+                    array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
+                    array[index].lastWeek = [lastWeek,this.checkResultData(defaultDay,lastWeek)];
+                    array[index].lastMonth = [lastMonth,this.checkResultData(defaultDay,lastMonth)];	
+                }
+            
+            },
+            //返回数据格式校验
+            checkResultData(firstVal,secondVal) {
+                if (isNaN(firstVal/secondVal)) {
+                    return {val:'暂无',state:'no',icon:''};
+                }
+                else if(firstVal === secondVal) {
+                    return {val:'持平',state:'same',icon:'arrow-right-c'};
+                }
+                else if (firstVal>secondVal) {
+                    return {val:(firstVal/secondVal).toFixed(2),state:'up',icon:'arrow-up-c'};
+                }
+                else{
+                    return {val:(firstVal/secondVal).toFixed(2),state:'down',icon:'arrow-down-c'};
+                }
+            },
+        }
+               
     }
 </script>

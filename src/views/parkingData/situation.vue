@@ -23,14 +23,16 @@
 </style>
 <template>
 <div>
-	<condition-query v-on:queryResult="showResult"></condition-query>
+	<keep-alive>
+		<condition-query></condition-query>
+	</keep-alive>
 	<div class="divisionLine"></div>
 	<div class="layout-content-situation">
-		<situation-panel :situation-panel-data="situationData"></situation-panel>
+		<situation-panel></situation-panel>
 	</div>
 	<div class="divisionLine"></div>	
 	<div class="layout-content-charts">
-		<tab-charts :tab-item="tabItems"></tab-charts>
+		<tab-charts></tab-charts>
 	</div>
 	<div class="layout-content-table">
 		<parking-table :table-showdata="tableData"></parking-table>
@@ -39,88 +41,47 @@
 </template>
 
 <script>
-import tabCharts from '../../components/parkingData/tabCharts.vue'
-import conditionQuery from '../../components/parkingData/conditionQuery.vue'
-import parkingTable from '../../components/parkingData/parkingTable.vue'
-import situationPanel from '../../components/parkingData/situationPanel.vue'
+	import tabCharts from '../../components/parkingData/tabCharts.vue'
+	import conditionQuery from '../../components/parkingData/conditionQuery.vue'
+	import parkingTable from '../../components/parkingData/parkingTable.vue'
+	import situationPanel from '../../components/parkingData/situationPanel.vue'
+	import * as situationService from '../../api/situation';
+	import axios from 'axios';
+	import CONSTANT from '../../commons/utils/code';
+	import {mapState, mapActions, mapGetters} from 'vuex';
 export default {
 
 	data (){
 		return {
-			situationData: [
-				{
-					title:'车位数量',
-					num: '00000',
-					lastDay:['00','00',true],	
-					lastWeek:['00','00',true],
-					lastMonth:['00','00',true]
-				},
-				{
-					title:'停车场数量',
-					num: '00000',
-					lastDay:['00','00',true],	
-					lastWeek:['00','00',true],
-					lastMonth:['00','00',true]
-				},
-				{
-					title:'完成停车辆数',
-					num: '00000',
-					lastDay:['00','00',true],	
-					lastWeek:['00','00',true],
-					lastMonth:['00','00',true]
-				},
-				{
-					title:'总收入(元)',
-					num: '00000',
-					lastDay:['00','00',true],	
-					lastWeek:['00','00',true],
-					lastMonth:['00','00',true]
-				},		
-				{
-					title:'平均每辆车付费(元)',
-					num: '00000',
-					lastDay:['00','00',true],	
-					lastWeek:['00','00',true],
-					lastMonth:['00','00',true]
-				}															
-			],
-			tabItems:{
-				tabOption:[
-					{label:'完成停车数量',id:'dedup_finish'},
-					{label:'完成停车次数',id:'finish'},
-					{label:'总收入',id:'charge'},
-					{label:'平均每辆车付费',id:'averageCharge'},
-					{label:'平均每次停车付费',id:'eachCharge'},
-					{label:'车位数量',id:'space'},
-					{label:'停车场数量',id:'parks'}
-				],
-				tabChartsData:{}
-				},
+			queryParamData: {},
+			resultData: {},
+			queryResData: {},
+
 			tableData: {
-				columns1: [
+				columns: [
 					{
 						title: '日期',
-						key: 'name'
+						key: 'date'
 					},
 					{
 						title: '完成停车数量',
-						key: 'age'
+						key: 'dedup_finish'
 					},
 					{
 						title: '完成停车次数',
-						key: 'address'
+						key: 'finish'
 					},
 					{
 						title: '总收入(元)',
-						key: 'income'
+						key: 'charge'
 					},
 					{
 						title: '平均每辆车付费(元)',
-						key: 'eachPay' 
+						key: 'averageCharge' 
 					},
 					{
 						title: '平均每次停车付费(元)',
-						key: 'eachParkPay'
+						key: 'eachCharge'
 					},
 					{
 						title: '车位数量',
@@ -128,120 +89,69 @@ export default {
 					},
 					{
 						title: '停车场数量',
-						key: 'parkNum'
+						key: 'parks'
 					}																				
 				],
-				data1: [
-
-				]
+				data: []
 			}
 		}
 	},
+	watch:{
+		'queryParam':{
+			deep:true,
+			handler:function(newVal,oldVal){
+				this.sendRquest(newVal);
+			},
+		}
+	},
+	computed: {
+		...mapState({
+			queryParam: 'queryParam'
+		}),			
+	},	 	
 	methods: {
-		showResult(res) {
-			this.tabItems.tabChartsData = Object.assign({}, res.pastWeek);
-			if (res.defaultDay.data.length === 0) {
-				this.$Message.warning('暂无数据！');
-				return
-			}
-			this.situationData.forEach((element,index,array)=>{
-				switch (index) {
-					case 0:
-						this.handleResultData(index,array,res,'space')
-						break;
-					case 1:
-						this.handleResultData(index,array,res,'parks')
-						break;
-					case 2:
-						this.handleResultData(index,array,res,'dedup_finish')
-						break;
-					case 3:
-						this.handleResultData(index,array,res,'charge')
-						break;
-					case 4:
-						this.handleResultData(index,array,res,'average')
-						break;						
-				}			
-			})
-		},
-		//处理返回数据
-		handleResultData(index,array,res,item) {				
-			if (item === 'charge'){
-				let defaultDay,lastDay,lastWeek,lastMonth;
-				defaultDay = (res.defaultDay.data.length>0) ? res.defaultDay.data[0][item]:'暂无';
-				lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[0][item]:'暂无';
-				lastWeek =  (res.lastWeek.data.length>0) ? res.lastWeek.data[0][item]:'暂无';
-				lastMonth =  (res.lastMonth.data.length>0) ? res.lastMonth.data[0][item]:'暂无';
-				array[index].num = (defaultDay/100).toFixed(2);
 
-				array[index].lastDay = [
-					(lastDay/100).toFixed(2),
-					(!isNaN(defaultDay/lastDay))?(defaultDay/lastDay/100).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastDay))?((defaultDay>lastDay)? true:false):null
-				];
-				array[index].lastWeek = [
-					lastWeek,
-					(!isNaN(defaultDay/lastWeek))?(defaultDay/lastWeek/100).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastWeek))?((defaultDay>lastWeek)? true:false):null
-				];
-				array[index].lastMonth = [
-					lastMonth,
-					(!isNaN(defaultDay/lastMonth))?(defaultDay/lastMonth/100).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastMonth))?((defaultDay>lastMonth)? true:false):null
-				];			
-			}
-			else if (item === 'average') {
-				let defaultDay,lastDay,lastWeek,lastMonth;
-				defaultDay = (res.defaultDay.data.length>0) ? (res.defaultDay.data[0].charge/res.defaultDay.data[0].dedup_finish/100).toFixed(2):'暂无';
-				lastDay =  (res.lastDay.data.length>0) ? (res.lastDay.data[0].charge/res.lastDay.data[0].dedup_finish/100).toFixed(2):'暂无';
-				lastWeek =  (res.lastWeek.data.length>0) ? (res.lastWeek.data[0].charge/res.lastWeek.data[0].dedup_finish/100).toFixed(2):'暂无';
-				lastMonth =  (res.lastMonth.data.length>0) ? (res.lastMonth.data[0].charge/res.lastMonth.data[0].dedup_finish/100).toFixed(2):'暂无';
-				array[index].num = defaultDay;
+		//发送各个查询条件
+		sendRquest(params){
+			return axios.all([
+				this.getQueryResult({name: 'defaultDay',val:params.defaultDay}), 
+				this.getQueryResult({name: 'lastDay',val:params.lastDay}),
+				this.getQueryResult({name: 'lastWeek',val:params.lastWeek}),
+				this.getQueryResult({name: 'lastMonth',val:params.lastMonth}),
+				this.getQueryResult({name: 'pastWeek',val:params.pastWeek})
+			]).then(axios.spread((acct, perms) => {
+				this.$store.commit('SET_QUERY_RESULT',perms);
+			}));
+		},
+		//获取查询结果
+		getQueryResult(searchParam) {
+			return situationService.getQueryResult(searchParam.val).then(res => {
+				if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
+					this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
+					return;
+				};
+				this.resultData[searchParam.name] = res.data;
+				return this.resultData;
+			});
+		},		
+		handleTableData(res) {
 			
-				array[index].lastDay = [
-					lastDay,
-					(!isNaN(defaultDay/lastDay))?(defaultDay/lastDay).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastDay))?((defaultDay>lastDay)? true:false):null
-				];
-				array[index].lastWeek = [
-					lastWeek,
-					(!isNaN(defaultDay/lastWeek))?(defaultDay/lastWeek).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastWeek))?((defaultDay>lastWeek)? true:false):null
-				];
-				array[index].lastMonth = [
-					lastMonth,
-					(!isNaN(defaultDay/lastMonth))?(defaultDay/lastMonth).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastMonth))?((defaultDay>lastMonth)? true:false):null
-				];
-			}
-			else{
-				let defaultDay,lastDay,lastWeek,lastMonth;
-				defaultDay = (res.defaultDay.data.length>0) ? res.defaultDay.data[0][item]:'暂无';
-				lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[0][item]:'暂无';
-				lastWeek =  (res.lastWeek.data.length>0) ? res.lastWeek.data[0][item]:'暂无';
-				lastMonth =  (res.lastMonth.data.length>0) ? res.lastMonth.data[0][item]:'暂无';
-				array[index].num = defaultDay;
+			let tableShowData = Object.assign({}, res.data),rowData = [];
 
-				array[index].lastDay = [
-					lastDay,
-					(!isNaN(defaultDay/lastDay))?(defaultDay/lastDay).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastDay))?((defaultDay>lastDay)? true:false):null
-				];
-				array[index].lastWeek = [
-					lastWeek,
-					(!isNaN(defaultDay/lastWeek))?(defaultDay/lastWeek).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastWeek))?((defaultDay>lastWeek)? true:false):null
-				];
-				array[index].lastMonth = [
-					lastMonth,
-					(!isNaN(defaultDay/lastMonth))?(defaultDay/lastMonth).toFixed(2):'暂无',
-					(!isNaN(defaultDay/lastMonth))?((defaultDay>lastMonth)? true:false):null
-				];	
+			for(let item in tableShowData) {
+				 let raw = {
+				 	date:tableShowData[item].date,
+				 	dedup_finish:tableShowData[item].dedup_finish,
+				 	finish:tableShowData[item].finish,
+				 	charge:(tableShowData[item].charge/100).toFixed(2),
+				 	averageCharge:(tableShowData[item].charge/tableShowData[item].dedup_finish/100).toFixed(2),
+				 	eachCharge:(tableShowData[item].charge/tableShowData[item].finish/100).toFixed(2),
+				 	space:tableShowData[item].space,
+				 	parks:tableShowData[item].parks,
+				 }
+				 rowData.push(raw);
 			}
-		
-		},
-		chartsData(res) {
-			console.log(res)
+			this.tableData.data = rowData;
 		}
 	},
 	components: {

@@ -18,7 +18,7 @@ let store = new Vuex.Store({
   getters:getters,
   state:state,
   mutations:mutations,
-//  plugins: [createLogger()],
+  // plugins: [createLogger()],
 });
 
 

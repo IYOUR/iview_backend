@@ -12,22 +12,24 @@ export default {
     //获取省份列表
     getProvinceList: function({commit}){
         situationService.getProvinceList().then(res => {
-            if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
-                this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
-                return;
-            };
-            
-            commit('SET_PROVINCE_LIST', res.data.data);
+            commit('SET_PROVINCE_LIST', res.data.data); 
+            return res;
         });
     },
 
     //获取集团列表
     getCompanyList: function({commit}){
-        return situationService.getProvinceList().then(res => {
-            res.status === HTTP_STATUS.SUCCESS.CODE && commit('SET_COMPANY_LIST', res.data);
+        return situationService.getCompanyList().then(res => {
+            commit('SET_COMPANY_LIST', res.data.data);
             return res;
         });
     },
 
-
+    //获取车场列表
+    getParkList: function({commit},params){
+        return situationService.getParkList(params).then(res => {
+            commit('SET_PARK_LIST', res.data.data);
+            return res;
+        });
+    },
 }

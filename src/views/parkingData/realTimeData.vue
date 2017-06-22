@@ -15,62 +15,12 @@
 	.layout-content-situation{
 		padding: 15px;
 	}
-	.layout-content-table{
-		padding: 15px;
-		padding-top: 20px;
-	}	
-	.currentDate{
-		text-align: center;
-		font-size: 1.5vw;
-    	font-weight: bold;
-	}
+
 </style>
 <template>
 <div>
 	<div class="layout-content-filtrate">
-		<Form label-position="right" :label-width="100">
-			<row>
-				<Col span="2" class="filtrate-title">
-					<span>条件选择:</span>
-				</col>
-				<Col span="7">
-					<Form-item label="省份:">
-						<Select placeholder="请选择">
-						</Select>
-					</Form-item>
-					<Form-item label="集团:">
-						<Select placeholder="请选择">
-						</Select>
-					</Form-item>	
-				</col>
-				<Col span="7">
-				
-					<Form-item label="城市:">
-						<Select placeholder="请选择">
-						</Select>
-					</Form-item>
-					<Form-item label="停车场:">
-						<Select placeholder="请选择">
-						</Select>
-					</Form-item>			
-				</col>
-				<Col span="7">
-					<Form-item>
-						<p class="currentDate">{{currentDate}}</p>
-					</Form-item>
-					<Form-item>
-						<row :gutter="16">
-							<Col span="12">
-								<Button type="primary" style="width:100%;">查询</Button>
-							</Col>
-							<Col span="12">
-								<Button type="ghost"  style="width:100%;">重置</Button>
-							</Col>
-						</row>	
-					</Form-item>			
-				</col>
-			</row>	
-		</Form>
+		<condition-query v-on:queryParams="sendRquest"></condition-query>
 	</div>
 	<div class="divisionLine"></div>
 	<div class="layout-content-situation">
@@ -78,10 +28,10 @@
 	</div>
 	<div class="divisionLine"></div>	
 	<div class="layout-content-charts">
-		<tab-charts :tab-item="tabItems"></tab-charts>
+		<tab-charts></tab-charts>
 	</div>
 	<div class="layout-content-table">
-		<parking-table :table-showdata="tableData"></parking-table>
+		<parking-table></parking-table>
 	</div>
 </div> 
 </template>
@@ -176,6 +126,9 @@ export default {
 	// 	}
 	// },
 	methods: {
+		queryParams(param) {
+			console.log(param)
+		}
 	},
 	components: {
 		'tab-charts': tabCharts,
