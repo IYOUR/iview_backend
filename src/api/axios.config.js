@@ -20,13 +20,12 @@ axios.PARK_API = process.env.NODE_ENV === 'production' ? 'http://180.97.81.222:8
 
 //请求拦截器
 axios.interceptors.request.use(config => {
-        LoadingBar.start();
+        //LoadingBar.start();
         let method = config.method.toLocaleLowerCase();
         if (method === 'post') {
             // console.log(Storage.KEYS.userToken)
             // 判断是否存在token，如果存在的话，则每个http header都加上token
             config.headers.token = Storage.KEYS.userToken;
-            console.log(config)
             config.data = processParam(config.data);
             let user = getUser();
             user && user.token && (config.data['token'] = user.token);
@@ -52,8 +51,7 @@ axios.interceptors.request.use(config => {
 
 //响应拦截器
 axios.interceptors.response.use(response => {
-        LoadingBar.finish();
-        //console.log(response)
+        //LoadingBar.finish();
         if (CONSTANT.HTTP_STATUS.VALID_TOKEN.CODE === response.data.code) {
             Storage.removeAll();
             router.replace({name: 'iop.login', query: {redirect: router.currentRoute.fullPath}});

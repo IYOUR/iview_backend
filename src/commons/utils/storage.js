@@ -9,7 +9,7 @@ export default Storage = (function () {
         KEYS: {
             USER: 'com.parkingwang.iop.user',
             CURRENT_PARK: 'com.parkingwang.iop.user.active.park',
-            userToken: 'ce9861c1c9052baf3137a1b6c9e6747b'
+            userToken: 'd2bd23a1d783389f8f110bca18338a57'
         },
         get: function (key, isSession) {
             if (!Storage.isLocalStorage()) {

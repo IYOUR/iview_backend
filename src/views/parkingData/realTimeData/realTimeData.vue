@@ -37,49 +37,17 @@
 </template>
 
 <script>
-import tabCharts from '../../components/parkingData/tabCharts.vue'
-import conditionQuery from '../../components/parkingData/conditionQuery.vue'
-import parkingTable from '../../components/parkingData/parkingTable.vue'
-import situationPanel from '../../components/parkingData/situationPanel.vue'
-import DateFormat from '../../commons/utils/formatDate.js';
+import tabCharts from './components/tabCharts.vue'
+	import conditionQuery from './components/conditionQuery.vue'
+	import parkingTable from './components/parkingTable.vue'
+	import situationPanel from './components/situationPanel.vue'
+	import DateFormat from '../../../commons/utils/formatDate.js';
+	import {mapState, mapActions, mapGetters} from 'vuex';
 export default {
 
 	data (){
 		return {
 			currentDate: '2017-01-01 00:00:00',
-			tabItems:['实时进车次数','实时出车次数','实时完成停车数','实时停放数量','实时车位使用率','实时收入','实时新增车辆数'],
-			situationData: [
-				{
-					title:'实时进车数',
-					num: '12341',
-					lastDay:['8812','86%',true]
-				},
-				{
-					title:'实时出车数',
-					num: '12341',
-					lastDay:['8812','86%',true]
-				},
-				{
-					title:'实时完成停车数',
-					num: '12341',
-					lastDay:['8812','86%',true]
-				},
-				{
-					title:'实时停放辆数',
-					num: '12341',
-					lastDay:['8812','86%',false]
-				},
-				{
-					title:'实时收入',
-					num: '12341',
-					lastDay:['8812','86%',true]
-				},
-								{
-					title:'实时新增车辆数',
-					num: '12341',
-					lastDay:['8812','86%',true]
-				}																
-			],
 			tableData: {
 				columns1: [
 					{
@@ -120,16 +88,23 @@ export default {
 			}
 		}
 	},
-	// computed: {
-	// 	datePicker: function() {
-	// 		return this.$route.path==='/realTimeData'?true:false;
-	// 	}
-	// },
-	methods: {
-		queryParams(param) {
-			console.log(param)
+	watch:{
+		'queryParam':{
+			deep:true,
+			handler:function(newVal,oldVal){
+				this.$store.dispatch('getCurrentResult',newVal)
+			},
 		}
 	},
+	computed: {
+			//获取当前页面名称 
+			currentPage () {
+				return this.$route.path;
+			},		
+		...mapState({
+			queryParam: 'queryParam'
+		}),			
+	},	 
 	components: {
 		'tab-charts': tabCharts,
 		'condition-query': conditionQuery,
@@ -137,9 +112,10 @@ export default {
 		'situation-panel':situationPanel
 	},
 	mounted () {
+	this.$store.commit('SET_CURRENT_PAGNAME',this.currentPage);
 		 this.interval= setInterval(() => {
-				this.currentDate = DateFormat.format(new Date(), 'yyyy-MM-dd hh:mm:ss');
-		 }, 1000);
+				this.$store.dispatch('getCurrentResult',this.queryParam)
+		 }, 10000);
 	 },
 	beforeDestroy () {
 		clearInterval(this.interval)

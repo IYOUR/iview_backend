@@ -14,11 +14,12 @@
 				<Button type="primary" @click="exportData">导出CSV</Button>
 			</Col>
 		</Row>
-		<Table v-show="isHidden" border :columns="situationTable.columns" :data="situationTable.data" ref="table"></Table>	
+		<Table v-show="isHidden" border :columns="realTimeTable.columns" :data="realTimeTable.data" ref="table"></Table>	
 	</div>
 </template>
 <script>
 	import {mapState, mapActions, mapGetters} from 'vuex';
+    import DateFormat from '../../../../commons/utils/formatDate.js';
     export default {
         data (){
             return {
@@ -30,15 +31,15 @@
                 return this.$route.path==='/realTimeData'?true:false;
             },
             ...mapState({
-                queryResult: 'queryResult',
+                currentResult: 'currentResult',
                 realTimeTable: 'realTimeTable'
             }),	                       
         }, 
         watch: {
-            'queryResult':{
+            'currentResult':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.handleTableData(newVal.pastWeek);
+                    this.handleTableData(newVal.toDay);
                 },
             }
         },        
@@ -50,22 +51,22 @@
                 });
             },
             handleTableData(res) {
-                let tableShowData = Object.assign({}, res.data),rowData = [];
-
-                for(let item in tableShowData) {
+                let tableShowData = Object.assign([], res.data),rowData = [];
+                for(let i=0;i<tableShowData.length;i++) {
                     let raw = {
-                        date:tableShowData[item].date,
-                        dedup_finish:tableShowData[item].dedup_finish,
-                        finish:tableShowData[item].finish,
-                        charge:(tableShowData[item].charge/100).toFixed(2),
-                        averageCharge:(tableShowData[item].charge/tableShowData[item].dedup_finish/100).toFixed(2),
-                        eachCharge:(tableShowData[item].charge/tableShowData[item].finish/100).toFixed(2),
-                        space:tableShowData[item].space,
-                        parks:tableShowData[item].parks,
+                        date:DateFormat.format(DateFormat.formatToDate (tableShowData[i].date), 'hh:mm'),
+                        ins:tableShowData[i].ins,
+                        outs:tableShowData[i].outs,
+                        in_parks:tableShowData[i].in_parks,
+                        in_parks:tableShowData[i].in_parks,
+                        space_ratio:tableShowData[i].space_ratio,
+                        charge:(tableShowData[i].ins/100).toFixed(2),
+                        in_parks:tableShowData[i].in_parks,
                     }
                     rowData.push(raw);
                 }
-                this.situationTable.data = rowData;
+                console.log(rowData)
+                this.realTimeTable.data = rowData;
             }                    
         }        
     }

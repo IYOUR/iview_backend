@@ -41,13 +41,13 @@
 </template>
 
 <script>
-	import tabCharts from '../../components/parkingData/tabCharts.vue'
-	import conditionQuery from '../../components/parkingData/conditionQuery.vue'
-	import parkingTable from '../../components/parkingData/parkingTable.vue'
-	import situationPanel from '../../components/parkingData/situationPanel.vue'
-	import * as situationService from '../../api/situation';
+	import tabCharts from './components/tabCharts.vue'
+	import conditionQuery from './components/conditionQuery.vue'
+	import parkingTable from './components/parkingTable.vue'
+	import situationPanel from './components/situationPanel.vue'
+	import * as situationService from '../..../api/situation';
 	import axios from 'axios';
-	import CONSTANT from '../../commons/utils/code';
+	import CONSTANT from '../..../commons/utils/code';
 	import {mapState, mapActions, mapGetters} from 'vuex';
 export default {
 

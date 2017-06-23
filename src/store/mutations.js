@@ -22,4 +22,13 @@ export default {
     SET_QUERY_PARAM: (state, data) => {
       state.queryParam = data
     },
+    SET_TABLE_DATA: (state, data) => {
+      state.tableData = data
+    },
+    SET_CURRENT_DATA: (state, data) => {
+      state.currentResult = data
+    },
+    SET_CURRENT_PAGNAME: (state, data) => {
+      state.currentPageName = data
+    },           
 }

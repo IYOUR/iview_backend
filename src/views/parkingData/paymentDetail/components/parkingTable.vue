@@ -31,7 +31,7 @@
             },
             ...mapState({
                 queryResult: 'queryResult',
-                realTimeTable: 'realTimeTable'
+                situationTable: 'situationTable'
             }),	                       
         }, 
         watch: {
