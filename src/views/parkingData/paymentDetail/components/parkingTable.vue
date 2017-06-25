@@ -14,7 +14,7 @@
 				<Button type="primary" @click="exportData">导出CSV</Button>
 			</Col>
 		</Row>
-		<Table v-show="isHidden" border :columns="situationTable.columns" :data="situationTable.data" ref="table"></Table>	
+		<Table v-show="isHidden" border :columns="paymentDetailTable.columns" :data="paymentDetailTable.data" ref="table"></Table>	
 	</div>
 </template>
 <script>
@@ -30,15 +30,15 @@
                 return this.$route.path==='/realTimeData'?true:false;
             },
             ...mapState({
-                queryResult: 'queryResult',
-                situationTable: 'situationTable'
+                paymentDetailData: 'paymentDetailData',
+                paymentDetailTable: 'paymentDetailTable'
             }),	                       
         }, 
         watch: {
-            'queryResult':{
+            'paymentDetailData':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.handleTableData(newVal.pastWeek);
+                    this.handleTableData(newVal);
                 },
             }
         },        
@@ -50,22 +50,23 @@
                 });
             },
             handleTableData(res) {
-                let tableShowData = Object.assign({}, res.data),rowData = [];
+                let tableShowData = Object.assign({}, res),rowData = [];
 
                 for(let item in tableShowData) {
                     let raw = {
                         date:tableShowData[item].date,
-                        dedup_finish:tableShowData[item].dedup_finish,
-                        finish:tableShowData[item].finish,
                         charge:(tableShowData[item].charge/100).toFixed(2),
-                        averageCharge:(tableShowData[item].charge/tableShowData[item].dedup_finish/100).toFixed(2),
-                        eachCharge:(tableShowData[item].charge/tableShowData[item].finish/100).toFixed(2),
-                        space:tableShowData[item].space,
-                        parks:tableShowData[item].parks,
+                        eachTimesPay:(tableShowData[item].charge/tableShowData[item].finish/100).toFixed(2),
+                        eachCarPay:(tableShowData[item].charge/tableShowData[item].dedup_finish/100).toFixed(2),
+                        eachFinish:tableShowData[item].ins,
+                        notPay:tableShowData[item].ins,
+                        spaceWorth:(tableShowData[item].charge/tableShowData[item].space/100).toFixed(2),
+                        averageTime:tableShowData[item].parking_duration,
+                        inOutPerhour:tableShowData[item].ins,
                     }
                     rowData.push(raw);
                 }
-                this.situationTable.data = rowData;
+                this.paymentDetailTable.data = rowData;
             }                    
         }        
     }

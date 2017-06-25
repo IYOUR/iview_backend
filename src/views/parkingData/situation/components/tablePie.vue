@@ -14,12 +14,7 @@
 <script>
 import echarts from 'echarts'
     export default {
-        // props: {
-        //     tabItem: {
-        //     type: Array,
-        //     required: true
-        //     }
-        // },
+        
         data (){
             return {
                 chartPie:null,

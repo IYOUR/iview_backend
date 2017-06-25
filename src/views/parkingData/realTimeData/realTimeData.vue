@@ -115,7 +115,7 @@ export default {
 	this.$store.commit('SET_CURRENT_PAGNAME',this.currentPage);
 		 this.interval= setInterval(() => {
 				this.$store.dispatch('getCurrentResult',this.queryParam)
-		 }, 10000);
+		 }, 100000);
 	 },
 	beforeDestroy () {
 		clearInterval(this.interval)

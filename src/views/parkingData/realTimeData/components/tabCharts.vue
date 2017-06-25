@@ -34,7 +34,7 @@
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                         </Poptip>        
                     </div>
-                    <Date-picker v-if="datePicker" class="datePicker" type="date" placement="bottom-end" placeholder="选择日期"></Date-picker> 
+                    <Date-picker v-if="datePicker" class="datePicker" v-model="queryDate" type="date" placement="bottom-end" placeholder="选择日期"></Date-picker> 
                 </Col>
             </Row>
             <div :id="item.id" style="width:100%; height:400px;"></div>       
@@ -45,11 +45,13 @@
     import echarts from 'echarts';
     import {mapState, mapActions, mapGetters} from 'vuex';
     import DateFormat from '../../../../commons/utils/formatDate.js';
-
+    import * as situationService from '../../../../api/situation';
+    import CONSTANT from '../../../../commons/utils/code';
     export default {
         data (){
 
             return {
+                queryDate: '',
                 chartLine: {
                     currentIns:{val:null,data:['date','ins'],name:'实时进车次数'},
                     currentOuts:{val:null,data:['date','outs'],name:'实时出车次数'},
@@ -67,7 +69,8 @@
             },
             ...mapState({
                 currentResult: 'currentResult',
-                realTimeTabs: 'realTimeTabs'
+                realTimeTabs: 'realTimeTabs',
+                queryParam: 'queryParam'
             }),	               
         },    
         // mounted:function(){
@@ -77,14 +80,27 @@
             'currentResult':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.createCharts();
+                    this.createCharts(this.currentResult.toDay);
                 },
-            }
+                
+            },
+            'queryDate': function(newVal,oldVal){
+                //console.log(typeOf(newVal))
+                let params = {
+                    url: this.queryParam.toDay.url,
+                    param: {
+                        date: DateFormat.format(newVal, 'yyyy-MM-dd')
+                    }
+                }
+                console.log(params)
+                this.getDateResult(params);
+            }            
         },        
         methods: {
             showCharts(name) {
+                console.log("sfewefw")
             },
-            createCharts() {
+            createCharts(res) {
                 for (let item in this.chartLine){
                     this.chartLine[item].val = echarts.init(document.getElementById([item]));
                     this.chartLine[item].val.setOption({
@@ -103,7 +119,7 @@
                         xAxis: {
                             type: 'category',
                             boundaryGap: false,
-                            data: this.filterChartData(['date','date'])
+                            data: this.filterChartData(['date','date'],res)
                         },
                         yAxis: {
                             type: 'value'
@@ -113,14 +129,14 @@
                                 name:this.chartLine[item].name,
                                 type:'line',
                                 stack: '总量',
-                                data:this.filterChartData(this.chartLine[item].data)
+                                data:this.filterChartData(this.chartLine[item].data,res)
                             }
                         ]
                     });
                 }
             },
-            filterChartData(item) {
-                let chartLine = Object.assign({}, this.currentResult.toDay)
+            filterChartData(item,res) {
+                let chartLine = Object.assign({}, res)
 
                 return chartLine.data.map((ele)=> {
                     switch (item[1]) {
@@ -139,7 +155,18 @@
                     }
                     return ele[item[1]];
                 });
-            }
+            },
+			getDateResult(params) {
+				return situationService.getQueryResult(params).then(res => {
+                    if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
+                        this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
+                        return;
+                    }; 
+                    this.createCharts(res.data);
+                    console.log(res)
+					//this.parkList = res.data.data;
+				});
+			},	             
         }
     }
 </script>

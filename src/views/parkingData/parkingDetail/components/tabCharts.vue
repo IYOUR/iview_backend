@@ -23,7 +23,7 @@
 </style>
 <template>
     <Tabs type="card">
-        <Tab-pane :label="item.label" v-for="(item,idx) in situationTabs.tabOption" :key="idx" class="parkingTimes">
+        <Tab-pane :label="item.label" v-for="(item,idx) in parkDetailTabs.tabOption" :key="idx" class="parkingTimes">
              <Row>
                 <Col span="5">
                     <div class="headTitle"><span>{{item.label}}</span></div>
@@ -42,20 +42,20 @@
     </Tabs>
 </template>
 <script>
-import echarts from 'echarts';
-import {mapState, mapActions, mapGetters} from 'vuex';
-
+    import echarts from 'echarts';
+    import {mapState, mapActions, mapGetters} from 'vuex';
+    import DateFormat from '../../../../commons/utils/formatDate.js';
     export default {
         data (){
             return {
                 chartLine: {
-                    dedup_finish:{val:null,data:['date','dedup_finish'],name:'每日完成停车数量'},
-                    finish:{val:null,data:['date','finish'],name:'每日完成停车次数'},
-                    charge:{val:null,data:['date','charge'],name:'每日总收入(元)'},
-                    averageCharge:{val:null,data:['date','eachCarPay'],name:'每日平均每辆车付费(元)'},
-                    eachCharge:{val:null,data:['date','eachTimesPay'],name:'每日平均每次付费(元)'},
-                    space:{val:null,data:['date','space'],name:'车位数量'},
-                    parks:{val:null,data:['date','parks'],name:'停车场数量'}
+                    ins:{val:null,data:['date','ins'],name:'每日进场车数量'},
+                    outs:{val:null,data:['date','outs'],name:'每日出场车数量'},
+                    pass_nights:{val:null,data:['date','pass_nights'],name:'每日过夜车数量'},
+                    space_ratio:{val:null,data:['date','space_ratio'],name:'每日车位使用率'},
+                    parking_duration:{val:null,data:['date','parking_duration'],name:'每日平均停车时长'},
+                    outsHour:{val:null,data:['date','outsHour'],name:'单位小时进出车辆数'},
+                    increased:{val:null,data:['date','increased'],name:'新增车辆数'}
                 },
             }
         },  
@@ -64,18 +64,15 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 return this.$route.path==='/realTimeData'?true:false;
             },
             ...mapState({
-                queryResult: 'queryResult',
-                situationTabs: 'situationTabs'
+                parkDetailData: 'parkDetailData',
+                parkDetailTabs: 'parkDetailTabs'
             }),	               
-        },    
-        // mounted:function(){
-        //     this.createCharts();
-        // },
+        }, 
         watch:{
-            'queryResult':{
+            'parkDetailData':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.createCharts();
+                    this.createCharts()
                 },
             }
         },        
@@ -119,21 +116,20 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 }
             },
             filterChartData(item) {
-                let chartLine = Object.assign({}, this.queryResult.pastWeek)
-
-                return chartLine.data.map((ele)=> {
+                let chartLine = Object.assign([], this.parkDetailData) 
+                return chartLine.map((ele)=> {
                     switch (item[1]) {
  						case 'charge':
                             return (ele.charge/100).toFixed(2);
 							break;   
- 						case 'eachCarPay':
-                            return (ele.charge/ele.dedup_finish/100).toFixed(2);
+ 						case 'outsHour':
+                            return (ele.dedup_finish/24/100).toFixed(2);
 							break;  
- 						case 'eachTimesPay':
-                            return (ele.charge/ele.finish/100).toFixed(2);
+ 						case 'increased':
+                            return ele.ins;
 							break; 
  						case 'date':
-                            return ele.date;
+                            return DateFormat.format(DateFormat.formatToDate (ele.date), 'yyyy-MM-dd');
 							break;                                                                                                            
                     }
                     return ele[item[1]];

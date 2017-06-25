@@ -32,6 +32,7 @@ export default {
             return res;
         });
     },
+
     //获取查询结果
     getQueryResult: function({commit},params){
         let resultData = {},
@@ -55,6 +56,7 @@ export default {
             commit('SET_QUERY_RESULT',perms);
         }));
     },
+
     //获取实时页面查询数据    
     getCurrentResult: function({commit},params){
         let resultData = {},
@@ -74,6 +76,23 @@ export default {
         ]).then(axios.spread((acct, perms) => {
             commit('SET_CURRENT_DATA', perms);
         }));
-
     },    
+
+
+    //获取停车数据详情
+    getParkDetail: function({commit},params){
+        return situationService.getQueryResult(params).then(res => {
+            commit('SET_PARK_DETAIL', res.data.data);
+            return res;
+        });
+    },  
+
+
+    //获取支付数据详情
+    getPaymentDetail: function({commit},params){
+        return situationService.getQueryResult(params).then(res => {
+            commit('SET_PAYMENT_DETAIL', res.data.data);
+            return res;
+        });
+    },       
 }

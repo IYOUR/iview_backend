@@ -65,7 +65,6 @@
                     }
                     rowData.push(raw);
                 }
-                console.log(rowData)
                 this.realTimeTable.data = rowData;
             }                    
         }        

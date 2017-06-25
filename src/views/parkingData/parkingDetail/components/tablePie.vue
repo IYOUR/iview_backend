@@ -8,22 +8,16 @@
         </Tab-pane>
         <Button type="ghost" size="small" slot="extra">导出Excel</Button>
         <Tab-pane label="表格">
-            <Table border :columns="columns1" :data="data1"></Table></Tab-pane>
+            <Table border :columns="columns" :data="data"></Table></Tab-pane>
     </Tabs>
 </template>
 <script>
 import echarts from 'echarts'
     export default {
-        // props: {
-        //     tabItem: {
-        //     type: Array,
-        //     required: true
-        //     }
-        // },
         data (){
             return {
                 chartPie:null,
-                columns1: [
+                columns: [
                     {
                         title: '姓名',
                         key: 'name'
@@ -37,28 +31,7 @@ import echarts from 'echarts'
                         key: 'address'
                     }
                 ],
-                data1: [
-                    {
-                        name: '王小明',
-                        age: 18,
-                        address: '北京市朝阳区芍药居'
-                    },
-                    {
-                        name: '张小刚',
-                        age: 25,
-                        address: '北京市海淀区西二旗'
-                    },
-                    {
-                        name: '李小红',
-                        age: 30,
-                        address: '上海市浦东新区世纪大道'
-                    },
-                    {
-                        name: '周小伟',
-                        age: 26,
-                        address: '深圳市南山区深南大道'
-                    }
-                ]
+                data: []
             }
         },        
         mounted:function(){
@@ -76,20 +49,19 @@ import echarts from 'echarts'
                 legend: {
                     orient: 'vertical',
                     left: 'left',
-                    data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                    data: ['未付费','月卡','优惠券','普通用户']
                 },
                 series : [
                     {
-                        name: '访问来源',
+                        name: '支付方式分布',
                         type: 'pie',
                         radius : '55%',
                         center: ['50%', '60%'],
                         data:[
-                            {value:335, name:'直接访问'},
-                            {value:310, name:'邮件营销'},
-                            {value:234, name:'联盟广告'},
-                            {value:135, name:'视频广告'},
-                            {value:1548, name:'搜索引擎'}
+                            {value:335, name:'未付费'},
+                            {value:310, name:'月卡'},
+                            {value:234, name:'优惠券'},
+                            {value:1548, name:'普通用户'}
                         ],
                         itemStyle: {
                             emphasis: {

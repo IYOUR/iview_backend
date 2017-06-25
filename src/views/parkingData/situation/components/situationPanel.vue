@@ -5,7 +5,8 @@
 		padding: 10px;
 	}
 	.situation-item .comparison{
-		font-size: 9px;;
+        white-space: nowrap;
+		font-size: 9px;
 	}
     .up{
         color: #19be6b;

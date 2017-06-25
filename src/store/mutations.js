@@ -30,5 +30,11 @@ export default {
     },
     SET_CURRENT_PAGNAME: (state, data) => {
       state.currentPageName = data
-    },           
+    },  
+    SET_PARK_DETAIL: (state, data) => {
+      state.parkDetailData = data
+    },    
+    SET_PAYMENT_DETAIL: (state, data) => {
+      state.paymentDetailData = data
+    },   
 }

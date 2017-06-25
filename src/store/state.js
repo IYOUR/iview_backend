@@ -29,37 +29,37 @@ export default {
         {
             title:'车位数量',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
-            lastWeek:['00000',{val:'00',state:'no',icon:''}],
-            lastMonth:['00000',{val:'00',state:'no',icon:''}]
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
+            lastWeek:['00',{val:'00',state:'no',icon:''}],
+            lastMonth:['00',{val:'00',state:'no',icon:''}]
         },
         {
             title:'停车场数量',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
-            lastWeek:['00000',{val:'00',state:'no',icon:''}],
-            lastMonth:['00000',{val:'00',state:'no',icon:''}]
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
+            lastWeek:['00',{val:'00',state:'no',icon:''}],
+            lastMonth:['00',{val:'00',state:'no',icon:''}]
         },
         {
             title:'完成停车辆数',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
-            lastWeek:['00000',{val:'00',state:'no',icon:''}],
-            lastMonth:['00000',{val:'00',state:'no',icon:''}]
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
+            lastWeek:['00',{val:'00',state:'no',icon:''}],
+            lastMonth:['00',{val:'00',state:'no',icon:''}]
         },
         {
             title:'总收入(元)',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
-            lastWeek:['00000',{val:'00',state:'no',icon:''}],
-            lastMonth:['00000',{val:'00',state:'no',icon:''}]
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
+            lastWeek:['00',{val:'00',state:'no',icon:''}],
+            lastMonth:['00',{val:'00',state:'no',icon:''}]
         },		
         {
             title:'平均每辆车付费(元)',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
-            lastWeek:['00000',{val:'00',state:'no',icon:''}],
-            lastMonth:['00000',{val:'00',state:'no',icon:''}]
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
+            lastWeek:['00',{val:'00',state:'no',icon:''}],
+            lastMonth:['00',{val:'00',state:'no',icon:''}]
         }															
     ],
     situationTabs:{
@@ -132,37 +132,37 @@ export default {
         {
             title:'实时进车次数',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
             title:'实时出车次数',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
             title:'实时完成停车数',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
             title:'实时停数放量',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
             title:'实时收入(元)',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],	
+            lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
             title:'实时新增车辆数',
             num: '00000',
-            lastDay:['00000',{val:'00',state:'no',icon:''}],
+            lastDay:['00',{val:'00',state:'no',icon:''}],
         }	        	        															
     ],  
     realTimeTable: {
@@ -201,5 +201,122 @@ export default {
             }																				
         ],
         data: []
-    },               
+    }, 
+
+
+    parkDetailData: {},
+    parkDetailTabs:{
+        tabOption:[
+            {label:'进场车数量',id:'ins'},
+            {label:'出场车数量',id:'outs'},
+            {label:'过夜车数量',id:'pass_nights'},
+            {label:'车位使用率',id:'space_ratio'},
+            {label:'平均停车时长',id:'parking_duration'},
+            {label:'单位小时进出车辆数',id:'outsHour'},
+            {label:'新增车辆数',id:'increased'}
+        ],
+        tabChartsData:{}
+    },  
+    parkDetailTable: {
+        columns: [
+            {
+                title: '时间',
+                key: 'date'
+            },
+            {
+                title: '进场车数量',
+                key: 'ins'
+            },
+            {
+                title: '出场车数量',
+                key: 'outs'
+            },
+            {
+                title: '过夜车数量',
+                key: 'pass_nights'
+            },
+            {
+                title: '车位使用率最高值',
+                key: 'maxRatio' 
+            },
+            {
+                title: '车位使用率最低值',
+                key: 'minRatio'
+            },
+            {
+                title: '车位使用率平均值',
+                key: 'space_ratio'
+            },
+            {
+                title: '平均停车时长',
+                key: 'averageTime'
+            },
+            {
+                title: '单位小时进出车辆数',
+                key: 'inOutPerhour'
+            },
+            {
+                title: '新增车辆数',
+                key: 'increased'
+            }	            	            																				
+        ],
+        data: []
+    },                      
+
+
+
+
+    paymentDetailData: {},
+    paymentDetailTabs:{
+        tabOption:[
+            {label:'总收入',id:'charge'},
+            {label:'平均每次付费',id:'eachTimesPay'},
+            {label:'平均每车付费',id:'eachCarPay'},
+            {label:'支付完成到抬杆平均时间',id:'eachFinish'},
+            {label:'未支付用户比',id:'notPay'},
+            {label:'车位平均价值',id:'spaceWorth'},
+        ],
+        tabChartsData:{}
+    },  
+    paymentDetailTable: {
+        columns: [
+            {
+                title: '日期',
+                key: 'date'
+            },
+            {
+                title: '总收入(元)',
+                key: 'charge'
+            },
+            {
+                title: '平均每次付费(元)',
+                key: 'eachTimesPay'
+            },
+            {
+                title: '平均每车付费(元)',
+                key: 'eachCarPay'
+            },
+            {
+                title: '支付完成到抬杆平均时间(s)',
+                key: 'eachFinish' 
+            },
+            {
+                title: '未支付用户比',
+                key: 'notPay'
+            },
+            {
+                title: '车位平均价值(元)',
+                key: 'spaceWorth'
+            },
+            {
+                title: '平均停车时长',
+                key: 'averageTime'
+            },
+            {
+                title: '单位小时进出车辆数',
+                key: 'inOutPerhour'
+            }            	            																				
+        ],
+        data: []
+    },                          
 };

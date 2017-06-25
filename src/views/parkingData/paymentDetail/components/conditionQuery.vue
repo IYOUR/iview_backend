@@ -166,27 +166,9 @@
 					request.url = 'province/0/range';
 					switch (type) {
 						case 'defaultDay':
-							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
-							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
-							break;
-						case 'lastDay':
-							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -2), 'yyyy-MM-dd');
-							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -2), 'yyyy-MM-dd');
-							break;
-						case 'lastWeek':
-							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
-							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
-							break;
-						case 'lastMonth':
-							request.param.sdate = DateFormat.format(DateFormat.addMonth(new Date(), -1), 'yyyy-MM-dd');
-							request.param.edate = DateFormat.format(DateFormat.addMonth(new Date(), -1), 'yyyy-MM-dd');
-							break;
-						//过去的一周时间内	
-						case 'pastWeek':
-							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
-							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
-							break;							
-					}						
+						request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
+						request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
+					}
 				} 
 				else {	
 					request.url = 'province/0/range';	
@@ -194,25 +176,7 @@
 						case 'defaultDay':
 							request.param.sdate = DateFormat.changeDate(queryParam.date[0]);
 							request.param.edate = DateFormat.changeDate(queryParam.date[1]);
-							break;
-						case 'lastDay':
-							request.param.sdate = DateFormat.changeDate(DateFormat.addDayStr(DateFormat.changeDate(queryParam.date[0]),-1));
-							request.param.edate = DateFormat.changeDate(DateFormat.addDayStr(DateFormat.changeDate(queryParam.date[1]),-1));
-							break;
-						case 'lastWeek':
-							request.param.sdate = DateFormat.changeDate(DateFormat.addDayStr(DateFormat.changeDate(queryParam.date[0]),-7));
-							request.param.edate = DateFormat.changeDate(DateFormat.addDayStr(DateFormat.changeDate(queryParam.date[1]),-7));
-							break;
-						case 'lastMonth':
-							request.param.sdate = DateFormat.changeDate(DateFormat.addMonthStr(DateFormat.changeDate(queryParam.date[0]),-1));
-							request.param.edate = DateFormat.changeDate(DateFormat.addMonthStr(DateFormat.changeDate(queryParam.date[1]),-1));
-							break;
-						//过去的一周时间内	
-						case 'pastWeek':
-							request.param.sdate = DateFormat.changeDate(queryParam.date[0]);
-							request.param.edate = DateFormat.changeDate(queryParam.date[1]);
-							break;								
-					}								
+					}
 				}	
 				if (queryParam.park_code.length !== 0) {
 					request.url = `park/${queryParam.park_code}/range`;
@@ -235,11 +199,7 @@
 			//包装各个日期的查询参数
 			packQueryParams() {
 				let param = {
-					defaultDay: this.paramsProcess('defaultDay'),
-					lastDay: this.paramsProcess('lastDay'),
-					lastWeek: this.paramsProcess('lastWeek'),
-					lastMonth: this.paramsProcess('lastMonth'),
-					pastWeek: this.paramsProcess('pastWeek'),
+					defaultDay: this.paramsProcess('defaultDay')
 				};
 				return param;
 			},				
@@ -263,18 +223,6 @@
 				});
 			},																									
 		},
-		mounted () {
-			if(this.currentPage) {
-				this.interval= setInterval(() => {
-						this.currentDate = DateFormat.format(new Date(), 'yyyy-MM-dd hh:mm:ss');
-				}, 1000);
-			}
-
-		},
-		beforeDestroy () {
-			if(this.currentPage) {
-				clearInterval(this.interval)
-			}
-		}	  		
+  		
     }
 </script>

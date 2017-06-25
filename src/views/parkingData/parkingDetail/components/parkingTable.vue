@@ -14,7 +14,7 @@
 				<Button type="primary" @click="exportData">导出CSV</Button>
 			</Col>
 		</Row>
-		<Table v-show="isHidden" border :columns="situationTable.columns" :data="situationTable.data" ref="table"></Table>	
+		<Table v-show="isHidden" border :columns="parkDetailTable.columns" :data="parkDetailTable.data" ref="table"></Table>	
 	</div>
 </template>
 <script>
@@ -30,15 +30,15 @@
                 return this.$route.path==='/realTimeData'?true:false;
             },
             ...mapState({
-                queryResult: 'queryResult',
-                situationTable: 'situationTable'
+                parkDetailData: 'parkDetailData',
+                parkDetailTable: 'parkDetailTable'
             }),	                       
         }, 
         watch: {
-            'queryResult':{
+            'parkDetailData':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.handleTableData(newVal.pastWeek);
+                    this.handleTableData(newVal);
                 },
             }
         },        
@@ -50,22 +50,25 @@
                 });
             },
             handleTableData(res) {
-                let tableShowData = Object.assign({}, res.data),rowData = [];
-
+                let tableShowData = Object.assign({}, res),rowData = [];
+                    console.log(tableShowData)
                 for(let item in tableShowData) {
                     let raw = {
                         date:tableShowData[item].date,
-                        dedup_finish:tableShowData[item].dedup_finish,
-                        finish:tableShowData[item].finish,
-                        charge:(tableShowData[item].charge/100).toFixed(2),
-                        averageCharge:(tableShowData[item].charge/tableShowData[item].dedup_finish/100).toFixed(2),
-                        eachCharge:(tableShowData[item].charge/tableShowData[item].finish/100).toFixed(2),
-                        space:tableShowData[item].space,
-                        parks:tableShowData[item].parks,
+                        ins:tableShowData[item].ins,
+                        outs:tableShowData[item].outs,
+                        pass_nights:tableShowData[item].pass_nights,
+                        maxRatio:tableShowData[item].ins,
+                        minRatio:tableShowData[item].ins,
+                        space_ratio:tableShowData[item].space_ratio,
+                        averageTime:tableShowData[item].ins,
+                        inOutPerhour:tableShowData[item].ins,
+                        increased:tableShowData[item].ins,
                     }
                     rowData.push(raw);
                 }
-                this.situationTable.data = rowData;
+                console.log(rowData)
+                this.parkDetailTable.data = rowData;
             }                    
         }        
     }

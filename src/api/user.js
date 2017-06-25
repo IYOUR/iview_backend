@@ -4,7 +4,7 @@
  * @brief
  */
 import axios from 'axios';
-import md5 from 'md5';
+// import md5 from 'md5';
 import Storage from '../commons/utils/storage';
 
 //登录

@@ -23,7 +23,7 @@
 </style>
 <template>
     <Tabs type="card">
-        <Tab-pane :label="item.label" v-for="(item,idx) in situationTabs.tabOption" :key="idx" class="parkingTimes">
+        <Tab-pane :label="item.label" v-for="(item,idx) in paymentDetailTabs.tabOption" :key="idx" class="parkingTimes">
              <Row>
                 <Col span="5">
                     <div class="headTitle"><span>{{item.label}}</span></div>
@@ -49,13 +49,12 @@ import {mapState, mapActions, mapGetters} from 'vuex';
         data (){
             return {
                 chartLine: {
-                    dedup_finish:{val:null,data:['date','dedup_finish'],name:'每日完成停车数量'},
-                    finish:{val:null,data:['date','finish'],name:'每日完成停车次数'},
-                    charge:{val:null,data:['date','charge'],name:'每日总收入(元)'},
-                    averageCharge:{val:null,data:['date','eachCarPay'],name:'每日平均每辆车付费(元)'},
-                    eachCharge:{val:null,data:['date','eachTimesPay'],name:'每日平均每次付费(元)'},
-                    space:{val:null,data:['date','space'],name:'车位数量'},
-                    parks:{val:null,data:['date','parks'],name:'停车场数量'}
+                    charge:{val:null,data:['date','charge'],name:'总收入'},
+                    eachTimesPay:{val:null,data:['date','eachTimesPay'],name:'平均每次付费'},
+                    eachCarPay:{val:null,data:['date','eachCarPay'],name:'平均每车付费'},
+                    eachFinish:{val:null,data:['date','eachFinish'],name:'支付完成到抬杆平均时间'},
+                    notPay:{val:null,data:['date','notPay'],name:'未支付用户比'},
+                    spaceWorth:{val:null,data:['date','spaceWorth'],name:'车位平均价值'}
                 },
             }
         },  
@@ -64,15 +63,12 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 return this.$route.path==='/realTimeData'?true:false;
             },
             ...mapState({
-                queryResult: 'queryResult',
-                situationTabs: 'situationTabs'
+                paymentDetailData: 'paymentDetailData',
+                paymentDetailTabs: 'paymentDetailTabs'
             }),	               
-        },    
-        // mounted:function(){
-        //     this.createCharts();
-        // },
+        },
         watch:{
-            'queryResult':{
+            'paymentDetailData':{
                 deep:true,
                 handler:function(newVal,oldVal){
                     this.createCharts();
@@ -119,9 +115,9 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 }
             },
             filterChartData(item) {
-                let chartLine = Object.assign({}, this.queryResult.pastWeek)
+                let chartLine = Object.assign([], this.paymentDetailData)
 
-                return chartLine.data.map((ele)=> {
+                return chartLine.map((ele)=> {
                     switch (item[1]) {
  						case 'charge':
                             return (ele.charge/100).toFixed(2);
@@ -132,6 +128,15 @@ import {mapState, mapActions, mapGetters} from 'vuex';
  						case 'eachTimesPay':
                             return (ele.charge/ele.finish/100).toFixed(2);
 							break; 
+ 						case 'eachFinish':
+                            return ele.ins;
+							break;  
+ 						case 'notPay':
+                            return ele.ins;
+							break;     
+ 						case 'spaceWorth':
+                            return (ele.charge/ele.space/100).toFixed(2);
+							break;                                                       
  						case 'date':
                             return ele.date;
 							break;                                                                                                            

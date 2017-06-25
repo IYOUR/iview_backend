@@ -45,10 +45,10 @@
 	<condition-query></condition-query>
 	<div class="divisionLine"></div>
 	<div class="layout-content-charts">
-		<tab-charts :tab-item="tabItems"></tab-charts>
+		<tab-charts></tab-charts>
 	</div>
 	<div class="layout-content-table">
-		<parking-table :table-showdata="tableData"></parking-table>
+		<parking-table></parking-table>
 	</div>
 	<div class="divisionLine"></div>
 	<div class="layout-content-tablePie">
@@ -66,13 +66,9 @@
 	<div class="divisionLine"></div>
 	<div class="layout-content-rankList">
 		<Row :gutter="16">
-			<Col span="12">
-				<p>收入排行榜</p>
-				<Table border :columns="tableData.columns1" :data="tableData.data1"></Table>
-			</Col>
-			<Col span="12">
-				<p>车位平均价值排行</p>
-				<Table border :columns="tableData.columns1" :data="tableData.data1"></Table>
+			<Col span="12" v-for="(item,idx) in rankData" :key="idx">
+				<p>{{item.title}}</p>
+				<Table border :columns="item.columns" :data="item.data"></Table>
 			</Col>
 		</Row>		
 	</div>
@@ -80,56 +76,79 @@
 </template>
 
 <script>
-import tabCharts from './components/tabCharts.vue'
-import conditionQuery from './components/conditionQuery.vue'
-import parkingTable from './components/parkingTable.vue'
-import tablePie from './components/tablePie.vue'
+	import tabCharts from './components/tabCharts.vue'
+	import conditionQuery from './components/conditionQuery.vue'
+	import parkingTable from './components/parkingTable.vue'
+	import tablePie from './components/tablePie.vue'
+	import {mapState, mapActions, mapGetters} from 'vuex';	
 export default {
 
 	data (){
 		return {
-			tabItems:['总收入','平均每次付费','平均每车付费','支付完成到抬杆平均时间','未支付用户比','车位平均价值'],
-			tableData: {
-				columns1: [
-					{
-						title: '姓名',
-						key: 'name'
-					},
-					{
-						title: '年龄',
-						key: 'age'
-					},
-					{
-						title: '地址',
-						key: 'address'
-					}
-				],
-				data1: [
-					{
-						name: '王小明',
-						age: 18,
-						address: '北京市朝阳区芍药居'
-					},
-					{
-						name: '张小刚',
-						age: 25,
-						address: '北京市海淀区西二旗'
-					},
-					{
-						name: '李小红',
-						age: 30,
-						address: '上海市浦东新区世纪大道'
-					},
-					{
-						name: '周小伟',
-						age: 26,
-						address: '深圳市南山区深南大道'
-					}
-				]
-			}
+			rankData: [
+				{
+					title: '停车车辆排行',
+					columns: [
+						{
+							title: '名次',
+							key: 'order'
+						},
+						{
+							title: '停车场名称',
+							key: 'parkName'
+						},
+						{
+							title: '所属集团',
+							key: 'group'
+						},
+						{
+							title: '收入',
+							key: 'charge'
+						}						
+					],
+					data: []
+				},
+				{
+					title: '车位使用率排行',
+					columns: [
+						{
+							title: '名次',
+							key: 'order'
+						},
+						{
+							title: '停车场名称',
+							key: 'parkName'
+						},
+						{
+							title: '所属集团',
+							key: 'group'
+						},
+						{
+							title: '车位平均价值',
+							key: 'worth'
+						}						
+					],
+					data: []
+				},							
+			]
+
 		}
 	},
-	methods: {
+	watch:{
+		'queryParam':{
+			deep:true,
+			handler:function(newVal,oldVal){
+				this.$store.dispatch('getPaymentDetail',newVal.defaultDay)
+			},
+		}
+	},
+	computed: {
+		...mapState({
+			queryParam: 'queryParam'
+		}),			
+	},	 	
+	methods: {	
+
 	},
 	components: {
 		'tab-charts': tabCharts,
