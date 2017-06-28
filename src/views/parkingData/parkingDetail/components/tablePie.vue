@@ -39,7 +39,6 @@ import echarts from 'echarts'
             this.chartPie.setOption({
                 title : {
                     text: 'Pie Chart',
-                    subtext: '纯属虚构',
                     x:'center'
                 },
                 tooltip : {

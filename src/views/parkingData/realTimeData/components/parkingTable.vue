@@ -39,9 +39,15 @@
             'currentResult':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.handleTableData(newVal.toDay);
+                    this.handleTableData(newVal.allResult.toDay);
                 },
-            }
+            },
+            'currentResult.dateResult':{
+                deep:true,
+                handler:function(newVal,oldVal){
+                    this.handleTableData(newVal);
+                },    
+            },              
         },        
         methods: {
             //导出数据
@@ -58,10 +64,9 @@
                         ins:tableShowData[i].ins,
                         outs:tableShowData[i].outs,
                         in_parks:tableShowData[i].in_parks,
-                        in_parks:tableShowData[i].in_parks,
                         space_ratio:tableShowData[i].space_ratio,
                         charge:(tableShowData[i].ins/100).toFixed(2),
-                        in_parks:tableShowData[i].in_parks,
+                        new:tableShowData[i].new,
                     }
                     rowData.push(raw);
                 }

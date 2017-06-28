@@ -42,8 +42,8 @@
     </Tabs>
 </template>
 <script>
-import echarts from 'echarts';
-import {mapState, mapActions, mapGetters} from 'vuex';
+    import echarts from 'echarts';
+    import {mapState, mapActions, mapGetters} from 'vuex';
 
     export default {
         data (){
@@ -52,7 +52,6 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                     charge:{val:null,data:['date','charge'],name:'总收入'},
                     eachTimesPay:{val:null,data:['date','eachTimesPay'],name:'平均每次付费'},
                     eachCarPay:{val:null,data:['date','eachCarPay'],name:'平均每车付费'},
-                    eachFinish:{val:null,data:['date','eachFinish'],name:'支付完成到抬杆平均时间'},
                     notPay:{val:null,data:['date','notPay'],name:'未支付用户比'},
                     spaceWorth:{val:null,data:['date','spaceWorth'],name:'车位平均价值'}
                 },
@@ -67,10 +66,20 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 paymentDetailTabs: 'paymentDetailTabs'
             }),	               
         },
+        mounted:function(){
+            for (let item in this.chartLine){
+                this.chartLine[item].val = echarts.init(document.getElementById([item]));     
+                this.chartLine[item].val.showLoading();           
+            }
+        },        
         watch:{
             'paymentDetailData':{
                 deep:true,
                 handler:function(newVal,oldVal){
+                    if(newVal.length===0){
+                        this.$Message.warning('暂无数据！');
+                        return
+                    }                    
                     this.createCharts();
                 },
             }
@@ -81,7 +90,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
             },
             createCharts() {
                 for (let item in this.chartLine){
-                    this.chartLine[item].val = echarts.init(document.getElementById([item]));
+                    this.chartLine[item].val.hideLoading();  
                     this.chartLine[item].val.setOption({
                         tooltip: {
                             trigger: 'axis'
@@ -115,7 +124,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 }
             },
             filterChartData(item) {
-                let chartLine = Object.assign([], this.paymentDetailData)
+                let chartLine = Object.assign([], this.paymentDetailData.tableSection)
 
                 return chartLine.map((ele)=> {
                     switch (item[1]) {

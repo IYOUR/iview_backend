@@ -25,16 +25,25 @@ export default {
     SET_TABLE_DATA: (state, data) => {
       state.tableData = data
     },
-    SET_CURRENT_DATA: (state, data) => {
-      state.currentResult = data
+    SET_CURRENT_ALLDATA: (state, data) => {
+      state.currentResult.allResult = data
+    },
+    SET_CURRENT_DATEDATA: (state, data) => {
+      state.currentResult.dateResult = data
     },
     SET_CURRENT_PAGNAME: (state, data) => {
       state.currentPageName = data
     },  
     SET_PARK_DETAIL: (state, data) => {
-      state.parkDetailData = data
+      state.parkDetailData.tableSection = data
     },    
-    SET_PAYMENT_DETAIL: (state, data) => {
-      state.paymentDetailData = data
-    },   
+    SET_PAYMENT_TABLESECTION: (state, data) => {
+      state.paymentDetailData.tableSection = data
+    },  
+    SET_PAYMENT_PAYSECTION: (state, data) => {
+      state.paymentDetailData.paySection = data
+    },  
+    SET_RANK_DATA : (state, data) => {
+      state.rankData = data
+    },      
 }

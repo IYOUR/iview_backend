@@ -42,7 +42,7 @@
 
 <script>
 	import tabCharts from './components/tabCharts.vue'
-	import conditionQuery from './components/conditionQuery.vue'
+	import conditionQuery from '../../../components/parkingData/conditionQuery.vue'
 	import parkingTable from './components/parkingTable.vue'
 	import situationPanel from './components/situationPanel.vue'
 	import * as situationService from '../../../api/situation';

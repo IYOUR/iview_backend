@@ -123,7 +123,7 @@
             ...mapActions({
                 getProvinceList: 'getProvinceList',
 				getCompanyList: 'getCompanyList',
-				getParkList: 'getParkList'
+				getParkLists: 'getParkLists'
             }),			
 			selectProvince(value) {
 				if(value !==''){
@@ -156,7 +156,7 @@
 				if(this.provinceList.length === 0){
 					this.getProvinceList();
 					this.getCompanyList();
-					//this.getParkList();
+					this.getParkLists();
 				}
 			},
             //参数处理

@@ -54,14 +54,18 @@
 	<div class="layout-content-tablePie">
 		<Row :gutter="16">
 			<Col span="12">
-				<p>进场车辆类型分布</p>
-				<table-pie></table-pie>
+				<p>支付渠道金额分布</p>
+				<pay-way-pie></pay-way-pie>
 			</Col>
 			<Col span="12">
-				<p>停车时长分布</p>
-				<table-pie></table-pie>
+				<p>支付渠道笔数分布</p>
+				<pay-times-pie></pay-times-pie>
 			</Col>
 		</Row>	
+	</div>
+	<div class="divisionLine"></div>
+	<div class="layout-content-charts">
+		<tab-pay-charts></tab-pay-charts>
 	</div>	
 	<div class="divisionLine"></div>
 	<div class="layout-content-rankList">
@@ -77,9 +81,11 @@
 
 <script>
 	import tabCharts from './components/tabCharts.vue'
-	import conditionQuery from './components/conditionQuery.vue'
+	import tabPayCharts from './components/tabPayCharts.vue'	
+	import conditionQuery from '../../../components/parkingData/conditionQuery.vue'
 	import parkingTable from './components/parkingTable.vue'
-	import tablePie from './components/tablePie.vue'
+	import payTimesPie from './components/payTimesPie.vue'
+	import payWayPie from './components/payWayPie.vue'	
 	import {mapState, mapActions, mapGetters} from 'vuex';	
 export default {
 
@@ -87,7 +93,7 @@ export default {
 		return {
 			rankData: [
 				{
-					title: '停车车辆排行',
+					title: '收入排行',
 					columns: [
 						{
 							title: '名次',
@@ -109,7 +115,7 @@ export default {
 					data: []
 				},
 				{
-					title: '车位使用率排行',
+					title: '车位平均价值排行',
 					columns: [
 						{
 							title: '名次',
@@ -138,7 +144,12 @@ export default {
 		'queryParam':{
 			deep:true,
 			handler:function(newVal,oldVal){
-				this.$store.dispatch('getPaymentDetail',newVal.defaultDay)
+				newVal.paymentSection = {
+					url : newVal.defaultDay.url.match(/(\S*)\/range/)[1],
+					param : newVal.defaultDay.param
+				}
+				this.$store.dispatch('getPaymentDetail',newVal.defaultDay);
+				this.$store.dispatch('getPaymentResult',newVal.paymentSection);
 			},
 		}
 	},
@@ -154,7 +165,9 @@ export default {
 		'tab-charts': tabCharts,
 		'condition-query': conditionQuery,
 		'parking-table': parkingTable,
-		'table-pie': tablePie
+		'pay-way-pie': payWayPie,
+		'pay-times-pie': payTimesPie,
+		'tab-pay-charts': tabPayCharts
 	}  
 }
 </script>

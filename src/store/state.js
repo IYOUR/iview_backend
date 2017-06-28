@@ -20,11 +20,17 @@ export default {
     queryResult: {},
 
     //实时查询结果
-    currentResult: {},
+    currentResult: {
+        allResult: {},
+        dateResult: {}
+    },
 
     //查询参数
     queryParam: {},
 
+    //排行数据
+    rankData: {},
+    
     situationData: [
         {
             title:'车位数量',
@@ -120,7 +126,6 @@ export default {
         tabOption:[
             {label:'实时进车次数',id:'currentIns'}, 
             {label:'实时出车次数',id:'currentOuts'},
-            {label:'实时完成停车数',id:'currentFinish'},
             {label:'实时停数放量',id:'currentInparks'},
             {label:'实时车位使用率',id:'currentRatio'},
             {label:'实时收入',id:'currentCharge'},
@@ -180,10 +185,6 @@ export default {
                 key: 'outs'
             },
             {
-                title: '完成停车次数',
-                key: 'in_parks'
-            },
-            {
                 title: '停放数量',
                 key: 'in_parks' 
             },
@@ -197,14 +198,17 @@ export default {
             },
             {
                 title: '新增车辆数',
-                key: 'in_parks'
+                key: 'new'
             }																				
         ],
         data: []
     }, 
 
 
-    parkDetailData: {},
+    parkDetailData: {
+        tableSection: [],
+        paySection:[]        
+    },
     parkDetailTabs:{
         tabOption:[
             {label:'进场车数量',id:'ins'},
@@ -248,7 +252,7 @@ export default {
                 key: 'space_ratio'
             },
             {
-                title: '平均停车时长',
+                title: '平均停车时长(分钟)',
                 key: 'averageTime'
             },
             {
@@ -266,18 +270,31 @@ export default {
 
 
 
-    paymentDetailData: {},
+    paymentDetailData: {
+        tableSection: [],
+        paySection:[]
+    },
     paymentDetailTabs:{
         tabOption:[
             {label:'总收入',id:'charge'},
             {label:'平均每次付费',id:'eachTimesPay'},
             {label:'平均每车付费',id:'eachCarPay'},
-            {label:'支付完成到抬杆平均时间',id:'eachFinish'},
             {label:'未支付用户比',id:'notPay'},
             {label:'车位平均价值',id:'spaceWorth'},
         ],
         tabChartsData:{}
-    },  
+    },
+    paymentWayTabs:{
+        tabOption:[
+            {label:'微信',id:'weixin'},
+            {label:'支付宝',id:'alipay'},
+            {label:'银联',id:'uniopay'},
+            {label:'现金',id:'cash'},
+            {label:'停车王钱包',id:'wallet'},
+            {label:'其他',id:'unkown'}
+        ],
+        tabChartsData:{}
+    },    
     paymentDetailTable: {
         columns: [
             {
@@ -297,10 +314,6 @@ export default {
                 key: 'eachCarPay'
             },
             {
-                title: '支付完成到抬杆平均时间(s)',
-                key: 'eachFinish' 
-            },
-            {
                 title: '未支付用户比',
                 key: 'notPay'
             },
@@ -309,7 +322,7 @@ export default {
                 key: 'spaceWorth'
             },
             {
-                title: '平均停车时长',
+                title: '平均停车时长(分钟)',
                 key: 'averageTime'
             },
             {

@@ -26,9 +26,9 @@ let routes = [{
         path: '/',
         component: Home,
         name: '汇总',
-        children: [
-            { path: '/main', component: Main, name: '主页'},
-        ]
+        // children: [
+        //     { path: '/main', component: Main, name: '主页'},
+        // ]
     },
     {
         path: '/',
@@ -46,17 +46,17 @@ let routes = [{
         component: Home,
         name: 'C端数据',
         // leaf: true, //只有一个节点
-        children: [
-            { path: '/page6', component: Page6, name: '页面6' }
-        ]
+        // children: [
+        //     { path: '/page6', component: Page6, name: '页面6' }
+        // ]
     },
     {
         path: '/',
         component: Home,
         name: '优惠券数据',
-        children: [
-            { path: '/echarts', component: echarts, name: 'echarts' }
-        ]
+        // children: [
+        //     { path: '/echarts', component: echarts, name: 'echarts' }
+        // ]
     },
     {
         path: '*',

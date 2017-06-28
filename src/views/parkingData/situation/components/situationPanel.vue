@@ -68,26 +68,6 @@
                             </table>								
                         </Col>
                     </Row>	
-                    <Row v-if="isShowPanel" type="flex" justify="space-around" class="code-row-bg">
-                        <Col span="11">
-                            <table>
-                                <tr>
-                                    <td>同比昨日:</td>
-                                    <td>{{item.lastDay[0]}}</td>
-                                </tr>												
-                            </table>								
-                        </Col>  
-                        <Col span="11">
-                            <table style="float:right;">
-                                <tr>
-                                    <td>变化:</td>
-                                    <td :class="[(item.lastDay[2]) ? 'isup' : 'isdown']">{{item.lastDay[1]}}
-                                        <Icon :type="(item.lastDay[2])? 'arrow-up-c':'arrow-down-c'"></Icon>
-                                    </td>
-                                </tr>																	
-                            </table>								
-                        </Col>                                          
-                    </row>	
                 </p>
             </div>
         </Col>
@@ -190,10 +170,10 @@
                     return {val:'持平',state:'same',icon:'arrow-right-c'};
                 }
                 else if (firstVal>secondVal) {
-                    return {val:(firstVal/secondVal).toFixed(2),state:'up',icon:'arrow-up-c'};
+                    return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'up',icon:'arrow-up-c'};
                 }
                 else{
-                    return {val:(firstVal/secondVal).toFixed(2),state:'down',icon:'arrow-down-c'};
+                    return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'down',icon:'arrow-down-c'};
                 }
             },
         }

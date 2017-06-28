@@ -55,11 +55,10 @@
                 chartLine: {
                     currentIns:{val:null,data:['date','ins'],name:'实时进车次数'},
                     currentOuts:{val:null,data:['date','outs'],name:'实时出车次数'},
-                    currentFinish:{val:null,data:['date','in_parks'],name:'实时完成停车数'},
                     currentInparks:{val:null,data:['date','in_parks'],name:'实时停放数放量'},
                     currentRatio:{val:null,data:['date','space_ratio'],name:'实时车位使用率'},
                     currentCharge:{val:null,data:['date','charge'],name:'实时收入'},
-                    currentAdd:{val:null,data:['date','in_parks'],name:'实时新增车辆数'}
+                    currentAdd:{val:null,data:['date','new'],name:'实时新增车辆数'}
                 },
             }
         },  
@@ -73,36 +72,39 @@
                 queryParam: 'queryParam'
             }),	               
         },    
-        // mounted:function(){
-        //     this.createCharts();
-        // },
+        mounted:function(){
+            for (let item in this.chartLine){
+                this.chartLine[item].val = echarts.init(document.getElementById([item]));     
+                this.chartLine[item].val.showLoading();           
+            }
+        },
         watch:{
             'currentResult':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.createCharts(this.currentResult.toDay);
-                },
-                
+                    this.createCharts(this.currentResult.allResult.toDay);
+                },     
             },
+            'currentResult.dateResult':{
+                deep:true,
+                handler:function(newVal,oldVal){
+                    this.createCharts(this.currentResult.dateResult);
+                },    
+            },            
             'queryDate': function(newVal,oldVal){
-                //console.log(typeOf(newVal))
                 let params = {
                     url: this.queryParam.toDay.url,
                     param: {
                         date: DateFormat.format(newVal, 'yyyy-MM-dd')
                     }
                 }
-                console.log(params)
-                this.getDateResult(params);
+                this.$store.dispatch('getDateResult',params)
             }            
         },        
         methods: {
-            showCharts(name) {
-                console.log("sfewefw")
-            },
             createCharts(res) {
                 for (let item in this.chartLine){
-                    this.chartLine[item].val = echarts.init(document.getElementById([item]));
+                    this.chartLine[item].val.hideLoading();  
                     this.chartLine[item].val.setOption({
                         tooltip: {
                             trigger: 'axis'
@@ -163,8 +165,6 @@
                         return;
                     }; 
                     this.createCharts(res.data);
-                    console.log(res)
-					//this.parkList = res.data.data;
 				});
 			},	             
         }

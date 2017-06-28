@@ -55,7 +55,7 @@
                     space_ratio:{val:null,data:['date','space_ratio'],name:'每日车位使用率'},
                     parking_duration:{val:null,data:['date','parking_duration'],name:'每日平均停车时长'},
                     outsHour:{val:null,data:['date','outsHour'],name:'单位小时进出车辆数'},
-                    increased:{val:null,data:['date','increased'],name:'新增车辆数'}
+                    increased:{val:null,data:['date','new'],name:'新增车辆数'}
                 },
             }
         },  
@@ -68,10 +68,20 @@
                 parkDetailTabs: 'parkDetailTabs'
             }),	               
         }, 
+        mounted:function(){
+            for (let item in this.chartLine){
+                this.chartLine[item].val = echarts.init(document.getElementById([item]));     
+                this.chartLine[item].val.showLoading();           
+            }
+        },        
         watch:{
             'parkDetailData':{
                 deep:true,
                 handler:function(newVal,oldVal){
+                    if(newVal.length===0){
+                        this.$Message.warning('暂无数据！');
+                        return
+                    }
                     this.createCharts()
                 },
             }
@@ -82,7 +92,7 @@
             },
             createCharts() {
                 for (let item in this.chartLine){
-                    this.chartLine[item].val = echarts.init(document.getElementById([item]));
+                    this.chartLine[item].val.hideLoading();  
                     this.chartLine[item].val.setOption({
                         tooltip: {
                             trigger: 'axis'
@@ -116,7 +126,7 @@
                 }
             },
             filterChartData(item) {
-                let chartLine = Object.assign([], this.parkDetailData) 
+                let chartLine = Object.assign([], this.parkDetailData.tableSection) 
                 return chartLine.map((ele)=> {
                     switch (item[1]) {
  						case 'charge':

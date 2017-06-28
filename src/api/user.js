@@ -14,6 +14,9 @@ export const login = params => {
     return axios.post(`${axios.PARK_API}/auth/login`, data).then(res => res);
 };
 
+
+export const loginNow = params => axios.post(`${axios.PARK_API}/api/token`, {key:params}).then(res => res);
+
 //登出
 export const logout = () => {
     Storage.removeAll();

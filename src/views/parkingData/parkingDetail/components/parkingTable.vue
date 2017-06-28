@@ -38,7 +38,7 @@
             'parkDetailData':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.handleTableData(newVal);
+                    this.handleTableData(newVal.tableSection);
                 },
             }
         },        
@@ -51,23 +51,21 @@
             },
             handleTableData(res) {
                 let tableShowData = Object.assign({}, res),rowData = [];
-                    console.log(tableShowData)
                 for(let item in tableShowData) {
                     let raw = {
                         date:tableShowData[item].date,
                         ins:tableShowData[item].ins,
                         outs:tableShowData[item].outs,
                         pass_nights:tableShowData[item].pass_nights,
-                        maxRatio:tableShowData[item].ins,
-                        minRatio:tableShowData[item].ins,
+                        maxRatio:tableShowData[item].space_ratio_max,
+                        minRatio:tableShowData[item].space_ratio_min,
                         space_ratio:tableShowData[item].space_ratio,
-                        averageTime:tableShowData[item].ins,
-                        inOutPerhour:tableShowData[item].ins,
-                        increased:tableShowData[item].ins,
+                        averageTime:(tableShowData[item].parking_duration/tableShowData[item].finish/60).toFixed(2),
+                        inOutPerhour:(tableShowData[item].dedup_finish/24).toFixed(2),
+                        increased:tableShowData[item].new,
                     }
                     rowData.push(raw);
                 }
-                console.log(rowData)
                 this.parkDetailTable.data = rowData;
             }                    
         }        

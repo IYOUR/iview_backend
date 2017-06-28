@@ -68,9 +68,12 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 situationTabs: 'situationTabs'
             }),	               
         },    
-        // mounted:function(){
-        //     this.createCharts();
-        // },
+        mounted:function(){
+            for (let item in this.chartLine){
+                this.chartLine[item].val = echarts.init(document.getElementById([item]));     
+                this.chartLine[item].val.showLoading();           
+            }
+        },
         watch:{
             'queryResult':{
                 deep:true,
@@ -80,12 +83,9 @@ import {mapState, mapActions, mapGetters} from 'vuex';
             }
         },        
         methods: {
-            showCharts(name) {
-                console.log("as")
-            },
             createCharts() {
                 for (let item in this.chartLine){
-                    this.chartLine[item].val = echarts.init(document.getElementById([item]));
+                    this.chartLine[item].val.hideLoading();  
                     this.chartLine[item].val.setOption({
                         tooltip: {
                             trigger: 'axis'

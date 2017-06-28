@@ -70,7 +70,8 @@
             }),	                       
         }, 
         watch: {
-            'currentResult':{
+            'currentResult.allResult':{
+                deep:true,
                 handler:function(newVal,oldVal){
                     this.showResult(newVal);
                 },
@@ -114,14 +115,11 @@
                 else if (item === 'add') {
                     let toDay,lastDay,toDay_last,lastDay_last;
                     
-                    toDay = (res.toDay.data.length>0) ? res.toDay.data[res.toDay.data.length-1].ins:'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[res.toDay.data.length-1].ins:'暂无';
+                    toDay = (res.toDay.data.length>0) ? res.toDay.data[res.toDay.data.length-1].new:'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[res.toDay.data.length-1].new:'暂无';
 
-                    toDay_last = (res.toDay.data.length>0) ? res.toDay.data[res.toDay.data.length-2].ins:'暂无';
-                    lastDay_last =  (res.lastDay.data.length>0) ? res.lastDay.data[res.toDay.data.length-2].ins:'暂无';
-
-                    array[index].num = (!isNaN(toDay-toDay_last))? toDay-toDay_last:'暂无';
-                    array[index].lastDay = [(!isNaN(lastDay-lastDay_last))? lastDay-lastDay_last:'暂无',this.checkResultData(toDay-toDay_last,lastDay-lastDay_last)];
+                    array[index].num = toDay;
+                    array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
                 }
                 else{
                     let toDay,lastDay
@@ -142,10 +140,10 @@
                     return {val:'持平',state:'same',icon:'arrow-right-c'};
                 }
                 else if (firstVal>secondVal) {
-                    return {val:(firstVal/secondVal).toFixed(2),state:'up',icon:'arrow-up-c'};
+                    return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'up',icon:'arrow-up-c'};
                 }
                 else{
-                    return {val:(firstVal/secondVal).toFixed(2),state:'down',icon:'arrow-down-c'};
+                    return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'down',icon:'arrow-down-c'};
                 }
             },
         }

@@ -12,7 +12,7 @@ import {getUser} from './user';
 import CONSTANT from '../commons/utils/code';
 import router from '../router/routes';
 
-import {LoadingBar} from 'iview';
+import {LoadingBar,Message} from 'iview';
 
 //api 地址配置
 axios.PARK_API = process.env.NODE_ENV === 'production' ? 'http://180.97.81.222:8788/api' : '';
@@ -35,7 +35,8 @@ axios.interceptors.request.use(config => {
         if (method === 'get') {
           //  console.log(Storage.KEYS.userToken)
           // 判断是否存在token，如果存在的话，则每个http header都加上token
-            config.headers.token = Storage.KEYS.userToken;
+            config.headers.token = sessionStorage.getItem('token');
+            //config.headers.token = Storage.KEYS.userToken;
             config.params = config.params || {};
             let user = getUser();
             user && user.token && (config.params['token'] = user.token);
@@ -51,16 +52,22 @@ axios.interceptors.request.use(config => {
 
 //响应拦截器
 axios.interceptors.response.use(response => {
+
         //LoadingBar.finish();
         if (CONSTANT.HTTP_STATUS.VALID_TOKEN.CODE === response.data.code) {
             Storage.removeAll();
             router.replace({name: 'iop.login', query: {redirect: router.currentRoute.fullPath}});
             response.data.message = CONSTANT.HTTP_STATUS.VALID_TOKEN.MSG;
         }
+       
         return response;
     },
     error => {
         LoadingBar.finish();
+        if (error.response.status == '401') {
+           Message.error('登录已过期，请重新登录');  
+           return;   
+        }         
         return Promise.reject(error)
     }
 );

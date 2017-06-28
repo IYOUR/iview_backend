@@ -38,7 +38,7 @@
             'paymentDetailData':{
                 deep:true,
                 handler:function(newVal,oldVal){
-                    this.handleTableData(newVal);
+                    this.handleTableData(newVal.tableSection);
                 },
             }
         },        
@@ -58,11 +58,10 @@
                         charge:(tableShowData[item].charge/100).toFixed(2),
                         eachTimesPay:(tableShowData[item].charge/tableShowData[item].finish/100).toFixed(2),
                         eachCarPay:(tableShowData[item].charge/tableShowData[item].dedup_finish/100).toFixed(2),
-                        eachFinish:tableShowData[item].ins,
                         notPay:tableShowData[item].ins,
                         spaceWorth:(tableShowData[item].charge/tableShowData[item].space/100).toFixed(2),
-                        averageTime:tableShowData[item].parking_duration,
-                        inOutPerhour:tableShowData[item].ins,
+                        averageTime:(tableShowData[item].parking_duration/tableShowData[item].finish/60).toFixed(2),
+                        inOutPerhour:((tableShowData[item].ins+tableShowData[item].outs)/24).toFixed(2),
                     }
                     rowData.push(raw);
                 }

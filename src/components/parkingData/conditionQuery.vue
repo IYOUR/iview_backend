@@ -108,22 +108,17 @@
             ...mapState({
                 provinceList: 'provinceList',
                 companyList: 'companyList',
-				//parkList: 'parkList'
             }),			
 		},
         created () {
-
 			this.loadAreaInfo();
 			this.$store.commit('SET_QUERY_PARAM',this.packQueryParams());
-
-			
-			
         },
 		methods: {
             ...mapActions({
                 getProvinceList: 'getProvinceList',
 				getCompanyList: 'getCompanyList',
-				getParkList: 'getParkList'
+				getParkLists: 'getParkLists'
             }),			
 			selectProvince(value) {
 				if(value !==''){
@@ -138,8 +133,7 @@
 			},				
 			//点击查询
 			query() {
-				this.$store.commit('SET_QUERY_PARAM',this.packQueryParams())
-				
+				this.$store.commit('SET_QUERY_PARAM',this.packQueryParams())				
 			},
 			//点击重置
             reset() {
@@ -156,7 +150,7 @@
 				if(this.provinceList.length === 0){
 					this.getProvinceList();
 					this.getCompanyList();
-					//this.getParkList();
+					this.getParkLists();
 				}
 			},
             //参数处理
@@ -253,7 +247,7 @@
 					this.cityList = res.data.data;
                 });
             },
-			getParkList(params) {
+			s(params) {
 				return situationService.getParkList(params).then(res => {
                     if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
                         this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);

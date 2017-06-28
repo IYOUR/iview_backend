@@ -26,7 +26,7 @@ export default {
     },
 
     //获取车场列表
-    getParkList: function({commit},params){
+    getParkLists: function({commit},params){
         return situationService.getParkList(params).then(res => {
             commit('SET_PARK_LIST', res.data.data);
             return res;
@@ -74,10 +74,17 @@ export default {
            sendQueryResult({name: 'toDay',val:params.toDay}), 
            sendQueryResult({name: 'lastDay',val:params.lastDay})
         ]).then(axios.spread((acct, perms) => {
-            commit('SET_CURRENT_DATA', perms);
+            commit('SET_CURRENT_ALLDATA', perms);
         }));
-    },    
+    },   
 
+    //获取实时页面某一天查询数据   
+    getDateResult: function({commit},params){
+        return situationService.getQueryResult(params).then(res => {
+            commit('SET_CURRENT_DATEDATA', res.data);
+            return res;
+        });
+    },
 
     //获取停车数据详情
     getParkDetail: function({commit},params){
@@ -91,8 +98,39 @@ export default {
     //获取支付数据详情
     getPaymentDetail: function({commit},params){
         return situationService.getQueryResult(params).then(res => {
-            commit('SET_PAYMENT_DETAIL', res.data.data);
+            commit('SET_PAYMENT_TABLESECTION', res.data.data);
             return res;
         });
-    },       
+    },  
+
+    //获取支付渠道数据
+    getPaymentResult: function({commit},params){
+        return situationService.getPaymentResult(params).then(res => {
+            commit('SET_PAYMENT_PAYSECTION', res.data.data);
+            return res;
+        });
+    },  
+    //获取排行数据
+    getRankResult: function({commit},params){
+        let resultData = {},
+		sendQueryResult = searchParam=> {
+			return situationService.getRankResult(searchParam.val).then(res => {
+				if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
+					this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
+					return;
+				};
+				resultData[searchParam.name] = res.data;
+				return resultData;
+			});
+		};   
+        axios.all([
+           sendQueryResult({name: 'ins',val:params.ins}), 
+           sendQueryResult({name: 'space_ratio',val:params.space_ratio}),
+           sendQueryResult({name: 'finish',val:params.finsh}),
+           sendQueryResult({name: 'charge',val:params.charge}),
+           sendQueryResult({name: 'charge_by_space',val:params.charge_by_space}),                                 
+        ]).then(axios.spread((acct, perms) => {
+            commit('SET_RANK_DATA', perms);
+        }));
+    },      
 }

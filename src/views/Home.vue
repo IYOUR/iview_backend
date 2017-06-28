@@ -14,7 +14,7 @@
         overflow: auto;
         background: #fff;
         border-radius: 4px;
-        height: 80%;
+        height: 87%;
     }
     .layout-content-main{
         padding: 10px;

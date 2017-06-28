@@ -52,7 +52,7 @@
 	<div class="layout-content-table">
 		<parking-table></parking-table>
 	</div>
-	<div class="divisionLine"></div>
+<!--	<div class="divisionLine"></div>
 	<div class="layout-content-tablePie">
 		<Row :gutter="16">
 			<Col span="12">
@@ -64,11 +64,11 @@
 				<table-pie></table-pie>
 			</Col>
 		</Row>	
-	</div>
+	</div> -->
 	<div class="divisionLine"></div>
 	<div class="layout-content-rankList">
 		<Row :gutter="16">
-			<Col span="8" v-for="(item,idx) in rankData" :key="idx">
+			<Col span="8" v-for="(item,idx) in rankTable" :key="idx">
 				<p>{{item.title}}</p>
 				<Table border :columns="item.columns" :data="item.data"></Table>
 			</Col>
@@ -79,7 +79,7 @@
 
 <script>
 	import tabCharts from './components/tabCharts.vue'
-	import conditionQuery from './components/conditionQuery.vue'
+	import conditionQuery from '../../../components/parkingData/conditionQuery.vue'
 	import parkingTable from './components/parkingTable.vue'
 	import tablePie from './components/tablePie.vue'
 	import {mapState, mapActions, mapGetters} from 'vuex';
@@ -87,9 +87,10 @@ export default {
 
 	data (){
 		return {
-			rankData: [
+			rankTable: [
 				{
 					title: '停车车辆排行',
+					name: 'finish',
 					columns: [
 						{
 							title: '名次',
@@ -112,6 +113,7 @@ export default {
 				},
 				{
 					title: '车位使用率排行',
+					name: 'spaceratio',
 					columns: [
 						{
 							title: '名次',
@@ -127,13 +129,14 @@ export default {
 						},
 						{
 							title: '车位使用率',
-							key: 'ratio'
+							key: 'num'
 						}						
 					],
 					data: []
 				},
 				{
-					title: '停车时长排行',
+					title: '单位时间内进出车数量排行',
+					name: 'ins',
 					columns: [
 						{
 							title: '名次',
@@ -148,7 +151,7 @@ export default {
 							key: 'group'
 						},
 						{
-							title: '单位时间内进出车数量排行',
+							title: '车数量排行',
 							key: 'num'
 						}						
 					],
@@ -162,17 +165,95 @@ export default {
 		'queryParam':{
 			deep:true,
 			handler:function(newVal,oldVal){
-				this.$store.dispatch('getParkDetail',newVal.defaultDay)
-			},
-		}
+				this.$store.dispatch('getParkDetail',newVal.defaultDay);
+				if(JSON.stringify(this.rankData)=='{}') {
+					this.$store.dispatch('getRankResult',this.packQueryParams(newVal.defaultDay));
+				}
+
+			}
+		},
+		'rankData':{
+			deep:true,
+			handler:function(newVal,oldVal){ 
+				// console.log(this.transform('ins'))
+				// this.showRanktable();
+			}
+		}		
 	},
 	computed: {
 		...mapState({
-			queryParam: 'queryParam'
+			queryParam: 'queryParam',
+			companyList: 'companyList',
+			parkList: 'parkList',
+			rankData: 'rankData'
 		}),			
 	},	 	
 	methods: {	
+		//包装请求数据
+		packQueryParams(param) {
+			return {
+				ins: this.paramsProcess('ins'),
+				space_ratio: this.paramsProcess('space_ratio'),
+				finsh: this.paramsProcess('finish'),
+				charge: this.paramsProcess('charge'),
+				charge_by_space: this.paramsProcess('charge_by_space'),								
+			};
+		},
+		paramsProcess(type) {
+			let queryParam = Object.assign({}, this.queryParam.defaultDay),request = {url:'',param:{sdate:'',edate:'',type:''}};
+			request.url = queryParam.url.match(/(\S*)\/range/)[1];
+			request.param.sdate = queryParam.param.sdate;
+			request.param.edate = queryParam.param.edate;
+			switch (type) {
+				case 'ins':
+					request.param.type = type;
+					break;	
+				case 'space_ratio':
+					request.param.type = type
+					break;	
+				case 'finish':
+					request.param.type = type;
+					break;		
+				case 'charge':
+					request.param.type = type;
+					break;	
+				case 'charge_by_space':
+					request.param.type = type;
+					break;																								
+			}
+			return request			
+		},
+		showRanktable() {
+			this.rankTable.forEach((ele)=>{
+				ele.data = this.transform(ele.name);
+			})
+		},
+		//将车场对应的code转换为名称
+		transform(item) {
+			let res = Object.assign([], this.rankData[item].data),arr=[];
+				
+				for(let i=0;i<res.length;i++) {
+					let data = {};
+						data.num = res[i].data;
+						data.order = i+1;
+					for(let j=0;j<this.companyList.length;j++) {
+						data.group = res[i].companycode;
+						if(res[i].companycode == this.companyList[j].value){
+							data.group = this.companyList[j].label
+						}
+					}
+					for(let j=0;j<this.companyList.length;j++) {
+						data.parkName = res[i].parkcode;
+						if(res[i].parkcode == this.parkList[j].value){
+							data.parkName = this.parkList[j].label
+						}
+					}	
+					arr.push(data)			
+				}
 
+			return arr;			
+		}
+		
 	},
 	components: {
 		'tab-charts': tabCharts,

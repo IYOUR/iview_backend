@@ -89,6 +89,9 @@
 </div>
 </template>
 <script>
+    import axios from 'axios';
+    import * as userService from '../api/user';
+    import CONSTANT from '../commons/utils/code';
     export default {
         data () {
             return {
@@ -114,8 +117,9 @@
                 this.$refs[name].validate((valid) => {
                     sessionStorage.setItem('user', JSON.stringify(this.formLogin.username));
                     if (valid) {
-                        this.$Message.success('提交成功!');
-                        this.$router.push({ path: '/situation' });
+                        this.$Message.success('登录成功!');
+                        this.loginNow('abcdef123455667dfdfgahoiajnasjbh')
+                        
                     } else {
                         this.$Message.error('表单验证失败!');
                     }
@@ -130,7 +134,30 @@
             },
             formLoginReset(name){
                 this.$refs[name].resetFields();
+            },
+            loginNow(params) {
+                    axios({
+                    url: 'api/token',
+                    method: 'post',
+                    data: {
+                        key: 'abcdef123455667dfdfgahoiajnasjbh'
+                    },
+                    transformRequest: [function (data) {
+                        let ret = ''
+                        for (let it in data) {
+                        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                        }
+                        return ret
+                    }],
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                    }).then(res=>{
+                        sessionStorage.setItem('token', res.data.data);
+                        this.$router.push({ path: '/situation' });
+                    })
             }
+            
         },
         mounted() {
             if(sessionStorage.getItem('username')){
