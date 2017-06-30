@@ -6,7 +6,8 @@
 import * as situationService from '../api/situation';
 import {HTTP_STATUS} from '../commons/utils/code';
 import CONSTANT from '../commons/utils/code';
-	import axios from 'axios';
+import axios from 'axios';
+import Storage from '../commons/utils/storage';
 export default {
 
     //获取省份列表
@@ -20,6 +21,10 @@ export default {
     //获取集团列表
     getCompanyList: function({commit}){
         return situationService.getCompanyList().then(res => {
+            //缓存全部集团数据
+            if(sessionStorage.getItem('companyList')==null){
+                sessionStorage.setItem('companyList',JSON.stringify(res.data.data))
+            }            
             commit('SET_COMPANY_LIST', res.data.data);
             return res;
         });
@@ -28,6 +33,10 @@ export default {
     //获取车场列表
     getParkLists: function({commit},params){
         return situationService.getParkList(params).then(res => {
+            //缓存全部车场数据
+            if(!params && sessionStorage.getItem('parkList')==null) {
+                sessionStorage.setItem('parkList',JSON.stringify(res.data.data));
+            }
             commit('SET_PARK_LIST', res.data.data);
             return res;
         });

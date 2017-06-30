@@ -30,7 +30,7 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Poptip trigger="hover" title="item.label" :content="item.label"  placement="left">
+                        <Poptip trigger="hover" title="item.label" :content="item.hint"  placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                         </Poptip>        
                     </div>
@@ -49,11 +49,13 @@
         data (){
             return {
                 chartLine: {
-                    ins:{val:null,data:['date','ins'],name:'每日进场车数量'},
-                    outs:{val:null,data:['date','outs'],name:'每日出场车数量'},
-                    pass_nights:{val:null,data:['date','pass_nights'],name:'每日过夜车数量'},
-                    space_ratio:{val:null,data:['date','space_ratio'],name:'每日车位使用率'},
-                    parking_duration:{val:null,data:['date','parking_duration'],name:'每日平均停车时长'},
+                    ins:{val:null,data:['date','ins'],name:'进场车数量'},
+                    dedup_ins:{val:null,data:['date','dedup_ins'],name:'进场车次数'},
+                    outs:{val:null,data:['date','outs'],name:'出场车数量'},
+                    dedup_outs:{val:null,data:['date','dedup_outs'],name:'出场车次数'},
+                    pass_nights:{val:null,data:['date','pass_nights'],name:'过夜车数量'},
+                    space_ratio:{val:null,data:['date','space_ratio'],name:'车位使用率'},
+                    parking_duration:{val:null,data:['date','parking_duration'],name:'平均停车时长'},
                     outsHour:{val:null,data:['date','outsHour'],name:'单位小时进出车辆数'},
                     increased:{val:null,data:['date','new'],name:'新增车辆数'}
                 },

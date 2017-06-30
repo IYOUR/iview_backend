@@ -30,7 +30,7 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Poptip trigger="hover" title="item.label" :content="item.label"  placement="left">
+                        <Poptip trigger="hover" title="item.label" :content="item.hint"  placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                         </Poptip>        
                     </div>
@@ -52,7 +52,7 @@
                     charge:{val:null,data:['date','charge'],name:'总收入'},
                     eachTimesPay:{val:null,data:['date','eachTimesPay'],name:'平均每次付费'},
                     eachCarPay:{val:null,data:['date','eachCarPay'],name:'平均每车付费'},
-                    notPay:{val:null,data:['date','notPay'],name:'未支付用户比'},
+                    // notPay:{val:null,data:['date','notPay'],name:'未支付用户比'},
                     spaceWorth:{val:null,data:['date','spaceWorth'],name:'车位平均价值'}
                 },
             }

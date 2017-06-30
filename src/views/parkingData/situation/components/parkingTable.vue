@@ -57,16 +57,22 @@
                         date:tableShowData[item].date,
                         dedup_finish:tableShowData[item].dedup_finish,
                         finish:tableShowData[item].finish,
-                        charge:(tableShowData[item].charge/100).toFixed(2),
-                        averageCharge:(tableShowData[item].charge/tableShowData[item].dedup_finish/100).toFixed(2),
-                        eachCharge:(tableShowData[item].charge/tableShowData[item].finish/100).toFixed(2),
+                        charge:this.isInvaild(tableShowData[item].charge/100),
+                        averageCharge:this.isInvaild(tableShowData[item].charge/tableShowData[item].dedup_finish/100),
+                        eachCharge:this.isInvaild(tableShowData[item].charge/tableShowData[item].finish/100),
                         space:tableShowData[item].space,
                         parks:tableShowData[item].parks,
                     }
                     rowData.push(raw);
                 }
                 this.situationTable.data = rowData;
-            }                    
-        }        
+            },
+            isInvaild(val) {
+                if(isNaN(val)) {
+                    return '0.00'
+                }
+                return val.toFixed(2)
+            }                                  
+        }      
     }
 </script>

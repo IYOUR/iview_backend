@@ -105,7 +105,7 @@
             //处理返回数据
             handleResultData(index,array,res,item) {				
                 if (item === 'charge'){
-                    let toDay,lastDay
+                    let toDay,lastDay;
                     toDay = (res.toDay.data.length>0) ? (res.toDay.data[res.toDay.data.length-1][item]/100).toFixed(2):'暂无';
                     lastDay =  (res.lastDay.data.length>0) ? (res.lastDay.data[res.toDay.data.length-1][item]/100).toFixed(2):'暂无';
 
@@ -122,10 +122,10 @@
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
                 }
                 else{
-                    let toDay,lastDay
+                    let toDay,lastDay;
                     toDay = (res.toDay.data.length>0) ? res.toDay.data[res.toDay.data.length-1][item]:'暂无';
                     lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[res.toDay.data.length-1][item]:'暂无';
-
+                    
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
                 }

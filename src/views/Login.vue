@@ -117,7 +117,6 @@
                 this.$refs[name].validate((valid) => {
                     sessionStorage.setItem('user', JSON.stringify(this.formLogin.username));
                     if (valid) {
-                        this.$Message.success('登录成功!');
                         this.loginNow('abcdef123455667dfdfgahoiajnasjbh')
                         
                     } else {
@@ -153,8 +152,14 @@
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                     }).then(res=>{
-                        sessionStorage.setItem('token', res.data.data);
-                        this.$router.push({ path: '/situation' });
+                        if(res.status == '200'){
+                            this.$Message.success('登录成功!');
+                            sessionStorage.setItem('token', res.data.data);
+                            this.$router.push({ path: '/situation' });
+                        } else {
+                            this.$Message.error('登录失败!');
+                        }
+
                     })
             }
             

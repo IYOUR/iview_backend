@@ -1,3 +1,5 @@
+import VueRouter from 'vue-router'
+import Vue from 'vue'
 import Login from '../views/Login.vue'
 import NotFound from '../views/404.vue'
 import Home from '../views/Home.vue'
@@ -12,7 +14,7 @@ import echarts from '../views/couponData/echarts.vue'
 let routes = [{
         path: '/login',
         component: Login,
-        name: '',
+        name: 'login',
         hidden: true
     },
     {
@@ -65,4 +67,9 @@ let routes = [{
     }
 ];
 
-export default routes;
+Vue.use(VueRouter)
+const router = new VueRouter({
+    routes
+})
+
+export default router;

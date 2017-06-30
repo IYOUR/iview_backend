@@ -65,7 +65,7 @@
                         outs:tableShowData[i].outs,
                         in_parks:tableShowData[i].in_parks,
                         space_ratio:tableShowData[i].space_ratio,
-                        charge:(tableShowData[i].ins/100).toFixed(2),
+                        charge:(tableShowData[i].charge/100).toFixed(2),
                         new:tableShowData[i].new,
                     }
                     rowData.push(raw);

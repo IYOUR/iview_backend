@@ -70,7 +70,7 @@
 	<div class="divisionLine"></div>
 	<div class="layout-content-rankList">
 		<Row :gutter="16">
-			<Col span="12" v-for="(item,idx) in rankData" :key="idx">
+			<Col span="12" v-for="(item,idx) in rankTable" :key="idx">
 				<p>{{item.title}}</p>
 				<Table border :columns="item.columns" :data="item.data"></Table>
 			</Col>
@@ -91,7 +91,7 @@ export default {
 
 	data (){
 		return {
-			rankData: [
+			rankTable: [
 				{
 					title: '收入排行',
 					columns: [
@@ -109,7 +109,7 @@ export default {
 						},
 						{
 							title: '收入',
-							key: 'charge'
+							key: 'num'
 						}						
 					],
 					data: []
@@ -131,7 +131,7 @@ export default {
 						},
 						{
 							title: '车位平均价值',
-							key: 'worth'
+							key: 'num'
 						}						
 					],
 					data: []
@@ -150,16 +150,86 @@ export default {
 				}
 				this.$store.dispatch('getPaymentDetail',newVal.defaultDay);
 				this.$store.dispatch('getPaymentResult',newVal.paymentSection);
-			},
-		}
+				this.$store.dispatch('getRankResult',this.packQueryParams(newVal.defaultDay));			
+			}
+		},
+		'rankData':{
+			deep:true,
+			handler:function(newVal,oldVal){ 
+				this.showRanktable();
+			}
+		}			
 	},
 	computed: {
 		...mapState({
-			queryParam: 'queryParam'
+			queryParam: 'queryParam',
+			rankData: 'rankData'
 		}),			
 	},	 	
 	methods: {	
-
+		//包装请求数据
+		packQueryParams(param) {
+			return {
+				ins: this.paramsProcess('ins'),
+				space_ratio: this.paramsProcess('space_ratio'),
+				finsh: this.paramsProcess('finish'),
+				charge: this.paramsProcess('charge'),
+				charge_by_space: this.paramsProcess('charge_by_space'),								
+			};
+		},
+		paramsProcess(type) {
+			let queryParam = Object.assign({}, this.queryParam.defaultDay),request = {url:'',param:{sdate:'',edate:'',type:''}};
+			request.url = queryParam.url.match(/(\S*)\/range/)[1];
+			request.param.sdate = queryParam.param.sdate;
+			request.param.edate = queryParam.param.edate;
+			switch (type) {
+				case 'ins':
+					request.param.type = type;
+					break;	
+				case 'space_ratio':
+					request.param.type = type
+					break;	
+				case 'finish':
+					request.param.type = type;
+					break;		
+				case 'charge':
+					request.param.type = type;
+					break;	
+				case 'charge_by_space':
+					request.param.type = type;
+					break;																								
+			}
+			return request			
+		},
+		showRanktable() {
+			this.rankTable[0].data = this.transform('charge');
+			this.rankTable[1].data = this.transform('charge_by_space');
+		},
+		//将车场对应的code转换为名称
+		transform(item) {
+			let res = Object.assign([], this.rankData[item].data),arr=[],
+				companyList = JSON.parse(sessionStorage.getItem('companyList')),
+				parkList = JSON.parse(sessionStorage.getItem('parkList'));
+				for(let i=0;i<res.length;i++) {
+					let data = {};
+						data.num = (res[i].data/100).toFixed(2);
+						data.order = i+1;
+						data.parkName = res[i].parkcode;
+						data.group = res[i].companycode;
+					for(let j=0;j<companyList.length;j++) {
+						if(res[i].companycode == companyList[j].value){
+							data.group = companyList[j].label
+						}
+					}
+					for(let j=0;j<parkList.length;j++) {
+						if(res[i].parkcode == parkList[j].value){
+							data.parkName = parkList[j].label
+						}
+					}	
+					arr.push(data)			
+				}
+			return arr;			
+		}
 	},
 	components: {
 		'tab-charts': tabCharts,

@@ -70,13 +70,13 @@ export default {
     ],
     situationTabs:{
         tabOption:[
-            {label:'完成停车数量',id:'dedup_finish'},
-            {label:'完成停车次数',id:'finish'},
-            {label:'总收入',id:'charge'},
-            {label:'平均每辆车付费',id:'averageCharge'},
-            {label:'平均每次停车付费',id:'eachCharge'},
-            {label:'车位数量',id:'space'},
-            {label:'停车场数量',id:'parks'}
+            {label:'完成停车数量',id:'dedup_finish',hint:'一天之内至少完成一次停车的车辆数量（去重统计）'},
+            {label:'完成停车次数',id:'finish',hint:'一天之内完成停车的总次数'},
+            {label:'总收入',id:'charge',hint:'一天之内的付费金额'},
+            {label:'平均每辆车付费',id:'averageCharge',hint:'总收入/完成停车数量'},
+            {label:'平均每次停车付费',id:'eachCharge',hint:'总收入/完成停车次数'},
+            {label:'车位数量',id:'space',hint:'可使用车位的总数量'},
+            {label:'停车场数量',id:'parks',hint:'筛选条件下的停车场总数量'}
         ],
         tabChartsData:{}
     },  
@@ -124,12 +124,12 @@ export default {
     currentPageName: '',
     realTimeTabs:{
         tabOption:[
-            {label:'实时进车次数',id:'currentIns'}, 
-            {label:'实时出车次数',id:'currentOuts'},
-            {label:'实时停数放量',id:'currentInparks'},
-            {label:'实时车位使用率',id:'currentRatio'},
-            {label:'实时收入',id:'currentCharge'},
-            {label:'实时新增车辆数',id:'currentAdd'}
+            {label:'实时进车次数',id:'currentIns',hint:'截止当前时间点，当日进车总次数'}, 
+            {label:'实时出车次数',id:'currentOuts',hint:'截止当前时间点，当日出车总次数'},
+            {label:'实时停数放量',id:'currentInparks',hint:'当前时间点，在停车辆总数'},
+            {label:'实时车位使用率',id:'currentRatio',hint:'当前时间点，在停车辆总数/车位数量'},
+            {label:'实时收入',id:'currentCharge',hint:'截止当前时间点，当日总收入金额'},
+            {label:'实时新增车辆数',id:'currentAdd',hint:'截止当前时间点，首次使用艾润停车服务的总车辆数'},
         ],
         tabChartsData:{}
     },   
@@ -211,13 +211,15 @@ export default {
     },
     parkDetailTabs:{
         tabOption:[
-            {label:'进场车数量',id:'ins'},
-            {label:'出场车数量',id:'outs'},
-            {label:'过夜车数量',id:'pass_nights'},
-            {label:'车位使用率',id:'space_ratio'},
-            {label:'平均停车时长',id:'parking_duration'},
-            {label:'单位小时进出车辆数',id:'outsHour'},
-            {label:'新增车辆数',id:'increased'}
+            {label:'进场车数量',id:'ins',hint:'按天统计进场车辆总数（去重）'},
+            {label:'进场车次数',id:'dedup_ins',hint:'按天统计进场车辆总次数'},
+            {label:'出场车数量',id:'outs',hint:'按天统计出场车辆总数（去重）'},
+            {label:'出场车次数',id:'dedup_outs',hint:'按天统计出场车辆总次数'},
+            {label:'过夜车数量',id:'pass_nights',hint:'当天进入停车场，但是在0点之前未出场的车辆总数'},
+            {label:'车位使用率',id:'space_ratio',hint:'当天实时车位使用率的平均值'},
+            {label:'平均停车时长',id:'parking_duration',hint:'按天统计停车场内所有完成停车车辆在停车场所停的平均时间'},
+            {label:'单位小时进出车辆数',id:'outsHour',hint:'一天总的(进车数量+出车数量)/24'},
+            {label:'新增车辆数',id:'increased',hint:'按天统计首次使用艾润停车服务的车辆总数'},
         ],
         tabChartsData:{}
     },  
@@ -276,11 +278,11 @@ export default {
     },
     paymentDetailTabs:{
         tabOption:[
-            {label:'总收入',id:'charge'},
-            {label:'平均每次付费',id:'eachTimesPay'},
-            {label:'平均每车付费',id:'eachCarPay'},
-            {label:'未支付用户比',id:'notPay'},
-            {label:'车位平均价值',id:'spaceWorth'},
+            {label:'总收入',id:'charge',hint:'一天之内的付费金额'},
+            {label:'平均每次付费',id:'eachTimesPay',hint:'总收入/完成停车数量'},
+            {label:'平均每车付费',id:'eachCarPay',hint:'总收入/完成停车次数'},
+            // {label:'未支付用户比',id:'notPay',hint:'当天出场车辆中，未付费的车辆占比'},
+            {label:'车位平均价值',id:'spaceWorth',hint:'总收入/车位数'},
         ],
         tabChartsData:{}
     },

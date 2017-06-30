@@ -46,12 +46,6 @@
 					</Form-item>
 					<Form-item label="选择日期:" v-if="!currentPage">
 						<Date-picker v-model="queryParam.date" format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="开始时间 - 结束时间 "></Date-picker>
-					</Form-item>
-					<!-- 实时页面显示 -->
-					<Form-item label="停车场:" v-if="currentPage">
-						<Select v-model="queryParam.park_code" clearable placeholder="请选择">
-							<Option v-for="item in parkList" :value="item.value" :key="item">{{ item.label }}</Option>
-						</Select>
 					</Form-item>								
 				</col>
 				<Col span="7">			
@@ -102,6 +96,12 @@
 		},
 		computed: {
 			//判断当前
+			showCity () {
+				return (this.cityList.length<0)?true:false;
+			},
+			showPark () {
+				return (this.parkList.length<0)?true:false;
+			},			
 			currentPage () {
 				return this.$route.path==='/realTimeData'?true:false;
 			},
@@ -247,7 +247,7 @@
 					this.cityList = res.data.data;
                 });
             },
-			s(params) {
+			getParkList (params) {
 				return situationService.getParkList(params).then(res => {
                     if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
                         this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);

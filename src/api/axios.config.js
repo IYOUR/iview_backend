@@ -1,9 +1,3 @@
-/**
- * @file axios.config
- * Created by haner on 2017/4/1.
- * @brief
- */
-
 
 import axios from 'axios';
 import Storage from '../commons/utils/storage';
@@ -15,8 +9,8 @@ import router from '../router/routes';
 import {LoadingBar,Message} from 'iview';
 
 //api 地址配置
-axios.PARK_API = process.env.NODE_ENV === 'production' ? 'http://180.97.81.222:8788/api' : '';
-// axios.PARK_API = 'http://iop.parkingwang.com:9397/iop';
+axios.PARK_API = process.env.NODE_ENV === 'production' ? 'http://180.97.81.222:8788/api/' : 'api/';
+//axios.PARK_API = 'http://180.97.81.222:8788/api/';
 
 //请求拦截器
 axios.interceptors.request.use(config => {
@@ -25,21 +19,20 @@ axios.interceptors.request.use(config => {
         if (method === 'post') {
             // console.log(Storage.KEYS.userToken)
             // 判断是否存在token，如果存在的话，则每个http header都加上token
-            config.headers.token = Storage.KEYS.userToken;
-            config.data = processParam(config.data);
-            let user = getUser();
-            user && user.token && (config.data['token'] = user.token);
+            // config.headers.token = Storage.KEYS.userToken;
+            // config.data = processParam(config.data);
+            // let user = getUser();
+            // user && user.token && (config.data['token'] = user.token);
             return config;
         }
 
         if (method === 'get') {
-          //  console.log(Storage.KEYS.userToken)
+            if(config.url.indexOf('api')>=0) {
+                LoadingBar.start();
+            }            
           // 判断是否存在token，如果存在的话，则每个http header都加上token
             config.headers.token = sessionStorage.getItem('token');
-            //config.headers.token = Storage.KEYS.userToken;
             config.params = config.params || {};
-            let user = getUser();
-            user && user.token && (config.params['token'] = user.token);
             return config;
         }
 
@@ -52,21 +45,22 @@ axios.interceptors.request.use(config => {
 
 //响应拦截器
 axios.interceptors.response.use(response => {
-
-        //LoadingBar.finish();
-        if (CONSTANT.HTTP_STATUS.VALID_TOKEN.CODE === response.data.code) {
-            Storage.removeAll();
-            router.replace({name: 'iop.login', query: {redirect: router.currentRoute.fullPath}});
-            response.data.message = CONSTANT.HTTP_STATUS.VALID_TOKEN.MSG;
-        }
-       
+        if(response.config.url.indexOf('api')>=0) {
+            LoadingBar.finish();
+        }   
+        // if (CONSTANT.HTTP_STATUS.VALID_TOKEN.CODE === response.status) {
+        //     Storage.removeAll();
+        //     router.replace({name: 'login', query: {redirect: router.currentRoute.fullPath}});
+        //     response.data.message = CONSTANT.HTTP_STATUS.VALID_TOKEN.MSG;
+        // }
         return response;
     },
     error => {
         LoadingBar.finish();
         if (error.response.status == '401') {
-           Message.error('登录已过期，请重新登录');  
-           return;   
+            router.replace({name: 'login'})
+            Message.error('登录已过期，请重新登录!');  
+            return;   
         }         
         return Promise.reject(error)
     }

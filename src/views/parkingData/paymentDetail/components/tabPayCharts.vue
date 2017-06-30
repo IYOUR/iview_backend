@@ -28,14 +28,7 @@
                 <Col span="5">
                     <div class="headTitle"><span>{{item.label}}</span></div>
                 </Col>
-                <Col span="5" offset="14">
-                    <div class="hint">
-                        <Poptip trigger="hover" title="item.label" :content="item.label"  placement="left">
-                            <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
-                        </Poptip>        
-                    </div>
-                    <Date-picker v-if="datePicker" class="datePicker" type="date" placement="bottom-end" placeholder="选择日期"></Date-picker> 
-                </Col>
+
             </Row>
             <div :id="item.id" style="width:100%; height:400px;"></div>       
         </Tab-pane>

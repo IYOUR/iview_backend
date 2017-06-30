@@ -30,7 +30,7 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Poptip trigger="hover" title="item.label" :content="item.label"  placement="left">
+                        <Poptip trigger="hover" title="item.label" :content="item.hint"  placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                         </Poptip>        
                     </div>

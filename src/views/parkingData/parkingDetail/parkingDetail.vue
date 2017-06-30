@@ -166,25 +166,19 @@ export default {
 			deep:true,
 			handler:function(newVal,oldVal){
 				this.$store.dispatch('getParkDetail',newVal.defaultDay);
-				if(JSON.stringify(this.rankData)=='{}') {
-					this.$store.dispatch('getRankResult',this.packQueryParams(newVal.defaultDay));
-				}
-
+				this.$store.dispatch('getRankResult',this.packQueryParams(newVal.defaultDay));
 			}
 		},
 		'rankData':{
 			deep:true,
 			handler:function(newVal,oldVal){ 
-				// console.log(this.transform('ins'))
-				// this.showRanktable();
+				this.showRanktable();
 			}
 		}		
 	},
 	computed: {
 		...mapState({
 			queryParam: 'queryParam',
-			companyList: 'companyList',
-			parkList: 'parkList',
 			rankData: 'rankData'
 		}),			
 	},	 	
@@ -224,33 +218,33 @@ export default {
 			return request			
 		},
 		showRanktable() {
-			this.rankTable.forEach((ele)=>{
-				ele.data = this.transform(ele.name);
-			})
+			this.rankTable[0].data = this.transform('ins');
+			this.rankTable[1].data = this.transform('space_ratio');
+			this.rankTable[2].data = this.transform('finish');
 		},
 		//将车场对应的code转换为名称
 		transform(item) {
-			let res = Object.assign([], this.rankData[item].data),arr=[];
-				
+			let res = Object.assign([], this.rankData[item].data),arr=[],
+				companyList = JSON.parse(sessionStorage.getItem('companyList')) || [],
+				parkList = JSON.parse(sessionStorage.getItem('parkList')) || [];
 				for(let i=0;i<res.length;i++) {
 					let data = {};
 						data.num = res[i].data;
 						data.order = i+1;
-					for(let j=0;j<this.companyList.length;j++) {
+						data.parkName = res[i].parkcode;
 						data.group = res[i].companycode;
-						if(res[i].companycode == this.companyList[j].value){
-							data.group = this.companyList[j].label
+					for(let j=0;j<companyList.length;j++) {
+						if(res[i].companycode == companyList[j].value){
+							data.group = companyList[j].label
 						}
 					}
-					for(let j=0;j<this.companyList.length;j++) {
-						data.parkName = res[i].parkcode;
-						if(res[i].parkcode == this.parkList[j].value){
-							data.parkName = this.parkList[j].label
+					for(let j=0;j<parkList.length;j++) {
+						if(res[i].parkcode == parkList[j].value){
+							data.parkName = parkList[j].label
 						}
 					}	
 					arr.push(data)			
 				}
-
 			return arr;			
 		}
 		
