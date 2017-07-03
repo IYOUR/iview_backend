@@ -9,10 +9,10 @@
 		font-size: 9px;
 	}
     .up{
-        color: #19be6b;
+        color: #ed3f14;
     }
     .down{
-        color: #ed3f14;
+        color: #19be6b;
     }
     .no,.same{
         color: #657180;

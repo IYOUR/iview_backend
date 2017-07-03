@@ -28,20 +28,16 @@
 					</Form-item>
 					<Form-item label="停车场:" v-if="!currentPage">
 						<Select v-model="queryParam.park_code" clearable placeholder="请选择">
-							<Option v-for="item in parkList" :value="item.value" :key="item">{{ item.label }}</Option>
-						</Select>
-					</Form-item>
-					<!-- 实时页面显示 -->
-					<Form-item label="集团:" v-if="currentPage">
-						<Select v-model="queryParam.company" clearable placeholder="请选择">
-							<Option v-for="item in companyList" :value="item.value" :key="item">{{ item.label }}</Option>
+							<Option value="null" v-if="!showPark" disabled>暂无</Option>
+							<Option v-if="showPark"  v-for="item in parkList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
 				</col>
 				<Col span="7">
 					<Form-item label="城市:">
 						<Select v-model="queryParam.city" @on-change="selectCity" clearable placeholder="请选择">
-							<Option v-for="item in cityList" :value="item.value" :key="item">{{ item.label }}</Option>
+							<Option value="null" v-if="!showCity" disabled>暂无</Option>
+							<Option v-if="showCity"  v-for="item in cityList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
 					<Form-item label="选择日期:" v-if="!currentPage">
@@ -53,11 +49,7 @@
 						<Select v-model="queryParam.company" clearable placeholder="请选择">
 							<Option v-for="item in companyList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
-					</Form-item>
-					<!-- 实时页面显示 -->
-					<Form-item v-if="currentPage">
-						<p class="currentDate">{{currentDate}}</p>
-					</Form-item>					
+					</Form-item>				
 					<Form-item>
 						<row :gutter="16">
 							<Col span="12">
@@ -89,19 +81,15 @@
 					date: [],
 					company: ''
 				},
+				showCity:false,
+				showPark:false,
                 cityList: [],
 				parkList: [],
 				resultData: {}
 			}
 		},
 		computed: {
-			//判断当前
-			showCity () {
-				return (this.cityList.length<0)?true:false;
-			},
-			showPark () {
-				return (this.parkList.length<0)?true:false;
-			},			
+			//判断当前			
 			currentPage () {
 				return this.$route.path==='/realTimeData'?true:false;
 			},
@@ -113,6 +101,24 @@
         created () {
 			this.loadAreaInfo();
 			this.$store.commit('SET_QUERY_PARAM',this.packQueryParams());
+        },
+        watch: {
+            'cityList':{
+                handler(newVal,oldVal){
+					if(newVal.length>0) {
+						this.showCity = true;
+					} else 
+					this.showCity = false;
+                },
+            },
+            'parkList':{
+                handler(newVal,oldVal){
+					if(newVal.length>0) {
+						this.showPark = true;
+					} else 
+					this.showPark = false;
+                },
+            },			
         },
 		methods: {
             ...mapActions({

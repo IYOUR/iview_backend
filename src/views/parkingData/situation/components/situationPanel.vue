@@ -9,10 +9,10 @@
 		font-size: 9px;
 	}
     .up{
-        color: #19be6b;
+        color: #ed3f14;
     }
     .down{
-        color: #ed3f14;
+        color: #19be6b;
     }
     .no,.same{
         color: #657180;
@@ -137,7 +137,7 @@
                 }
                 else if (item === 'average') {
                     let defaultDay,lastDay,lastWeek,lastMonth;
-                    defaultDay = (res.defaultDay.data.length>0) ? (res.defaultDay.data[0].charge/res.defaultDay.data[0].dedup_finish/100).toFixed(2):'暂无';
+                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[0].charge/res.defaultDay.data[0].dedup_finish/100):'暂无';
                     lastDay =  (res.lastDay.data.length>0) ? (res.lastDay.data[0].charge/res.lastDay.data[0].dedup_finish/100).toFixed(2):'暂无';
                     lastWeek =  (res.lastWeek.data.length>0) ? (res.lastWeek.data[0].charge/res.lastWeek.data[0].dedup_finish/100).toFixed(2):'暂无';
                     lastMonth =  (res.lastMonth.data.length>0) ? (res.lastMonth.data[0].charge/res.lastMonth.data[0].dedup_finish/100).toFixed(2):'暂无';
@@ -176,6 +176,12 @@
                     return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'down',icon:'arrow-down-c'};
                 }
             },
+            isInvaild(val) {
+                if(isNaN(val)) {
+                    return '暂无'
+                }
+                return val.toFixed(2)
+            }                
         }
                
     }

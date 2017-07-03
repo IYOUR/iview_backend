@@ -9,9 +9,9 @@ import router from '../router/routes';
 import {LoadingBar,Message} from 'iview';
 
 //api 地址配置
-axios.PARK_API = process.env.NODE_ENV === 'production' ? 'http://180.97.81.222:8788/api/' : 'api/';
+// axios.PARK_API = process.env.NODE_ENV === 'production' ? 'http://180.97.80.42:8788/api/' : 'api/';
 //axios.PARK_API = 'http://180.97.81.222:8788/api/';
-
+axios.PARK_API ='api/';
 //请求拦截器
 axios.interceptors.request.use(config => {
         //LoadingBar.start();
@@ -27,6 +27,16 @@ axios.interceptors.request.use(config => {
         }
 
         if (method === 'get') {
+            if(config.url.indexOf('api')>=0) {
+                LoadingBar.start();
+            }            
+          // 判断是否存在token，如果存在的话，则每个http header都加上token
+            config.headers.token = sessionStorage.getItem('token');
+            config.params = config.params || {};
+            return config;
+        }
+
+        if (method === 'options') {
             if(config.url.indexOf('api')>=0) {
                 LoadingBar.start();
             }            

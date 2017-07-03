@@ -55,18 +55,23 @@
                 for(let item in tableShowData) {
                     let raw = {
                         date:tableShowData[item].date,
-                        charge:(tableShowData[item].charge/100).toFixed(2),
-                        eachTimesPay:(tableShowData[item].charge/tableShowData[item].finish/100).toFixed(2),
-                        eachCarPay:(tableShowData[item].charge/tableShowData[item].dedup_finish/100).toFixed(2),
-                        notPay:tableShowData[item].ins,
-                        spaceWorth:(tableShowData[item].charge/tableShowData[item].space/100).toFixed(2),
-                        averageTime:(tableShowData[item].parking_duration/tableShowData[item].finish/60).toFixed(2),
-                        inOutPerhour:((tableShowData[item].ins+tableShowData[item].outs)/24).toFixed(2),
+                        charge:this.isInvaild(tableShowData[item].charge/100),
+                        eachTimesPay:this.isInvaild(tableShowData[item].charge/tableShowData[item].finish/100),
+                        eachCarPay:this.isInvaild(tableShowData[item].charge/tableShowData[item].dedup_finish/100),
+                        spaceWorth:this.isInvaild(tableShowData[item].charge/tableShowData[item].space/100),
+                        averageTime:this.isInvaild(tableShowData[item].parking_duration/tableShowData[item].finish/60),
+                        inOutPerhour:this.isInvaild((tableShowData[item].ins+tableShowData[item].outs)/24),
                     }
                     rowData.push(raw);
                 }
                 this.paymentDetailTable.data = rowData;
-            }                    
+            },
+            isInvaild(val) {
+                if(isNaN(val)) {
+                    return '0'
+                }
+                return val.toFixed(2)
+            }                                
         }        
     }
 </script>

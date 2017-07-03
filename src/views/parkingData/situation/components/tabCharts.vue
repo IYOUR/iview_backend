@@ -124,13 +124,13 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 return chartLine.data.map((ele)=> {
                     switch (item[1]) {
  						case 'charge':
-                            return (ele.charge/100).toFixed(2);
+                            return this.isInvaild(ele.charge/100);
 							break;   
  						case 'eachCarPay':
-                            return (ele.charge/ele.dedup_finish/100).toFixed(2);
+                            return this.isInvaild(ele.charge/ele.dedup_finish/100);
 							break;  
  						case 'eachTimesPay':
-                            return (ele.charge/ele.finish/100).toFixed(2);
+                            return this.isInvaild(ele.charge/ele.finish/100);
 							break; 
  						case 'date':
                             return ele.date;
@@ -138,7 +138,13 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                     }
                     return ele[item[1]];
                 });
-            }
+            },
+            isInvaild(val) {
+                if(isNaN(val)) {
+                    return 0
+                }
+                return val.toFixed(2)
+            }             
         }
     }
 </script>

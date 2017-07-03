@@ -60,14 +60,20 @@
                         maxRatio:tableShowData[item].space_ratio_max,
                         minRatio:tableShowData[item].space_ratio_min,
                         space_ratio:tableShowData[item].space_ratio,
-                        averageTime:(tableShowData[item].parking_duration/tableShowData[item].finish/60).toFixed(2),
-                        inOutPerhour:(tableShowData[item].dedup_finish/24).toFixed(2),
+                        averageTime:this.isInvaild(tableShowData[item].parking_duration/tableShowData[item].finish/60),
+                        inOutPerhour:this.isInvaild(tableShowData[item].dedup_finish/24),
                         increased:tableShowData[item].new,
                     }
                     rowData.push(raw);
                 }
                 this.parkDetailTable.data = rowData;
-            }                    
+            },
+            isInvaild(val) {
+                if(isNaN(val)) {
+                    return '0'
+                }
+                return val.toFixed(2)
+            }                                   
         }        
     }
 </script>

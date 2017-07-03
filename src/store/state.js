@@ -316,10 +316,6 @@ export default {
                 key: 'eachCarPay'
             },
             {
-                title: '未支付用户比',
-                key: 'notPay'
-            },
-            {
                 title: '车位平均价值(元)',
                 key: 'spaceWorth'
             },
