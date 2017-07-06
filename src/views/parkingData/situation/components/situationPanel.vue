@@ -4,6 +4,9 @@
 		font-size: 30px;
 		padding: 10px;
 	}
+    .situation-item .title{
+        padding-left: 4px;
+    }    
 	.situation-item .comparison{
         white-space: nowrap;
 		font-size: 9px;
@@ -22,7 +25,7 @@
     <Row type="flex" justify="space-between" class="code-row-bg">
         <Col span="4" v-for="(item,idx) in situationData" :key="idx">
             <div class="situation-item">
-                <p>{{item.title}}:</p>
+                <p class="title">{{item.title}}:</p>
                 <p class="number"><span>{{item.num}}</span></p>
                 <p class="comparison">
                     <Row v-if="!isShowPanel" type="flex" justify="space-around" class="code-row-bg">
@@ -125,34 +128,35 @@
             //处理返回数据
             handleResultData(index,array,res,item) {				
                 if (item === 'charge'){
-                    let defaultDay,lastDay,lastWeek,lastMonth;
-                    defaultDay = (res.defaultDay.data.length>0) ? (res.defaultDay.data[0][item]/100).toFixed(2):'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? (res.lastDay.data[0][item]/100).toFixed(2):'暂无';
-                    lastWeek =  (res.lastWeek.data.length>0) ? (res.lastWeek.data[0][item]/100).toFixed(2):'暂无';
-                    lastMonth =  (res.lastMonth.data.length>0) ? (res.lastMonth.data[0][item]/100).toFixed(2):'暂无';
-                    array[index].num = defaultDay;
+                    let defaultDay,lastDay,lastWeek,lastMonth,num=res.defaultDay.data.length-1;
+                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[num][item]/100):'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? this.isInvaild(res.lastDay.data[num][item]/100):'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? this.isInvaild(res.lastWeek.data[num][item]/100):'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? this.isInvaild(res.lastMonth.data[num][item]/100):'暂无';
+
+                    array[index].num = isNaN(defaultDay)?defaultDay:`￥${defaultDay}`;
                     array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
                     array[index].lastWeek = [lastWeek,this.checkResultData(defaultDay,lastWeek)];
                     array[index].lastMonth = [lastMonth,this.checkResultData(defaultDay,lastMonth)];			
                 }
                 else if (item === 'average') {
-                    let defaultDay,lastDay,lastWeek,lastMonth;
-                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[0].charge/res.defaultDay.data[0].dedup_finish/100):'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? (res.lastDay.data[0].charge/res.lastDay.data[0].dedup_finish/100).toFixed(2):'暂无';
-                    lastWeek =  (res.lastWeek.data.length>0) ? (res.lastWeek.data[0].charge/res.lastWeek.data[0].dedup_finish/100).toFixed(2):'暂无';
-                    lastMonth =  (res.lastMonth.data.length>0) ? (res.lastMonth.data[0].charge/res.lastMonth.data[0].dedup_finish/100).toFixed(2):'暂无';
+                    let defaultDay,lastDay,lastWeek,lastMonth,num=res.defaultDay.data.length-1;
+                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[num].charge/res.defaultDay.data[num].dedup_finish/100):'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? this.isInvaild(res.lastDay.data[num].charge/res.lastDay.data[num].dedup_finish/100):'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? this.isInvaild(res.lastWeek.data[num].charge/res.lastWeek.data[num].dedup_finish/100):'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? this.isInvaild(res.lastMonth.data[num].charge/res.lastMonth.data[num].dedup_finish/100):'暂无';
                     
-                    array[index].num = defaultDay;
+                    array[index].num = isNaN(defaultDay)?defaultDay:`￥${defaultDay}`;
                     array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
                     array[index].lastWeek = [lastWeek,this.checkResultData(defaultDay,lastWeek)];
                     array[index].lastMonth = [lastMonth,this.checkResultData(defaultDay,lastMonth)];
                 }
                 else{
-                    let defaultDay,lastDay,lastWeek,lastMonth;
-                    defaultDay = (res.defaultDay.data.length>0) ? res.defaultDay.data[0][item]:'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[0][item]:'暂无';
-                    lastWeek =  (res.lastWeek.data.length>0) ? res.lastWeek.data[0][item]:'暂无';
-                    lastMonth =  (res.lastMonth.data.length>0) ? res.lastMonth.data[0][item]:'暂无';
+                    let defaultDay,lastDay,lastWeek,lastMonth,num=res.defaultDay.data.length-1;
+                    defaultDay = (res.defaultDay.data.length>0) ? res.defaultDay.data[num][item]:'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[num][item]:'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? res.lastWeek.data[num][item]:'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? res.lastMonth.data[num][item]:'暂无';
 
                     array[index].num = defaultDay;
                     array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
@@ -163,22 +167,22 @@
             },
             //返回数据格式校验
             checkResultData(firstVal,secondVal) {
-                if (isNaN(firstVal/secondVal)) {
+                if (!isFinite(firstVal/secondVal)) {
                     return {val:'暂无',state:'no',icon:''};
                 }
                 else if(firstVal === secondVal) {
                     return {val:'持平',state:'same',icon:'arrow-right-c'};
                 }
-                else if (firstVal>secondVal) {
-                    return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'up',icon:'arrow-up-c'};
+                else if (parseFloat(firstVal)>parseFloat(secondVal)) {
+                    return {val:`${(Math.abs(firstVal-secondVal)/secondVal*100).toFixed(1)}%`,state:'up',icon:'arrow-up-c'};
                 }
                 else{
-                    return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'down',icon:'arrow-down-c'};
+                    return {val:`${(Math.abs(firstVal-secondVal)/secondVal*100).toFixed(1)}%`,state:'down',icon:'arrow-down-c'};
                 }
             },
             isInvaild(val) {
-                if(isNaN(val)) {
-                    return '暂无'
+                if(!isFinite(val)) {
+                    return "0.00"
                 }
                 return val.toFixed(2)
             }                

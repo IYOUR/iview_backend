@@ -4,6 +4,9 @@
 		font-size: 30px;
 		padding: 10px;
 	}
+    .situation-item .title{
+        padding-left: 4px;
+    }
 	.situation-item .comparison{
         white-space: nowrap;
 		font-size: 9px;
@@ -22,7 +25,7 @@
     <Row type="flex" justify="space-between" class="code-row-bg">
         <Col span="4" v-for="(item,idx) in realTimeSituation" :key="idx">
             <div class="situation-item">
-                <p>{{item.title}}:</p>
+                <p class="title">{{item.title}}:</p>
                 <p class="number"><span>{{item.num}}</span></p>
                 <p class="comparison">
                     <Row type="flex" justify="space-around" class="code-row-bg">
@@ -91,13 +94,10 @@
                             this.handleResultData(index,array,res,'in_parks')
                             break;
                         case 3:
-                            this.handleResultData(index,array,res,'in_parks')
-                            break;
-                        case 4:
                             this.handleResultData(index,array,res,'charge')
                             break;	
-                        case 5:
-                            this.handleResultData(index,array,res,'add')
+                        case 4:
+                            this.handleResultData(index,array,res,'new')
                             break;                       					
                     }			
                 })
@@ -106,25 +106,33 @@
             handleResultData(index,array,res,item) {				
                 if (item === 'charge'){
                     let toDay,lastDay;
-                    toDay = (res.toDay.data.length>0) ? (res.toDay.data[res.toDay.data.length-1][item]/100).toFixed(2):'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? (res.lastDay.data[res.toDay.data.length-1][item]/100).toFixed(2):'暂无';
-
-                    array[index].num = toDay;
+                    toDay = (res.toDay.data.length>0) ? (this.counter(res.toDay.data,item)/100).toFixed(2):'暂无';
+                    lastDay =  (res.lastDay.data.length>=res.toDay.data.length) ? (this.counter(res.lastDay.data,item)/100).toFixed(2):'暂无';
+                    
+                    array[index].num = isNaN(toDay)?toDay:`￥${toDay}`;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];	
                 }
-                else if (item === 'add') {
-                    let toDay,lastDay,toDay_last,lastDay_last;
+                else if (item === 'new') {
+                    let toDay,lastDay;
                     
-                    toDay = (res.toDay.data.length>0) ? res.toDay.data[res.toDay.data.length-1].new:'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[res.toDay.data.length-1].new:'暂无';
+                    toDay = (res.toDay.data.length>0) ? this.counter(res.toDay.data,item):'暂无';
+                    lastDay =  (res.lastDay.data.length>=res.toDay.data.length) ? this.counter(res.lastDay.data,item):'暂无';
 
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
                 }
-                else{
+                else if (item === 'in_parks') {
                     let toDay,lastDay;
                     toDay = (res.toDay.data.length>0) ? res.toDay.data[res.toDay.data.length-1][item]:'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[res.toDay.data.length-1][item]:'暂无';
+                    lastDay =  (res.lastDay.data.length>=res.toDay.data.length) ? res.lastDay.data[res.toDay.data.length-1][item]:'暂无';
+                    
+                    array[index].num = toDay;
+                    array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
+                }                
+                else{
+                    let toDay,lastDay;
+                    toDay = (res.toDay.data.length>0) ? this.counter(res.toDay.data,item):'暂无';
+                    lastDay =  (res.lastDay.data.length>=res.toDay.data.length) ? this.counter(res.lastDay.data,item):'暂无';
                     
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
@@ -133,19 +141,27 @@
             },
             //返回数据格式校验
             checkResultData(firstVal,secondVal) {
-                if (isNaN(firstVal/secondVal)) {
+                if (!isFinite(firstVal/secondVal)) {
                     return {val:'暂无',state:'no',icon:''};
                 }
                 else if(firstVal === secondVal) {
                     return {val:'持平',state:'same',icon:'arrow-right-c'};
                 }
-                else if (firstVal>secondVal) {
-                    return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'up',icon:'arrow-up-c'};
+                else if (parseFloat(firstVal)>parseFloat(secondVal)) {
+                    return {val:`${(Math.abs(firstVal-secondVal)/secondVal*100).toFixed(1)}%`,state:'up',icon:'arrow-up-c'};
                 }
                 else{
-                    return {val:`${(firstVal/secondVal).toFixed(2)}%`,state:'down',icon:'arrow-down-c'};
+                    return {val:`${(Math.abs(firstVal-secondVal)/secondVal*100).toFixed(1)}%`,state:'down',icon:'arrow-down-c'};
                 }
             },
+            //累加计算
+            counter(arr,item) {
+                let num = 0;
+                for(let i=0;i<arr.length;i++) {
+                    num = num +arr[i][item]
+                }
+                return num;
+            }
         }
                
     }

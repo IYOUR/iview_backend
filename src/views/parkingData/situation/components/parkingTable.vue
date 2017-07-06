@@ -26,8 +26,8 @@
             }
         },
         computed: {
-            isShowPanel: function() {
-                return this.$route.path==='/realTimeData'?true:false;
+            csvName: function() {
+                return this.$route.name;
             },
             ...mapState({
                 queryResult: 'queryResult',
@@ -46,7 +46,7 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: '数据'
+                    filename: this.csvName
                 });
             },
             handleTableData(res) {
@@ -68,10 +68,10 @@
                 this.situationTable.data = rowData;
             },
             isInvaild(val) {
-                if(isNaN(val)) {
-                    return '0.00'
+                if(!isFinite(val)) {
+                    return '￥0.00'
                 }
-                return val.toFixed(2)
+                return `￥${val.toFixed(2)}`
             }                                  
         }      
     }

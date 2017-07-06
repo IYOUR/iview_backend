@@ -10,14 +10,14 @@
     text-align: center;
 }
 .hint button{
-    width: 115px;
+    width: 130px;
 }
 .parkingTable{
     padding: 15px;
     margin-top: 30px;
 }
 .datePicker{
-    width: 115px;
+    width: 130px;
     margin:0 auto;
 }
 </style>
@@ -34,7 +34,7 @@
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                         </Poptip>        
                     </div>
-                    <Date-picker v-if="datePicker" class="datePicker" v-model="queryDate" type="date" placement="bottom-end" placeholder="选择日期"></Date-picker> 
+                    <Date-picker v-if="datePicker" class="datePicker" v-model="queryDate" type="date" :options="disableDate" placement="bottom-end" placeholder="选择日期"></Date-picker> 
                 </Col>
             </Row>
             <div :id="item.id" style="width:100%; height:400px;"></div>       
@@ -49,14 +49,18 @@
     import CONSTANT from '../../../../commons/utils/code';
     export default {
         data (){
-
             return {
+				disableDate: {
+                    disabledDate (date) {
+                        return date && date.valueOf() > Date.now();
+                    }					
+				},                  
                 queryDate: '',
                 chartLine: {
                     currentIns:{val:null,data:['date','ins'],name:'实时进车次数'},
                     currentOuts:{val:null,data:['date','outs'],name:'实时出车次数'},
                     currentInparks:{val:null,data:['date','in_parks'],name:'实时停放数放量'},
-                    currentRatio:{val:null,data:['date','space_ratio'],name:'实时车位使用率'},
+                    currentRatio:{val:null,data:['date','space_ratio'],name:'实时车位使用率(%)'},
                     currentCharge:{val:null,data:['date','charge'],name:'实时收入'},
                     currentAdd:{val:null,data:['date','new'],name:'实时新增车辆数'}
                 },
@@ -91,7 +95,7 @@
                     this.createCharts(this.currentResult.dateResult);
                 },    
             },            
-            'queryDate': function(newVal,oldVal){
+            'queryDate':function(newVal,oldVal){
                 let params = {
                     url: this.queryParam.toDay.url,
                     param: {
@@ -99,7 +103,13 @@
                     }
                 }
                 this.$store.dispatch('getDateResult',params)
-            }            
+            },
+            'queryParam':{
+                deep:true,
+                handler:function(newVal,oldVal){
+                    this.queryDate = '';
+                },     
+            },                       
         },        
         methods: {
             createCharts(res) {
@@ -151,6 +161,9 @@
  						case 'eachTimesPay':
                             return (ele.charge/ele.finish/100).toFixed(2);
 							break; 
+ 						case 'space_ratio':
+                            return (ele.space_ratio).toFixed(2);
+							break;                             
  						case 'date':
                             return DateFormat.format(DateFormat.formatToDate (ele.date), 'hh:mm')
 							break;                                                                                                            

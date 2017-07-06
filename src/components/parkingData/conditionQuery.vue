@@ -27,26 +27,26 @@
 						</Select>
 					</Form-item>
 					<Form-item label="停车场:" v-if="!currentPage">
-						<Select v-model="queryParam.park_code" clearable placeholder="请选择">
-							<Option value="null" v-if="!showPark" disabled>暂无</Option>
-							<Option v-if="showPark"  v-for="item in parkList" :value="item.value" :key="item">{{ item.label }}</Option>
+						<Select v-model="queryParam.park_code" filterable clearable placeholder="请选择">
+							<Option value="null" v-if="!showPark" disabled>暂无数据</Option>
+							<Option v-if="showPark" v-for="item in parkList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
 				</col>
 				<Col span="7">
 					<Form-item label="城市:">
 						<Select v-model="queryParam.city" @on-change="selectCity" clearable placeholder="请选择">
-							<Option value="null" v-if="!showCity" disabled>暂无</Option>
+							<Option value="null" v-if="!showCity" disabled>暂无数据</Option>
 							<Option v-if="showCity"  v-for="item in cityList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
 					<Form-item label="选择日期:" v-if="!currentPage">
-						<Date-picker v-model="queryParam.date" format="yyyy/MM/dd" type="daterange" placement="bottom-end" placeholder="开始时间 - 结束时间 "></Date-picker>
+						<Date-picker v-model="queryParam.date" format="yyyy/MM/dd" type="daterange" :options="disableDate" placement="bottom-end" placeholder="开始时间 - 结束时间 "></Date-picker>
 					</Form-item>								
 				</col>
 				<Col span="7">			
 					<Form-item label="集团:" v-if="!currentPage">
-						<Select v-model="queryParam.company" clearable placeholder="请选择">
+						<Select v-model="queryParam.company" @on-change="selectCompany" filterable clearable placeholder="请选择">
 							<Option v-for="item in companyList" :value="item.value" :key="item">{{ item.label }}</Option>
 						</Select>
 					</Form-item>				
@@ -74,6 +74,11 @@
 		data() {
 			return {
 				currentDate: '2017-01-01 00:00:00',
+				disableDate: {
+                    disabledDate (date) {
+                        return date && date.valueOf() > Date.now()-86400000;
+                    }					
+				},
 				queryParam: {
 					province: '',
 					park_code: '',
@@ -136,7 +141,12 @@
 				if(value !== ''){
 					this.getParkList({city:value});	
 				}
-			},				
+			},	
+			selectCompany(value) {
+				if(value !== ''){
+					this.getparkbycompany({id:value});	
+				}
+			},			
 			//点击查询
 			query() {
 				this.$store.commit('SET_QUERY_PARAM',this.packQueryParams())				
@@ -261,7 +271,16 @@
                     }; 
 					this.parkList = res.data.data;
 				});
-			},																									
+			},	
+			getparkbycompany (params) {
+				return situationService.getparkbycompany(params).then(res => {
+                    if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
+                        this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
+                        return;
+                    }; 
+					this.parkList = res.data.data;
+				});
+			},																												
 		},
 		mounted () {
 			if(this.currentPage) {

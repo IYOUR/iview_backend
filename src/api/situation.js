@@ -20,6 +20,9 @@ export const getCompanyList = () => axios.get('site/getallcompany').then(res => 
 //获取车场列表
 export const getParkList = params => axios.get('site/getallpark', {params: params}).then(res => res);
 
+//获取车场列表
+export const getparkbycompany = params => axios.get('site/getparkbycompany', {params: params}).then(res => res);
+
 //获取查询结果
 export const getQueryResult = params => axios.get(`${axios.PARK_API}data/${params.url}`, {params: params.param}).then(res => res);
 

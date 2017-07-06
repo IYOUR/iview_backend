@@ -10,14 +10,14 @@
     text-align: center;
 }
 .hint button{
-    width: 115px;
+    width: 130px;
 }
 .parkingTable{
     padding: 15px;
     margin-top: 30px;
 }
 .datePicker{
-    width: 115px;
+    width: 130px;
     margin:0 auto;
 }
 </style>
@@ -34,7 +34,6 @@
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                         </Poptip>        
                     </div>
-                    <Date-picker v-if="datePicker" class="datePicker" type="date" placement="bottom-end" placeholder="选择日期"></Date-picker> 
                 </Col>
             </Row>
             <div :id="item.id" style="width:100%; height:400px;"></div>       
@@ -47,7 +46,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
 
     export default {
         data (){
-            return {
+            return {              
                 chartLine: {
                     dedup_finish:{val:null,data:['date','dedup_finish'],name:'每日完成停车数量'},
                     finish:{val:null,data:['date','finish'],name:'每日完成停车次数'},
@@ -60,9 +59,6 @@ import {mapState, mapActions, mapGetters} from 'vuex';
             }
         },  
         computed: {
-            datePicker: function() {
-                return this.$route.path==='/realTimeData'?true:false;
-            },
             ...mapState({
                 queryResult: 'queryResult',
                 situationTabs: 'situationTabs'

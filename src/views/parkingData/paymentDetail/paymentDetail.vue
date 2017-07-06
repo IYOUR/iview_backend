@@ -145,12 +145,14 @@ export default {
 			deep:true,
 			handler:function(newVal,oldVal){
 				newVal.paymentSection = {
-					url : newVal.defaultDay.url.match(/(\S*)\/range/)[1],
-					param : newVal.defaultDay.param
+					url : newVal.pastWeek.url.match(/(\S*)\/range/)[1],
+					param : newVal.pastWeek.param
 				}
-				this.$store.dispatch('getPaymentDetail',newVal.defaultDay);
+				let rankParam = newVal.defaultDay;
+				rankParam.param.sdate = newVal.defaultDay.param.edate;
+				this.$store.dispatch('getPaymentDetail',newVal.pastWeek);
 				this.$store.dispatch('getPaymentResult',newVal.paymentSection);
-				this.$store.dispatch('getRankResult',this.packQueryParams(newVal.defaultDay));			
+				this.$store.dispatch('getRankResult',this.packQueryParams(rankParam));			
 			}
 		},
 		'rankData':{
@@ -170,15 +172,15 @@ export default {
 		//包装请求数据
 		packQueryParams(param) {
 			return {
-				ins: this.paramsProcess('ins'),
-				space_ratio: this.paramsProcess('space_ratio'),
-				finsh: this.paramsProcess('finish'),
-				charge: this.paramsProcess('charge'),
-				charge_by_space: this.paramsProcess('charge_by_space'),								
+				ins: this.paramsProcess(param,'ins'),
+				space_ratio: this.paramsProcess(param,'space_ratio'),
+				finsh: this.paramsProcess(param,'finish'),
+				charge: this.paramsProcess(param,'charge'),
+				charge_by_space: this.paramsProcess(param,'charge_by_space'),								
 			};
 		},
-		paramsProcess(type) {
-			let queryParam = Object.assign({}, this.queryParam.defaultDay),request = {url:'',param:{sdate:'',edate:'',type:''}};
+		paramsProcess(param,type) {
+			let queryParam = Object.assign({}, param),request = {url:'',param:{sdate:'',edate:'',type:''}};
 			request.url = queryParam.url.match(/(\S*)\/range/)[1];
 			request.param.sdate = queryParam.param.sdate;
 			request.param.edate = queryParam.param.edate;
@@ -212,7 +214,7 @@ export default {
 				parkList = JSON.parse(sessionStorage.getItem('parkList'));
 				for(let i=0;i<res.length;i++) {
 					let data = {};
-						data.num = (res[i].data/100).toFixed(2);
+						data.num = `￥${(res[i].data/100).toFixed(2)}`;
 						data.order = i+1;
 						data.parkName = res[i].parkcode;
 						data.group = res[i].companycode;

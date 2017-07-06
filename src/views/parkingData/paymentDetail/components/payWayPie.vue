@@ -25,7 +25,7 @@
                             key: 'type'
                         },
                         {
-                            title: '金额',
+                            title: '金额(元)',
                             key: 'money'
                         },
                         {
@@ -75,7 +75,7 @@
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                        data: ['钱包','支付宝','微信','现金','银联','其他']
+                        data: ['停车王钱包','支付宝','微信','现金','银联','其他']
                     },
                     series : [
                         {
@@ -95,7 +95,7 @@
                     ]
                 });               
             },
-            //图标显示数据处理
+            //图表显示数据处理
             handlePieData(res) {
                 let extract = function(item,res) {
                     if(res.length!=0){
@@ -117,7 +117,7 @@
                 }
 
                 let pieData = [
-                    {value:add(extract('wallet',res)), name:'钱包'},
+                    {value:add(extract('wallet',res)), name:'停车王钱包'},
                     {value:add(extract('alipay',res)), name:'支付宝'},
                     {value:add(extract('weixin',res)), name:'微信'},
                     {value:add(extract('cash',res)), name:'现金'},
@@ -135,34 +135,34 @@
                 let sum = this.getSum(arr)
                 this.tableShowData.data =[
                     {
-                        type: '钱包',
-                        money: data[0].value,
-                        ratio : (!isNaN(data[0].value/sum))? (data[0].value/sum).toFixed(2):0
+                        type: '停车王钱包',
+                        money: `￥${(data[0].value/100).toFixed(2)}`,
+                        ratio : (!isNaN(data[0].value/sum))? `${(data[0].value/sum*100).toFixed(2)}%`:0
                     },
                     {
                         type: '支付宝',
-                        money: data[1].value,
-                        ratio : (!isNaN(data[1].value/sum))? (data[1].value/sum).toFixed(2):0
+                        money: `￥${(data[1].value/100).toFixed(2)}`,
+                        ratio : (!isNaN(data[1].value/sum))? `${(data[1].value/sum*100).toFixed(2)}%`:0
                     },
                     {
                         type: '微信',
-                        money: data[2].value,
-                        ratio : (!isNaN(data[2].value/sum))? (data[2].value/sum).toFixed(2):0
+                        money: `￥${(data[2].value/100).toFixed(2)}`,
+                        ratio : (!isNaN(data[2].value/sum))? `${(data[2].value/sum*100).toFixed(2)}%`:0
                     },
                     {
                         type: '现金',
-                        money: data[3].value,
-                        ratio : (!isNaN(data[3].value/sum))? (data[3].value/sum).toFixed(2):0
+                        money: `￥${(data[3].value/100).toFixed(2)}`,
+                        ratio : (!isNaN(data[3].value/sum))? `${(data[3].value/sum*100).toFixed(2)}%`:0
                     },
                     {
                         type: '银联',
-                        money: data[4].value,
-                        ratio : (!isNaN(data[4].value/sum))? (data[4].value/sum).toFixed(2):0
+                        money: `￥${(data[4].value/100).toFixed(2)}`,
+                        ratio : (!isNaN(data[4].value/sum))? `${(data[4].value/sum*100).toFixed(2)}%`:0
                     },   
                     {
                         type: '其他',
-                        money: data[5].value,
-                        ratio : (!isNaN(data[5].value/sum))? (data[5].value/sum).toFixed(2):0
+                        money: `￥${(data[5].value/100).toFixed(2)}`,
+                        ratio : (!isNaN(data[5].value/sum))? `${(data[5].value/sum*100).toFixed(2)}%`:0
                     },                       
                 ] 
             },

@@ -26,8 +26,8 @@
             }
         },
         computed: {
-            isShowPanel: function() {
-                return this.$route.path==='/realTimeData'?true:false;
+            csvName: function() {
+                return this.$route.name;
             },
             ...mapState({
                 parkDetailData: 'parkDetailData',
@@ -46,7 +46,7 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: '数据'
+                    filename: this.csvName
                 });
             },
             handleTableData(res) {
@@ -54,14 +54,14 @@
                 for(let item in tableShowData) {
                     let raw = {
                         date:tableShowData[item].date,
-                        ins:tableShowData[item].ins,
-                        outs:tableShowData[item].outs,
+                        dedup_ins:tableShowData[item].dedup_ins,
+                        dedup_outs:tableShowData[item].dedup_outs,
                         pass_nights:tableShowData[item].pass_nights,
-                        maxRatio:tableShowData[item].space_ratio_max,
-                        minRatio:tableShowData[item].space_ratio_min,
-                        space_ratio:tableShowData[item].space_ratio,
+                        maxRatio:`${(tableShowData[item].space_ratio_max).toFixed(2)}%`,
+                        minRatio:`${(tableShowData[item].space_ratio_min).toFixed(2)}%`,
+                        space_ratio:`${(tableShowData[item].space_ratio).toFixed(2)}%`,
                         averageTime:this.isInvaild(tableShowData[item].parking_duration/tableShowData[item].finish/60),
-                        inOutPerhour:this.isInvaild(tableShowData[item].dedup_finish/24),
+                        inOutPerhour:this.isInvaild((tableShowData[item].dedup_ins+tableShowData[item].dedup_outs)/24),
                         increased:tableShowData[item].new,
                     }
                     rowData.push(raw);
@@ -69,7 +69,7 @@
                 this.parkDetailTable.data = rowData;
             },
             isInvaild(val) {
-                if(isNaN(val)) {
+                if(!isFinite(val)) {
                     return '0'
                 }
                 return val.toFixed(2)

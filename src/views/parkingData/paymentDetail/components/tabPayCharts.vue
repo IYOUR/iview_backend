@@ -130,7 +130,7 @@
                     return chartLine.map((ele)=> {
                         switch (type) {
                             case 'money':
-                                return ele[item[1]] || 0;
+                                return this.isInvaild(ele[item[1]]/100);
                                 break;   
                             case 'times':
                                 return ele[`${item[1]}_s`] || 0;
@@ -147,7 +147,7 @@
                     return chartLine.map((ele)=> {
                         switch (type) {
                             case 'money':
-                                return ele[item[1]] || 0;
+                                return this.isInvaild(ele[item[1]]/100);
                                 break;   
                             case 'times':
                                 return ele[`${item[1]}_s`] || 0;
@@ -160,7 +160,13 @@
                         }
                     });
                 }
-            }
+            },
+            isInvaild(val) {
+                if(!isFinite(val) || !val) {
+                    return "0.00"
+                }
+                return val.toFixed(2)
+            }               
         }
     }
 </script>

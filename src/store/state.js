@@ -124,48 +124,42 @@ export default {
     currentPageName: '',
     realTimeTabs:{
         tabOption:[
-            {label:'实时进车次数',id:'currentIns',hint:'截止当前时间点，当日进车总次数'}, 
-            {label:'实时出车次数',id:'currentOuts',hint:'截止当前时间点，当日出车总次数'},
-            {label:'实时停数放量',id:'currentInparks',hint:'当前时间点，在停车辆总数'},
-            {label:'实时车位使用率',id:'currentRatio',hint:'当前时间点，在停车辆总数/车位数量'},
-            {label:'实时收入',id:'currentCharge',hint:'截止当前时间点，当日总收入金额'},
-            {label:'实时新增车辆数',id:'currentAdd',hint:'截止当前时间点，首次使用艾润停车服务的总车辆数'},
+            {label:'实时进车次数',id:'currentIns',hint:'截止当前时间点进车次数'}, 
+            {label:'实时出车次数',id:'currentOuts',hint:'截止当前时间点出车次数'},
+            {label:'实时停放数量',id:'currentInparks',hint:'截止当前时间点在停车辆数'},
+            {label:'实时车位使用率',id:'currentRatio',hint:'截止当前时间点在停车辆总数/车位数量'},
+            {label:'实时收入',id:'currentCharge',hint:'截止当前时间点收入金额'},
+            {label:'实时新增车辆数',id:'currentAdd',hint:'截止当前时间点首次使用艾润停车服务的车辆数'},
         ],
         tabChartsData:{}
     },   
     realTimeSituation: [
         {
-            title:'实时进车次数',
+            title:'实时进车总次数',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
-            title:'实时出车次数',
+            title:'实时出车总次数',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
-            title:'实时完成停车数',
+            title:'实时停放数量',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
-            title:'实时停数放量',
+            title:'实时总收入(元)',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
 
         },
         {
-            title:'实时收入(元)',
-            num: '00000',
-            lastDay:['00',{val:'00',state:'no',icon:''}],	
-
-        },
-        {
-            title:'实时新增车辆数',
+            title:'实时新增总车辆数',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],
         }	        	        															
@@ -211,10 +205,10 @@ export default {
     },
     parkDetailTabs:{
         tabOption:[
-            {label:'进场车数量',id:'ins',hint:'按天统计进场车辆总数（去重）'},
-            {label:'进场车次数',id:'dedup_ins',hint:'按天统计进场车辆总次数'},
-            {label:'出场车数量',id:'outs',hint:'按天统计出场车辆总数（去重）'},
-            {label:'出场车次数',id:'dedup_outs',hint:'按天统计出场车辆总次数'},
+            {label:'进场车数量',id:'dedup_ins',hint:'按天统计进场车辆总数（去重）'},
+            {label:'进场车次数',id:'ins',hint:'按天统计进场车辆总次数'},
+            {label:'出场车数量',id:'dedup_outs',hint:'按天统计出场车辆总数（去重）'},
+            {label:'出场车次数',id:'outs',hint:'按天统计出场车辆总次数'},
             {label:'过夜车数量',id:'pass_nights',hint:'当天进入停车场，但是在0点之前未出场的车辆总数'},
             {label:'车位使用率',id:'space_ratio',hint:'当天实时车位使用率的平均值'},
             {label:'平均停车时长',id:'parking_duration',hint:'按天统计停车场内所有完成停车车辆在停车场所停的平均时间'},
@@ -231,11 +225,11 @@ export default {
             },
             {
                 title: '进场车数量',
-                key: 'ins'
+                key: 'dedup_ins'
             },
             {
                 title: '出场车数量',
-                key: 'outs'
+                key: 'dedup_outs'
             },
             {
                 title: '过夜车数量',

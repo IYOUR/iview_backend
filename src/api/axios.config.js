@@ -12,6 +12,7 @@ import {LoadingBar,Message} from 'iview';
 // axios.PARK_API = process.env.NODE_ENV === 'production' ? 'http://180.97.80.42:8788/api/' : 'api/';
 //axios.PARK_API = 'http://180.97.81.222:8788/api/';
 axios.PARK_API ='api/';
+var iTime;
 //请求拦截器
 axios.interceptors.request.use(config => {
         //LoadingBar.start();
@@ -35,17 +36,6 @@ axios.interceptors.request.use(config => {
             config.params = config.params || {};
             return config;
         }
-
-        if (method === 'options') {
-            if(config.url.indexOf('api')>=0) {
-                LoadingBar.start();
-            }            
-          // 判断是否存在token，如果存在的话，则每个http header都加上token
-            config.headers.token = sessionStorage.getItem('token');
-            config.params = config.params || {};
-            return config;
-        }
-
         return config;
     },
     error => {
@@ -57,25 +47,31 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(response => {
         if(response.config.url.indexOf('api')>=0) {
             LoadingBar.finish();
-        }   
-        // if (CONSTANT.HTTP_STATUS.VALID_TOKEN.CODE === response.status) {
-        //     Storage.removeAll();
-        //     router.replace({name: 'login', query: {redirect: router.currentRoute.fullPath}});
-        //     response.data.message = CONSTANT.HTTP_STATUS.VALID_TOKEN.MSG;
-        // }
+        }
+
         return response;
     },
     error => {
         LoadingBar.finish();
+
         if (error.response.status == '401') {
             router.replace({name: 'login'})
-            Message.error('登录已过期，请重新登录!');  
-            return;   
-        }         
+            //消息防抖
+            clearTimeout(iTime);
+            iTime = setTimeout(function () {
+                Message.error('登录已过期，请重新登录!')
+            }, 300); 
+            return Promise.reject(error)
+        }    
+        //消息防抖
+        clearTimeout(iTime);
+        iTime = setTimeout(function () {
+            Message.error('服务器开小差了，请重稍后再试!')
+        }, 300);
+
         return Promise.reject(error)
     }
 );
-
 
 //参数处理
 function processParam(params) {
@@ -87,3 +83,4 @@ function processParam(params) {
     });
     return params;
 }
+

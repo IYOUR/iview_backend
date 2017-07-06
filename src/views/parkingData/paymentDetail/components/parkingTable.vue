@@ -26,8 +26,8 @@
             }
         },
         computed: {
-            isShowPanel: function() {
-                return this.$route.path==='/realTimeData'?true:false;
+            csvName: function() {
+                return this.$route.name;
             },
             ...mapState({
                 paymentDetailData: 'paymentDetailData',
@@ -46,7 +46,7 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: '数据'
+                    filename: this.csvName
                 });
             },
             handleTableData(res) {
@@ -55,22 +55,30 @@
                 for(let item in tableShowData) {
                     let raw = {
                         date:tableShowData[item].date,
-                        charge:this.isInvaild(tableShowData[item].charge/100),
-                        eachTimesPay:this.isInvaild(tableShowData[item].charge/tableShowData[item].finish/100),
-                        eachCarPay:this.isInvaild(tableShowData[item].charge/tableShowData[item].dedup_finish/100),
-                        spaceWorth:this.isInvaild(tableShowData[item].charge/tableShowData[item].space/100),
-                        averageTime:this.isInvaild(tableShowData[item].parking_duration/tableShowData[item].finish/60),
-                        inOutPerhour:this.isInvaild((tableShowData[item].ins+tableShowData[item].outs)/24),
+                        charge:this.isInvaild(tableShowData[item].charge/100,'charge'),
+                        eachTimesPay:this.isInvaild(tableShowData[item].charge/tableShowData[item].finish/100,'charge'),
+                        eachCarPay:this.isInvaild(tableShowData[item].charge/tableShowData[item].dedup_finish/100,'charge'),
+                        spaceWorth:this.isInvaild(tableShowData[item].charge/tableShowData[item].space/100,'charge'),
+                        averageTime:this.isInvaild(tableShowData[item].parking_duration/tableShowData[item].finish/60,'finish'),
+                        inOutPerhour:this.isInvaild((tableShowData[item].ins+tableShowData[item].outs)/24,'outs'),
                     }
                     rowData.push(raw);
                 }
                 this.paymentDetailTable.data = rowData;
             },
-            isInvaild(val) {
-                if(isNaN(val)) {
-                    return '0'
+            isInvaild(val,type) {
+                if(type == 'charge') {
+                    if(!isFinite(val)) {
+                        return '￥0.00'
+                    }
+                    return `￥${val.toFixed(2) }`               
                 }
-                return val.toFixed(2)
+                else {
+                    if(!isFinite(val)) {
+                        return '0'
+                    }
+                    return val.toFixed(2)         
+                }
             }                                
         }        
     }

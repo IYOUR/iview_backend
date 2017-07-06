@@ -49,13 +49,13 @@
         data (){
             return {
                 chartLine: {
-                    ins:{val:null,data:['date','ins'],name:'进场车数量'},
-                    dedup_ins:{val:null,data:['date','dedup_ins'],name:'进场车次数'},
-                    outs:{val:null,data:['date','outs'],name:'出场车数量'},
-                    dedup_outs:{val:null,data:['date','dedup_outs'],name:'出场车次数'},
+                    dedup_ins:{val:null,data:['date','dedup_ins'],name:'进场车数量'},
+                    ins:{val:null,data:['date','ins'],name:'进场车次数'},
+                    dedup_outs:{val:null,data:['date','dedup_outs'],name:'出场车数量'},
+                    outs:{val:null,data:['date','outs'],name:'出场车次数'},
                     pass_nights:{val:null,data:['date','pass_nights'],name:'过夜车数量'},
-                    space_ratio:{val:null,data:['date','space_ratio'],name:'车位使用率'},
-                    parking_duration:{val:null,data:['date','parking_duration'],name:'平均停车时长'},
+                    space_ratio:{val:null,data:['date','space_ratio'],name:'车位使用率(%)'},
+                    parking_duration:{val:null,data:['date','parking_duration'],name:'平均停车时长(分钟)'},
                     outsHour:{val:null,data:['date','outsHour'],name:'单位小时进出车辆数'},
                     increased:{val:null,data:['date','new'],name:'新增车辆数'}
                 },
@@ -135,18 +135,30 @@
                             return (ele.charge/100).toFixed(2);
 							break;   
  						case 'outsHour':
-                            return (ele.dedup_finish/24/100).toFixed(2);
+                            return ((ele.dedup_outs+ele.dedup_ins)/24).toFixed(2);
 							break;  
  						case 'increased':
                             return ele.ins;
 							break; 
  						case 'date':
                             return DateFormat.format(DateFormat.formatToDate (ele.date), 'yyyy-MM-dd');
-							break;                                                                                                            
+							break;    
+ 						case 'parking_duration': 
+                            return this.isInvaild(ele.parking_duration/ele.finish/60)
+							break;       
+ 						case 'space_ratio':
+                            return (ele.space_ratio).toFixed(2);
+							break;                                                                                                                                                             
                     }
                     return ele[item[1]];
                 });
-            }
+            },
+            isInvaild(val) {
+                if(!isFinite(val)) {
+                    return '0'
+                }
+                return val.toFixed(2)
+            }                
         }
     }
 </script>
