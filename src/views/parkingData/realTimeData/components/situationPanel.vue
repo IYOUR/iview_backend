@@ -107,7 +107,7 @@
                 if (item === 'charge'){
                     let toDay,lastDay;
                     toDay = (res.toDay.data.length>0) ? (this.counter(res.toDay.data,item)/100).toFixed(2):'暂无';
-                    lastDay =  (res.lastDay.data.length>=res.toDay.data.length) ? (this.counter(res.lastDay.data,item)/100).toFixed(2):'暂无';
+                    lastDay =  (res.toDay.data.length>0 && res.lastDay.data.length>=res.toDay.data.length) ? (this.counter(res.lastDay.data,item)/100).toFixed(2):'暂无';
                     
                     array[index].num = isNaN(toDay)?toDay:`￥${toDay}`;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];	
@@ -116,7 +116,7 @@
                     let toDay,lastDay;
                     
                     toDay = (res.toDay.data.length>0) ? this.counter(res.toDay.data,item):'暂无';
-                    lastDay =  (res.lastDay.data.length>=res.toDay.data.length) ? this.counter(res.lastDay.data,item):'暂无';
+                    lastDay =  (res.toDay.data.length>0 && res.lastDay.data.length>=res.toDay.data.length) ? this.counter(res.lastDay.data,item):'暂无';
 
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
@@ -124,7 +124,7 @@
                 else if (item === 'in_parks') {
                     let toDay,lastDay;
                     toDay = (res.toDay.data.length>0) ? res.toDay.data[res.toDay.data.length-1][item]:'暂无';
-                    lastDay =  (res.lastDay.data.length>=res.toDay.data.length) ? res.lastDay.data[res.toDay.data.length-1][item]:'暂无';
+                    lastDay =  (res.toDay.data.length>0 && res.lastDay.data.length>=res.toDay.data.length) ? res.lastDay.data[res.toDay.data.length-1][item]:'暂无';
                     
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
@@ -132,7 +132,7 @@
                 else{
                     let toDay,lastDay;
                     toDay = (res.toDay.data.length>0) ? this.counter(res.toDay.data,item):'暂无';
-                    lastDay =  (res.lastDay.data.length>=res.toDay.data.length) ? this.counter(res.lastDay.data,item):'暂无';
+                    lastDay =  (res.toDay.data.length>0 && res.lastDay.data.length>=res.toDay.data.length) ? this.counter(res.lastDay.data,item):'暂无';
                     
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];

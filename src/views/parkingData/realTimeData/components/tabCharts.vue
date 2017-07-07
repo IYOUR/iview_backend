@@ -130,6 +130,10 @@
                         },
                         xAxis: {
                             type: 'category',
+                            axisLabel:{
+                                interval:0,
+                                 rotate:45,
+                            },
                             boundaryGap: false,
                             data: this.filterChartData(['date','date'],res)
                         },

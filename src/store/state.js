@@ -124,12 +124,12 @@ export default {
     currentPageName: '',
     realTimeTabs:{
         tabOption:[
-            {label:'实时进车次数',id:'currentIns',hint:'截止当前时间点进车次数'}, 
-            {label:'实时出车次数',id:'currentOuts',hint:'截止当前时间点出车次数'},
-            {label:'实时停放数量',id:'currentInparks',hint:'截止当前时间点在停车辆数'},
-            {label:'实时车位使用率',id:'currentRatio',hint:'截止当前时间点在停车辆总数/车位数量'},
-            {label:'实时收入',id:'currentCharge',hint:'截止当前时间点收入金额'},
-            {label:'实时新增车辆数',id:'currentAdd',hint:'截止当前时间点首次使用艾润停车服务的车辆数'},
+            {label:'实时进车次数',id:'currentIns',hint:'截止当前时间点，实时进车次数'}, 
+            {label:'实时出车次数',id:'currentOuts',hint:'截止当前时间点，实时出车次数'},
+            {label:'实时停放数量',id:'currentInparks',hint:'当前时间点，实时停车数量'},
+            {label:'实时车位使用率',id:'currentRatio',hint:'当前时间点，在停车辆总数/车位数量'},
+            {label:'实时收入',id:'currentCharge',hint:'截止当前时间点，实时收入金额'},
+            {label:'实时新增车辆数',id:'currentAdd',hint:'截止当前时间点，首次使用艾润停车服务的总车辆数'},
         ],
         tabChartsData:{}
     },   

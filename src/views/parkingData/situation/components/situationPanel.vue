@@ -126,13 +126,17 @@
                 })
             },
             //处理返回数据
-            handleResultData(index,array,res,item) {				
+            handleResultData(index,array,res,item) {	
+                let defaultDay,lastDay,lastWeek,lastMonth,
+                    defaultDayLength=res.defaultDay.data.length,
+                    lastDayLength=res.lastDay.data.length,
+                    lastWeekLength=res.lastWeek.data.length,
+                    lastMonthLength=res.lastMonth.data.length;              			
                 if (item === 'charge'){
-                    let defaultDay,lastDay,lastWeek,lastMonth,num=res.defaultDay.data.length-1;
-                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[num][item]/100):'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? this.isInvaild(res.lastDay.data[num][item]/100):'暂无';
-                    lastWeek =  (res.lastWeek.data.length>0) ? this.isInvaild(res.lastWeek.data[num][item]/100):'暂无';
-                    lastMonth =  (res.lastMonth.data.length>0) ? this.isInvaild(res.lastMonth.data[num][item]/100):'暂无';
+                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[defaultDayLength-1][item]/100):'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? this.isInvaild(res.lastDay.data[lastDayLength-1][item]/100):'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? this.isInvaild(res.lastWeek.data[lastWeekLength-1][item]/100):'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? this.isInvaild(res.lastMonth.data[lastMonthLength-1][item]/100):'暂无';
 
                     array[index].num = isNaN(defaultDay)?defaultDay:`￥${defaultDay}`;
                     array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
@@ -140,11 +144,10 @@
                     array[index].lastMonth = [lastMonth,this.checkResultData(defaultDay,lastMonth)];			
                 }
                 else if (item === 'average') {
-                    let defaultDay,lastDay,lastWeek,lastMonth,num=res.defaultDay.data.length-1;
-                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[num].charge/res.defaultDay.data[num].dedup_finish/100):'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? this.isInvaild(res.lastDay.data[num].charge/res.lastDay.data[num].dedup_finish/100):'暂无';
-                    lastWeek =  (res.lastWeek.data.length>0) ? this.isInvaild(res.lastWeek.data[num].charge/res.lastWeek.data[num].dedup_finish/100):'暂无';
-                    lastMonth =  (res.lastMonth.data.length>0) ? this.isInvaild(res.lastMonth.data[num].charge/res.lastMonth.data[num].dedup_finish/100):'暂无';
+                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[defaultDayLength-1].charge/res.defaultDay.data[defaultDayLength-1].dedup_finish/100):'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? this.isInvaild(res.lastDay.data[lastDayLength-1].charge/res.lastDay.data[lastDayLength-1].dedup_finish/100):'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? this.isInvaild(res.lastWeek.data[lastWeekLength-1].charge/res.lastWeek.data[lastWeekLength-1].dedup_finish/100):'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? this.isInvaild(res.lastMonth.data[lastMonthLength-1].charge/res.lastMonth.data[lastMonthLength-1].dedup_finish/100):'暂无';
                     
                     array[index].num = isNaN(defaultDay)?defaultDay:`￥${defaultDay}`;
                     array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
@@ -152,11 +155,10 @@
                     array[index].lastMonth = [lastMonth,this.checkResultData(defaultDay,lastMonth)];
                 }
                 else{
-                    let defaultDay,lastDay,lastWeek,lastMonth,num=res.defaultDay.data.length-1;
-                    defaultDay = (res.defaultDay.data.length>0) ? res.defaultDay.data[num][item]:'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? res.lastDay.data[num][item]:'暂无';
-                    lastWeek =  (res.lastWeek.data.length>0) ? res.lastWeek.data[num][item]:'暂无';
-                    lastMonth =  (res.lastMonth.data.length>0) ? res.lastMonth.data[num][item]:'暂无';
+                    defaultDay = defaultDayLength>0 ? res.defaultDay.data[defaultDayLength-1][item]:'暂无';
+                    lastDay = lastDayLength>0 ? res.lastDay.data[lastDayLength-1][item]:'暂无';
+                    lastWeek = lastWeekLength>0 ? res.lastWeek.data[lastWeekLength-1][item]:'暂无';
+                    lastMonth = lastMonthLength>0 ? res.lastMonth.data[lastMonthLength-1][item]:'暂无';
 
                     array[index].num = defaultDay;
                     array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];

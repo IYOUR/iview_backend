@@ -184,8 +184,8 @@
 							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -2), 'yyyy-MM-dd');
 							break;
 						case 'lastWeek':
-							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
-							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
+							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -7), 'yyyy-MM-dd');
+							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -7), 'yyyy-MM-dd');
 							break;
 						case 'lastMonth':
 							request.param.sdate = DateFormat.format(DateFormat.addMonth(new Date(), -1), 'yyyy-MM-dd');
@@ -193,7 +193,7 @@
 							break;
 						//过去的一周时间内	
 						case 'pastWeek':
-							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -8), 'yyyy-MM-dd');
+							request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -7), 'yyyy-MM-dd');
 							request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
 							break;							
 					}						

@@ -49,11 +49,11 @@
         data (){
             return {
                 chartLine: {
-                    charge:{val:null,data:['date','charge'],name:'总收入'},
-                    eachTimesPay:{val:null,data:['date','eachTimesPay'],name:'平均每次付费'},
-                    eachCarPay:{val:null,data:['date','eachCarPay'],name:'平均每车付费'},
+                    charge:{val:null,data:['date','charge'],name:'总收入(元)'},
+                    eachTimesPay:{val:null,data:['date','eachTimesPay'],name:'平均每次付费(元)'},
+                    eachCarPay:{val:null,data:['date','eachCarPay'],name:'平均每车付费(元)'},
                     // notPay:{val:null,data:['date','notPay'],name:'未支付用户比'},
-                    spaceWorth:{val:null,data:['date','spaceWorth'],name:'车位平均价值'}
+                    spaceWorth:{val:null,data:['date','spaceWorth'],name:'车位平均价值(元)'}
                 },
             }
         },  
@@ -129,22 +129,16 @@
                 return chartLine.map((ele)=> {
                     switch (item[1]) {
  						case 'charge':
-                            return (ele.charge/100).toFixed(2);
+                            return this.isInvaild(ele.charge/100);
 							break;   
  						case 'eachCarPay':
-                            return (ele.charge/ele.dedup_finish/100).toFixed(2);
+                            return this.isInvaild(ele.charge/ele.dedup_finish/100);
 							break;  
  						case 'eachTimesPay':
-                            return (ele.charge/ele.finish/100).toFixed(2);
-							break; 
- 						case 'eachFinish':
-                            return ele.ins;
-							break;  
- 						case 'notPay':
-                            return ele.ins;
-							break;     
+                            return this.isInvaild(ele.charge/ele.finish/100);
+							break;   
  						case 'spaceWorth':
-                            return (ele.charge/ele.space/100).toFixed(2);
+                            return this.isInvaild(ele.charge/ele.space/100);
 							break;                                                       
  						case 'date':
                             return ele.date;
@@ -152,7 +146,13 @@
                     }
                     return ele[item[1]];
                 });
-            }
+            },
+            isInvaild(val) {
+                if(!isFinite(val) || !val) {
+                    return "0.00"
+                }
+                return val.toFixed(2)
+            }             
         }
     }
 </script>

@@ -1,5 +1,6 @@
 <style scoped>
     .tableButton{
+        margin-top: 15px;
         margin-bottom: 15px;
     }
 </style>
@@ -18,7 +19,7 @@
 	</div>
 </template>
 <script>
-	import {mapState, mapActions, mapGetters} from 'vuex';
+	import {mapState, mapActions} from 'vuex';
     import DateFormat from '../../../../commons/utils/formatDate.js';
     export default {
         data (){
@@ -33,7 +34,7 @@
             ...mapState({
                 currentResult: 'currentResult',
                 realTimeTable: 'realTimeTable'
-            }),	                       
+            }),	                                   
         }, 
         watch: {
             'currentResult':{
@@ -53,7 +54,7 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: this.csvName
+                    filename: `${this.csvName}()`
                 });
             },
             handleTableData(res) {

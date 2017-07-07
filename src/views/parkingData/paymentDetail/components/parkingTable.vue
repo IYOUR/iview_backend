@@ -32,7 +32,10 @@
             ...mapState({
                 paymentDetailData: 'paymentDetailData',
                 paymentDetailTable: 'paymentDetailTable'
-            }),	                       
+            }),	  
+            ...mapGetters({
+                exportDate: 'exportCSVdate'
+            })                                    
         }, 
         watch: {
             'paymentDetailData':{
@@ -46,7 +49,7 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: this.csvName
+                    filename: `${this.csvName}(${this.exportDate})`
                 });
             },
             handleTableData(res) {

@@ -180,6 +180,10 @@
 					case 'lastDay':
 						request.param.date = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
 						break;
+					case 'pastWeek':
+						request.param.sdate = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
+						request.param.edate = DateFormat.format(DateFormat.addDay(new Date(), -1), 'yyyy-MM-dd');
+						break;						
 				}
 
 				if (queryParam.park_code.length !== 0) {
@@ -205,6 +209,7 @@
 				let param = {
 					toDay: this.paramsProcess('toDay'),
 					lastDay: this.paramsProcess('lastDay'),
+					pastWeek: this.paramsProcess('pastWeek'),
 					}
 				return param;
 			},				
