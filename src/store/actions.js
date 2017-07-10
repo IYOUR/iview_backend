@@ -133,9 +133,9 @@ export default {
 			});
 		};   
         axios.all([
-           sendQueryResult({name: 'ins',val:params.ins}), 
+           sendQueryResult({name: 'finish',val:params.finish}), 
            sendQueryResult({name: 'space_ratio',val:params.space_ratio}),
-           sendQueryResult({name: 'finish',val:params.finsh}),
+           sendQueryResult({name: 'ins_outs',val:params.ins_outs}),
            sendQueryResult({name: 'charge',val:params.charge}),
            sendQueryResult({name: 'charge_by_space',val:params.charge_by_space}),                                 
         ]).then(axios.spread((acct, perms) => {

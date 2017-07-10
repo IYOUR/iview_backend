@@ -135,7 +135,7 @@
                             return (ele.charge/100).toFixed(2);
 							break;   
  						case 'outsHour':
-                            return ((ele.dedup_outs+ele.dedup_ins)/24).toFixed(2);
+                            return ((ele.outs+ele.ins)/24).toFixed(2);
 							break;  
  						case 'increased':
                             return ele.ins;

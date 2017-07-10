@@ -172,9 +172,9 @@ export default {
 		//包装请求数据
 		packQueryParams(param) {
 			return {
-				ins: this.paramsProcess(param,'ins'),
+				finish: this.paramsProcess(param,'finish'),
 				space_ratio: this.paramsProcess(param,'space_ratio'),
-				finsh: this.paramsProcess(param,'finish'),
+				ins_outs: this.paramsProcess(param,'ins_outs'),
 				charge: this.paramsProcess(param,'charge'),
 				charge_by_space: this.paramsProcess(param,'charge_by_space'),								
 			};
@@ -185,13 +185,13 @@ export default {
 			request.param.sdate = queryParam.param.sdate;
 			request.param.edate = queryParam.param.edate;
 			switch (type) {
-				case 'ins':
+				case 'finish':
 					request.param.type = type;
 					break;	
 				case 'space_ratio':
 					request.param.type = type
 					break;	
-				case 'finish':
+				case 'ins_outs':
 					request.param.type = type;
 					break;		
 				case 'charge':

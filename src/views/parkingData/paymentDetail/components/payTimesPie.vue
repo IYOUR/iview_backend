@@ -79,7 +79,7 @@
                     },
                     series : [
                         {
-                            name: '支付渠道笔数分布',
+                            name: '支付渠道笔数分布(笔)',
                             type: 'pie',
                             radius : '55%',
                             center: ['50%', '60%'],

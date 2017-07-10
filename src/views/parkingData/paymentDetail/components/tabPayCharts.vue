@@ -42,12 +42,12 @@
         data (){     
             return {
                 chartLine: {
-                    weixin:{val:null,data:['date','weixin'],name:['微信支付金额','微信支付次数']},
-                    alipay:{val:null,data:['date','alipay'],name:['支付宝支付金额','支付宝支付次数']},
-                    uniopay:{val:null,data:['date','uniopay'],name:['银联支付金额','银联支付次数']},
-                    cash:{val:null,data:['date','cash'],name:['现金支付金额','现金支付次数']},
-                    wallet:{val:null,data:['date','wallet'],name:['停车王钱包支付金额','停车王钱包支付次数']},
-                    unkown:{val:null,data:['date','unkown'],name:['其他支付金额','其他支付次数']},
+                    weixin:{val:null,data:['date','weixin'],name:['微信支付金额(元)','微信支付次数']},
+                    alipay:{val:null,data:['date','alipay'],name:['支付宝支付金额(元)','支付宝支付次数']},
+                    uniopay:{val:null,data:['date','uniopay'],name:['银联支付金额(元)','银联支付次数']},
+                    cash:{val:null,data:['date','cash'],name:['现金支付金额(元)','现金支付次数']},
+                    wallet:{val:null,data:['date','wallet'],name:['停车王钱包支付金额(元)','停车王钱包支付次数']},
+                    unkown:{val:null,data:['date','unkown'],name:['其他支付金额(元)','其他支付次数']},
                 },
             }
         },  
@@ -103,21 +103,33 @@
                             boundaryGap: false,
                             data: this.filterChartData(['date','date'],'date')
                         },
-                        yAxis: {
-                            type: 'value'
-                        },
+                        yAxis: [
+                            {  
+                                type: 'value',  
+                                position:'left',   
+                            },  
+                            {  
+                                type: 'value', 
+                                splitLine:{ 
+                                    show:false 
+                                },                                  
+                                position:'right',  
+                            },  
+                        ],
                         series: [
                             {
                                 name:this.chartLine[item].name[0],
                                 type:'line',
                                 stack: this.chartLine[item].name[0],
-                                data:this.filterChartData(this.chartLine[item].data,'money')
+                                data:this.filterChartData(this.chartLine[item].data,'money'),
+                                yAxisIndex:0, 
                             },
                             {
                                 name:this.chartLine[item].name[1],
                                 type:'line',
-                                stack: this.chartLine[item].name[0],
-                                data:this.filterChartData(this.chartLine[item].data,'times')
+                                stack: this.chartLine[item].name[1],
+                                data:this.filterChartData(this.chartLine[item].data,'times'),
+                                yAxisIndex:1, 
                             }                            
                         ]
                     });

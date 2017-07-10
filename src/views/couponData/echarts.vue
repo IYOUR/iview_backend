@@ -94,50 +94,63 @@
             });
 
             this.chartLine.setOption({
-                title: {
-                    text: 'Line Chart'
-                },
-                tooltip: {
-                    trigger: 'axis'
-                },
-                legend: {
-                    data:['邮件营销','联盟广告','搜索引擎']
-                },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
-                },
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: false,
-                    data: ['周一','周二','周三','周四','周五','周六','周日']
-                },
-                yAxis: {
-                    type: 'value'
-                },
-                series: [
-                    {
-                        name:'邮件营销',
-                        type:'line',
-                        stack: '总量',
-                        data:[120, 132, 101, 134, 90, 230, 210]
-                    },
-                    {
-                        name:'联盟广告',
-                        type:'line',
-                        stack: '总量',
-                        data:[220, 182, 191, 234, 290, 330, 310]
-                    },
-                    {
-                        name:'搜索引擎',
-                        type:'line',
-                        stack: '总量',
-                        data:[820, 932, 901, 934, 1290, 1330, 1320]
-                    }
-                ]
-            });
+                title: {  
+                    text: 'Step Line'  
+                },  
+                tooltip: {  
+                    trigger: 'axis'  
+                },  
+                legend: {  
+                    x: 'right',  
+                    data:['NO1','NO2','NO3','NO4'],  
+                    textStyle:{  
+                        color:"#FFFFFF",  
+                        fontsize:5  
+                    }  
+                },  
+                grid: {  
+                    left: '3%',  
+                    right: '4%',  
+                    bottom: '3%',  
+                    containLabel: true  
+                },  
+                toolbox: {  
+                    feature: {  
+                        saveAsImage: {}  
+                    }  
+                },  
+                xAxis: {  
+                    type: 'category',  
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']  
+                },  
+                yAxis: [   
+                    {  
+                        type: 'value',  
+                        splitNumber:5, 
+                        position:'left',   
+                    },  
+                    {  
+                        type: 'value',  
+                        splitNumber:5, 
+                        splitLine:{ 
+                            show:false 
+                        },
+                        position:'right',  
+                    },  
+                ],  
+                series: [ 
+                    {   
+                        type:'line', 
+                        data:[30, 28, 20, 23, 29, 43, 41],  
+                        yAxisIndex:0,  
+                    },  
+                    {  
+                        type:'line',  
+                        data:[450, 432, 401, 454, 590, 530, 510],  
+                        yAxisIndex:1,  
+                    }  
+                ]  
+            });  
 
             this.chartPie.setOption({
                 title : {

@@ -79,7 +79,7 @@
                     },
                     series : [
                         {
-                            name: '支付渠道金额分布',
+                            name: '支付渠道金额分布(元)',
                             type: 'pie',
                             radius : '55%',
                             center: ['50%', '60%'],

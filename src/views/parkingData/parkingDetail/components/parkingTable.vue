@@ -64,7 +64,7 @@
                         minRatio:`${(tableShowData[item].space_ratio_min).toFixed(2)}%`,
                         space_ratio:`${(tableShowData[item].space_ratio).toFixed(2)}%`,
                         averageTime:this.isInvaild(tableShowData[item].parking_duration/tableShowData[item].finish/60),
-                        inOutPerhour:this.isInvaild((tableShowData[item].dedup_ins+tableShowData[item].dedup_outs)/24),
+                        inOutPerhour:this.isInvaild((tableShowData[item].ins+tableShowData[item].outs)/24),
                         increased:tableShowData[item].new,
                     }
                     rowData.push(raw);

@@ -90,7 +90,7 @@ export default {
 			rankTable: [
 				{
 					title: '停车车辆排行',
-					name: 'finish',
+					name: 'ins_outs',
 					columns: [
 						{
 							title: '名次',
@@ -136,7 +136,7 @@ export default {
 				},
 				{
 					title: '单位时间内进出车数量排行',
-					name: 'ins',
+					name: 'finish',
 					columns: [
 						{
 							title: '名次',
@@ -188,9 +188,9 @@ export default {
 		//包装请求数据
 		packQueryParams(param) {
 			return {
-				ins: this.paramsProcess(param,'ins'),
+				finish: this.paramsProcess(param,'finish'),
 				space_ratio: this.paramsProcess(param,'space_ratio'),
-				finsh: this.paramsProcess(param,'finish'),
+				ins_outs: this.paramsProcess(param,'ins_outs'),
 				charge: this.paramsProcess(param,'charge'),
 				charge_by_space: this.paramsProcess(param,'charge_by_space'),								
 			};
@@ -201,13 +201,13 @@ export default {
 			request.param.sdate = queryParam.param.sdate;
 			request.param.edate = queryParam.param.edate;
 			switch (type) {
-				case 'ins':
+				case 'finish':
 					request.param.type = type;
 					break;	
 				case 'space_ratio':
 					request.param.type = type
 					break;	
-				case 'finish':
+				case 'ins_outs':
 					request.param.type = type;
 					break;		
 				case 'charge':
@@ -220,9 +220,9 @@ export default {
 			return request			
 		},
 		showRanktable() {
-			this.rankTable[0].data = this.transform('ins');
+			this.rankTable[0].data = this.transform('finish');
 			this.rankTable[1].data = this.transform('space_ratio');
-			this.rankTable[2].data = this.transform('finish');
+			this.rankTable[2].data = this.transform('ins_outs');
 		},
 		//将车场对应的code转换为名称
 		transform(item) {
