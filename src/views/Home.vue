@@ -234,11 +234,9 @@
                         return false;
                     }
                 })    
-               // this.$Message.info('点击了确定');
             },
             cancel(){
-                this.modal1 = false;    
-                this.$Message.info('点击了取消');
+                this.modal1 = false;
             },
             menuSelect(name) {
                  this.$router.push({ path: name });

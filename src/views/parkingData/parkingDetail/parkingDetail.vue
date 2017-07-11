@@ -78,11 +78,11 @@
 </template>
 
 <script>
-	import tabCharts from './components/tabCharts.vue'
-	import conditionQuery from '../../../components/parkingData/conditionQuery.vue'
-	import parkingTable from './components/parkingTable.vue'
-	import tablePie from './components/tablePie.vue'
-	import {mapState, mapActions, mapGetters} from 'vuex';
+import tabCharts from './components/tabCharts.vue'
+import conditionQuery from '../../../components/parkingData/conditionQuery.vue'
+import parkingTable from './components/parkingTable.vue'
+import tablePie from './components/tablePie.vue'
+import {mapState, mapActions, mapGetters} from 'vuex';
 export default {
 
 	data (){
@@ -233,8 +233,11 @@ export default {
 					let data = {};
 						data.num = res[i].data;
 						if(item == 'space_ratio') {
-							data.num = `${(res[i].data).toFixed(2)}%`;
+							data.num = `${(res[i].data/100).toFixed(2)}%`;
 						}
+						if(item == 'ins_outs') {
+							data.num = (res[i].data/24).toFixed(2);
+						}						
 						data.order = i+1;
 						data.parkName = res[i].parkcode;
 						data.group = res[i].companycode;

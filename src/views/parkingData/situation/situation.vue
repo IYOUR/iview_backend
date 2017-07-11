@@ -23,9 +23,7 @@
 </style>
 <template>
 <div>
-	<keep-alive>
-		<condition-query></condition-query>
-	</keep-alive>
+	<condition-query></condition-query>
 	<div class="divisionLine"></div>
 	<div class="layout-content-situation">
 		<situation-panel></situation-panel>

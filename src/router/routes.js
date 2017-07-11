@@ -3,14 +3,11 @@ import Vue from 'vue'
 import Login from '../views/Login.vue'
 import NotFound from '../views/404.vue'
 import Home from '../views/Home.vue'
-import Main from '../views/total/Main.vue'
 import Situation from '../views/parkingData/situation/situation.vue'
 import RealTimeData from '../views/parkingData/realTimeData/realTimeData.vue'
 import ParkingDetail from '../views/parkingData/parkingDetail/parkingDetail.vue'
 import PaymentDetail from '../views/parkingData/paymentDetail/paymentDetail.vue'
-import Page6 from '../views/cPortData/Page6.vue'
-import echarts from '../views/couponData/echarts.vue'
-
+import AppConfig from '../views/operation/appConfig/appConfig.vue'
 let routes = [{
         path: '/login',
         component: Login,
@@ -23,14 +20,10 @@ let routes = [{
         name: '',
         hidden: true
     },
-    //{ path: '/main', component: Main },
     {
         path: '/',
         component: Home,
         name: '汇总',
-        // children: [
-        //     { path: '/main', component: Main, name: '主页'},
-        // ]
     },
     {
         path: '/',
@@ -59,6 +52,14 @@ let routes = [{
         // children: [
         //     { path: '/echarts', component: echarts, name: 'echarts' }
         // ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '运营功能',
+        children: [
+           { path: '/appConfig', component: AppConfig, name: 'App更新配置' },
+        ]
     },
     {
         path: '*',

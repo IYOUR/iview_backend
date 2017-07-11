@@ -42,7 +42,10 @@
         computed: {
             ...mapState({
                 paymentDetailData: 'paymentDetailData'
-            }),	               
+            }),	
+            ...mapGetters({
+                exportDate: 'exportCSVdate'
+            })                             
         },
         mounted:function(){
             this.chartPie = echarts.init(document.getElementById('payWayPie'));
@@ -107,6 +110,7 @@
                     } 
                     else return 0;
                 };
+                //累加计算
                 let add = function(arr) {
                     if(Array.isArray(arr)){
                         return arr.reduce(function(x, y){
@@ -115,14 +119,20 @@
                     }
                     else return 0;
                 }
-
+                //计算校验
+                let isInvaild = function (val) {
+                    if(!isFinite(val)) {
+                        return 0.00
+                    }
+                    return (val/100).toFixed(2)
+                }  
                 let pieData = [
-                    {value:add(extract('wallet',res)), name:'停车王钱包'},
-                    {value:add(extract('alipay',res)), name:'支付宝'},
-                    {value:add(extract('weixin',res)), name:'微信'},
-                    {value:add(extract('cash',res)), name:'现金'},
-                    {value:add(extract('uniopay',res)), name:'银联'},
-                    {value:add(extract('unkown',res)), name:'其他'}
+                    {value:isInvaild(add(extract('wallet',res))), name:'停车王钱包'},
+                    {value:isInvaild(add(extract('alipay',res))), name:'支付宝'},
+                    {value:isInvaild(add(extract('weixin',res))), name:'微信'},
+                    {value:isInvaild(add(extract('cash',res))), name:'现金'},
+                    {value:isInvaild(add(extract('uniopay',res))), name:'银联'},
+                    {value:isInvaild(add(extract('unkown',res))), name:'其他'}
                 ];
                 return pieData;
 
@@ -136,32 +146,32 @@
                 this.tableShowData.data =[
                     {
                         type: '停车王钱包',
-                        money: `￥${(data[0].value/100).toFixed(2)}`,
+                        money: `￥${(data[0].value)}`,
                         ratio : (!isNaN(data[0].value/sum))? `${(data[0].value/sum*100).toFixed(2)}%`:0
                     },
                     {
                         type: '支付宝',
-                        money: `￥${(data[1].value/100).toFixed(2)}`,
+                        money: `￥${(data[1].value)}`,
                         ratio : (!isNaN(data[1].value/sum))? `${(data[1].value/sum*100).toFixed(2)}%`:0
                     },
                     {
                         type: '微信',
-                        money: `￥${(data[2].value/100).toFixed(2)}`,
+                        money: `￥${(data[2].value)}`,
                         ratio : (!isNaN(data[2].value/sum))? `${(data[2].value/sum*100).toFixed(2)}%`:0
                     },
                     {
                         type: '现金',
-                        money: `￥${(data[3].value/100).toFixed(2)}`,
+                        money: `￥${(data[3].value)}`,
                         ratio : (!isNaN(data[3].value/sum))? `${(data[3].value/sum*100).toFixed(2)}%`:0
                     },
                     {
                         type: '银联',
-                        money: `￥${(data[4].value/100).toFixed(2)}`,
+                        money: `￥${(data[4].value)}`,
                         ratio : (!isNaN(data[4].value/sum))? `${(data[4].value/sum*100).toFixed(2)}%`:0
                     },   
                     {
                         type: '其他',
-                        money: `￥${(data[5].value/100).toFixed(2)}`,
+                        money: `￥${(data[5].value)}`,
                         ratio : (!isNaN(data[5].value/sum))? `${(data[5].value/sum*100).toFixed(2)}%`:0
                     },                       
                 ] 
@@ -169,7 +179,7 @@
             getSum(arr) {
                 if(Array.isArray(arr)){
                     return arr.reduce(function(x, y){
-                        return x + y;
+                        return parseFloat(x) + parseFloat(y);
                     })
                 }
                 else return 0;                
@@ -177,7 +187,7 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: '数据'
+                    filename: `支付渠道金额${this.exportDate}`
                 });
             },            
         }

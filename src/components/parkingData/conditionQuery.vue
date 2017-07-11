@@ -76,8 +76,7 @@
 				currentDate: '2017-01-01 00:00:00',
 				disableDate: {
                     disabledDate (date) {
-						return date && date.valueOf() > Date.now();
-                        // return date && date.valueOf() > Date.now()-86400000;
+                        return date && date.valueOf() > Date.now()-86400000;
                     }					
 				},
 				queryParam: {
