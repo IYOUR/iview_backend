@@ -45,5 +45,11 @@ export default {
     },  
     SET_RANK_DATA : (state, data) => {
       state.rankData = data
-    },      
+    }, 
+    SET_ADDPLAN_SHOW : (state, data) => {
+      state.showAddPlan = data
+    },     
+    SET_ADDPLAN_ADD : (state, data) => {
+      state.updatePlan = data
+    },    
 }

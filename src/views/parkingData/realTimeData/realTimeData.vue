@@ -15,6 +15,10 @@
 	.layout-content-situation{
 		padding: 15px;
 	}
+	.layout-content-table{
+		padding: 15px;
+		padding-top: 20px;
+	}	
 
 </style>
 <template>

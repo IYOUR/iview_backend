@@ -135,32 +135,34 @@
                 this.$refs[name].resetFields();
             },
             loginNow(params) {
-                    axios({
-                    url: 'api/token',
-                    method: 'post',
-                    data: {
-                        key: 'abcdef123455667dfdfgahoiajnasjbh'
-                    },
-                    transformRequest: [function (data) {
-                        let ret = ''
-                        for (let it in data) {
-                        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-                        }
-                        return ret
-                    }],
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                axios({
+                url: 'api/token',
+                method: 'post',
+                data: {
+                    key: 'abcdef123455667dfdfgahoiajnasjbh',
+                    username: this.formLogin.username,
+                    password: this.formLogin.password,
+                },
+                transformRequest: [function (data) {
+                    let ret = ''
+                    for (let it in data) {
+                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
                     }
-                    }).then(res=>{
-                        if(res.status == '200'){
-                            this.$Message.success('登录成功!');
-                            sessionStorage.setItem('token', res.data.data);
-                            this.$router.push({ path: '/situation' });
-                        } else {
-                            this.$Message.error('登录失败!');
-                        }
+                    return ret
+                }],
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+                }).then(res=>{
+                    if(res.data.message == 'ok'){
+                        this.$Message.success('登录成功!');
+                        sessionStorage.setItem('token', res.data.data.token);
+                        this.$router.push({ path: '/situation' });
+                    } else {
+                        this.$Message.error('登录失败!');
+                    }
 
-                    })
+                })
             }
             
         },

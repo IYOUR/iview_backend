@@ -132,7 +132,7 @@
             }),			
 			selectProvince(value) {
 				if(value !==''){
-					this.getCityList({leveltype:'2',parent:value});
+					this.getCityList({levelType:'2',parent:value});
 					this.getParkList({province:value})	
 				}
 			},		

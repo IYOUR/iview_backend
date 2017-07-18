@@ -24,6 +24,8 @@ axios.interceptors.request.use(config => {
             // config.data = processParam(config.data);
             // let user = getUser();
             // user && user.token && (config.data['token'] = user.token);
+                config.headers.token = sessionStorage.getItem('token');
+                config.params = config.params || {};
             return config;
         }
 

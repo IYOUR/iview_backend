@@ -323,5 +323,10 @@ export default {
             }            	            																				
         ],
         data: []
-    },                          
+    }, 
+    
+    
+
+    showAddPlan: false,
+    updatePlan: [],
 };

@@ -12,6 +12,9 @@
 		font-size: 1.5vw;
     	font-weight: bold;
 	}
+	.datePicker{
+		width:100%;
+	}
 </style>
 <template>
 	<div class="layout-content-filtrate">
@@ -41,7 +44,7 @@
 						</Select>
 					</Form-item>
 					<Form-item label="选择日期:" v-if="!currentPage">
-						<Date-picker v-model="queryParam.date" format="yyyy/MM/dd" type="daterange" :options="disableDate" placement="bottom-end" placeholder="开始时间 - 结束时间 "></Date-picker>
+						<Date-picker class="datePicker" v-model="queryParam.date" format="yyyy/MM/dd" type="daterange" :options="disableDate" placement="bottom-end" placeholder="开始时间 - 结束时间 "></Date-picker>
 					</Form-item>								
 				</col>
 				<Col span="7">			
@@ -68,7 +71,7 @@
 <script>
     import * as situationService from '../../api/situation';
 	import CONSTANT from '../../commons/utils/code';
-	import DateFormat from '../../commons/utils/formatDate.js';
+	import DateFormat from '../../commons/utils/formatDate';
 	import {mapState, mapActions, mapGetters} from 'vuex';
     export default {
 		data() {
@@ -133,7 +136,7 @@
             }),			
 			selectProvince(value) {
 				if(value !==''){
-					this.getCityList({leveltype:'2',parent:value});
+					this.getCityList({levelType:'2',parent:value});
 					this.getParkList({province:value})	
 				}
 			},		
@@ -170,7 +173,7 @@
 				}
 			},
             //参数处理
-            paramsProcess(type){
+            paramsProcess (type){
                 let queryParam = Object.assign({}, this.queryParam), request = {url:'',param:{}},queryDate;
 				if (queryParam.date.length === 0 || queryParam.date[0] === null) {
 					request.url = 'province/0/range';
@@ -243,7 +246,7 @@
                 return request;
             },
 			//包装各个日期的查询参数
-			packQueryParams() {
+			packQueryParams () {
 				let param = {
 					defaultDay: this.paramsProcess('defaultDay'),
 					lastDay: this.paramsProcess('lastDay'),
@@ -254,7 +257,7 @@
 				return param;
 			},				
 			//获取城市列表	
-            getCityList(params) {
+            getCityList (params) {
                 return situationService.getCityList(params).then(res => {
                     if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
                         this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
@@ -280,7 +283,7 @@
                     }; 
 					this.parkList = res.data.data;
 				});
-			},																												
+			},																										
 		},
 		mounted () {
 			if(this.currentPage) {

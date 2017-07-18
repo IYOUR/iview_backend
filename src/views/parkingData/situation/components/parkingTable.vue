@@ -19,6 +19,7 @@
 </template>
 <script>
 	import {mapState, mapActions, mapGetters} from 'vuex';
+    import DateFormat from '../../../../commons/utils/formatDate.js';
     export default {
         data (){
             return {
@@ -33,10 +34,7 @@
                 queryParam: 'queryParam',
                 queryResult: 'queryResult',
                 situationTable: 'situationTable'
-            }),	
-            ...mapGetters({
-                exportDate: 'exportCSVdate'
-            })                       
+            }),	                    
         }, 
         watch: {
             'queryResult':{
@@ -50,8 +48,14 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: `${this.csvName}(${this.exportDate})`
+                    filename: `${this.csvName}(${this.exportDate()})`
                 });
+            },
+            //导出时间
+            exportDate () {
+                let sdate = DateFormat.format(DateFormat.formatToDate(this.queryParam.pastWeek.param.sdate), 'MM-dd'),
+                    edate = DateFormat.format(DateFormat.formatToDate(this.queryParam.pastWeek.param.edate), 'MM-dd');
+                return `${sdate}_${edate}`;
             },
             handleTableData(res) {
                 let tableShowData = Object.assign({}, res.data),rowData = [];

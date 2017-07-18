@@ -12,7 +12,7 @@ export default {
 
     //获取省份列表
     getProvinceList: function({commit}){
-        situationService.getProvinceList().then(res => {
+        return situationService.getProvinceList().then(res => {
             commit('SET_PROVINCE_LIST', res.data.data); 
             return res;
         });

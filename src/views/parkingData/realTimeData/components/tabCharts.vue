@@ -5,8 +5,7 @@
     text-align: center;
 }
 .parkingTimes .hint{
-    height: 60px;
-    line-height: 60px;
+    height: 40px;
     text-align: center;
 }
 .hint button{
@@ -30,11 +29,13 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Poptip trigger="hover" title="item.label" :content="item.hint"  placement="left">
+                        <Tooltip :content="item.hint" placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
-                        </Poptip>        
+                        </Tooltip>      
                     </div>
-                    <Date-picker v-if="datePicker" class="datePicker" v-model="queryDate" type="date" :options="disableDate" placement="bottom-end" placeholder="选择日期"></Date-picker> 
+                    <div class="hint">
+                        <Date-picker v-if="datePicker" class="datePicker" v-model="queryDate" :options="disableDate" placement="bottom-end" placeholder="选择日期"></Date-picker> 
+                    </div>
                 </Col>
             </Row>
             <div :id="item.id" style="width:100%; height:400px;"></div>       
@@ -54,7 +55,8 @@
                     disabledDate (date) {
                         return date && date.valueOf() > Date.now();
                     }					
-				},                  
+				},
+                dateClearable: false,                  
                 queryDate: '',
                 chartLine: {
                     currentIns:{val:null,data:['date','ins'],name:'实时进车次数'},
@@ -102,7 +104,9 @@
                         date: DateFormat.format(newVal, 'yyyy-MM-dd')
                     }
                 }
-                this.$store.dispatch('getDateResult',params)
+                setTimeout(()=>{
+                    this.$store.dispatch('getDateResult',params); 
+                },300)
             },
             'queryParam':{
                 deep:true,

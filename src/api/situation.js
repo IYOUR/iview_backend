@@ -1,8 +1,3 @@
-/**
- * @file mall.js
- * Created by haner on 2017/5/10.
- * @brief
- */
 
 import axios from 'axios';
 import * as UserService from './user';

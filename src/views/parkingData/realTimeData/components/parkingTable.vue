@@ -32,6 +32,7 @@
                 return this.$route.name;
             },
             ...mapState({
+                queryParam: 'queryParam',
                 currentResult: 'currentResult',
                 realTimeTable: 'realTimeTable'
             }),	                                   
@@ -54,8 +55,13 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: `${this.csvName}()`
+                    filename: `${this.csvName}(${this.exportDate()})`
                 });
+            },
+            //导出时间
+            exportDate () {
+                let date = DateFormat.format(DateFormat.formatToDate(this.queryParam.toDay.param.date), 'MM-dd')
+                return `${date}`;
             },
             handleTableData(res) {
                 let tableShowData = Object.assign([], res.data),rowData = [];
