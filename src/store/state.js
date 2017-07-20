@@ -329,4 +329,25 @@ export default {
 
     showAddPlan: false,
     updatePlan: [],
+    planId: [],
+    editConfigData: {
+        state: false,
+        val: {}
+    },
+    configEditTime:'',
+    previewInfo: {
+        state: false,
+        val: {
+            versionname:'',
+            versioncode:'',
+            version_max:'',
+            version_min:'',
+            md5:'',
+            product_line:'',
+            update_type:'',
+            popup_type:'',
+            update_content:'',
+            filename: ''            
+        }
+    },
 };

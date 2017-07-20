@@ -29,9 +29,12 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Tooltip :content="item.hint" placement="left">
+                        <Tooltip placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
-                        </Tooltip>      
+                            <div style="white-space: normal" slot="content">
+                                <span>{{item.hint}}</span>
+                            </div>
+                        </Tooltip>    
                     </div>
                     <div class="hint">
                         <Date-picker v-if="datePicker" class="datePicker" v-model="queryDate" :options="disableDate" placement="bottom-end" placeholder="选择日期"></Date-picker> 

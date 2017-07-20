@@ -30,9 +30,12 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Poptip trigger="hover" title="item.label" :content="item.hint"  placement="left">
+                        <Tooltip placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
-                        </Poptip>        
+                            <div style="white-space: normal" slot="content">
+                                <span>{{item.hint}}</span>
+                            </div>
+                        </Tooltip>       
                     </div>
                     <Date-picker v-if="datePicker" class="datePicker" type="date" placement="bottom-end" placeholder="选择日期"></Date-picker> 
                 </Col>

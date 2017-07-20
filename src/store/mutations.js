@@ -46,10 +46,23 @@ export default {
     SET_RANK_DATA : (state, data) => {
       state.rankData = data
     }, 
+
     SET_ADDPLAN_SHOW : (state, data) => {
       state.showAddPlan = data
     },     
     SET_ADDPLAN_ADD : (state, data) => {
       state.updatePlan = data
     },    
+    SET_PLAN_ID : (state, data) => {
+      state.planId = data
+    },  
+    SET_EDIT_CONFIG_DATA : (state, data) => {
+      state.editConfigData = data
+    },     
+    SET_CONFIG_CONFIG_TIME : (state, data) => {
+      state.configEditTime = data
+    },    
+    SET_PREVIEW_STATE : (state, data) => {
+      state.previewInfo = data
+    },       
 }

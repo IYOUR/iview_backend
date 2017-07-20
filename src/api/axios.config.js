@@ -24,20 +24,15 @@ axios.interceptors.request.use(config => {
             // config.data = processParam(config.data);
             // let user = getUser();
             // user && user.token && (config.data['token'] = user.token);
-                config.headers.token = sessionStorage.getItem('token');
-                config.params = config.params || {};
-            return config;
         }
 
         if (method === 'get') {
             if(config.url.indexOf('api')>=0) {
                 LoadingBar.start();
-            }            
-          // 判断是否存在token，如果存在的话，则每个http header都加上token
-            config.headers.token = sessionStorage.getItem('token');
-            config.params = config.params || {};
-            return config;
+            }
         }
+        config.headers.token = sessionStorage.getItem('token');
+        config.params = config.params || {};
         return config;
     },
     error => {

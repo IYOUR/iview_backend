@@ -65,7 +65,7 @@
                             </Card>            
                         </Form-item>   
                         <Form-item label="执行时间:">
-                            <Date-picker v-model="planTime" type="datetime" format="yyyy-MM-dd HH:mm" placeholder="选择日期和时间" placement="top-start" style="width: 100%"></Date-picker>
+                            <Date-picker v-model="planTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期和时间" placement="top-start" style="width: 100%"></Date-picker>
                         </Form-item>   
                         <Form-item>
                             <Button type="primary" @click="save">保存</Button>
@@ -91,6 +91,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
 import {getCityList} from '../../../../api/situation';
 import CONSTANT from '../../../../commons/utils/code';
 import DateFormat from '../../../../commons/utils/formatDate';
+import * as operationService from '../../../../api/operation';
 
 export default { 
     props:{
@@ -109,13 +110,16 @@ export default {
             userList: '',
             planTime: '',
             isEeditState: false,
+            planIdArr: [],
         }
     },
     computed: {
         ...mapState({
             provinceList: 'provinceList',
             showAddPlan: 'showAddPlan',
-            updatePlan: 'updatePlan'
+            updatePlan: 'updatePlan',
+            planId: 'planId',
+            editConfigData: 'editConfigData',
         }),	
         selectedArea () {
             return this.areaArr.map((item)=>{
@@ -127,9 +131,9 @@ export default {
         'changePlan': {
             handler:function(newVal,oldVal){
                 this.userList = newVal.val.user;
-                this.planTime = newVal.val.time;
+                this.planTime = DateFormat.formatToDate(newVal.val.time);
                 this.areaArr = newVal.val.area;
-                this.isEditState = true;  
+                this.isEditState = true;
             }
         }
     },
@@ -146,39 +150,50 @@ export default {
                 this.$Message.warning('请填写完整更新计划信息');
                 return
             }
-            // 判断是否为修改状态
-            if(this.isEditState) {
-                let areaStr = '', arr = [];
-                for(let item in this.selectedArea){
-                    arr.push(this.selectedArea[item].label);
-                }
-                areaStr = arr.join(',');
-                let plan = {
-                    user: this.userList,
-                    area: this.selectedArea,
-                    areaStr: areaStr,
-                    time: this.planTime,
-                };
-                this.updatePlan[this.changePlan.idx] = plan;
-                this.$store.commit('SET_ADDPLAN_ADD',this.updatePlan);
-                this.reset();   
-                this.isEditState = false;              
-            }
-            else{
-            let areaStr = '', arr = [];
+            let area = {}, arrStr = [],arrVal = [];
             for(let item in this.selectedArea){
-                arr.push(this.selectedArea[item].label);
+                arrStr.push(this.selectedArea[item].label);
+                arrVal.push(this.selectedArea[item].value);
             }
-            areaStr = arr.join(',');
+            area.str = arrStr.join(',');
+            area.val = arrVal.join(',');
             let plan = {
                 user: this.userList,
                 area: this.selectedArea,
-                areaStr: areaStr,
+                areaStr: area.str,
                 time: DateFormat.format(this.planTime, 'yyyy-MM-dd hh:mm:ss'),
             };
-            this.updatePlan.push(plan);
-            this.$store.commit('SET_ADDPLAN_ADD',this.updatePlan);
-            this.reset();
+            let param = {
+                app_info_id: (this.editConfigData.state)? this.editConfigData.val.id:0,    
+                white_list: this.userList,
+                region: area.val,
+                time: DateFormat.format(this.planTime, 'yyyy-MM-dd hh:mm:ss'),
+            }            
+            // 判断是否为修改状态
+            if(this.isEditState) {
+                this.sendUpdatePlan({id:this.changePlan.id,val:param}).then((res)=>{
+                    plan.id = this.changePlan.id;
+                    this.updatePlan.splice(this.changePlan.idx, 1, plan)
+                    this.$store.commit('SET_ADDPLAN_ADD',this.updatePlan);
+                    this.reset();   
+                    this.isEditState = false;     
+                });   
+            }
+
+            else{
+                this.sendAddPlan(param).then((res)=>{
+                    this.updatePlan.push({
+                        id: res.data.data,
+                        user: this.userList,
+                        area: this.selectedArea,
+                        areaStr: area.str,
+                        time: DateFormat.format(this.planTime, 'yyyy-MM-dd hh:mm:ss'),                       
+                    });
+                    this.planIdArr.push(res.data.data);
+                    this.$store.commit('SET_PLAN_ID',this.planIdArr);
+                    this.$store.commit('SET_ADDPLAN_ADD',this.updatePlan);
+                    this.reset();
+                });
             }
         },
         // 重置
@@ -219,7 +234,29 @@ export default {
                 }; 
                 this.cityItem = res.data.data;
             });                         
-        }
+        },
+        sendAddPlan (params) {
+            let param = {info:JSON.stringify(params)}
+            return operationService.addUpdatePlan(param).then(res => {
+                if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
+                    this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
+                    return;
+                }; 
+                return res
+            });    
+        },
+        sendUpdatePlan (params) {
+            let param = {
+                    id: params.id,
+                    val:{info:JSON.stringify(params.val)}
+            };
+            return operationService.updatePlan(param).then(res => {
+                if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
+                    this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
+                    return;
+                }; 
+            });    
+        }        
     }
 }
 </script>
