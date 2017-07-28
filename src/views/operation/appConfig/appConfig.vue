@@ -42,8 +42,13 @@ export default {
             previewInfo: 'previewInfo'
         }),	
     },
+    created () {
+        this.$store.commit('SET_ADDPLAN_ADD',[]);
+        this.$store.commit('SET_PLAN_ID',[]);
+    },       
     methods:{
     },
+    
     components: {
         'edit-config': editConfig,
         'config-list': configList,

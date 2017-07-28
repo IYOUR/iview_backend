@@ -38,23 +38,43 @@
     .closeIcon{
         cursor: pointer;
     }    
+    .csvhint{
+        cursor: pointer;
+        margin-left: 20px;
+        color: #495060;
+    }
+    .csvFormat{
+        text-align: center;
+        border: 1px solid #dddee1;
+        border-collapse: collapse;   
+    }
+    .csvFormat tr{  
+        border: 1px solid #dddee1;        
+    }  
+    .csvFormat td {
+        min-width: 50px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #dddee1;
+        background-color: #ffffff;
+    }        
 </style>
 
 <template>
     <Row class="addcontainer">
         <Col span="20" offset="1">
-            <Form label-position="right" :label-width="100">
+            <Form label-position="right" :label-width="120">
                 <Row>
                     <Col span="11">
                         <Form-item label="白名单:">
-                            <Input v-model="userList"></Input>
+                            <Input v-model.trim="userList" placeholder="不填写默认为全部"></Input>
                         </Form-item>
                         <Form-item label="推送地域:">
-                            <Select v-model="ProvinceCode" @on-change="selectProvince" filterable>
+                            <Select v-model="ProvinceCode" @on-change="selectProvince" :disabled="slectDisabled" filterable>
                                 <Option v-for="item in provinceItme" :value="item.value" :key="item">{{ item.label }}</Option>
                             </Select>
                             <Card class="areaList" :padding="cardPadding" dis-hover>
-                                <Checkbox-group v-model="areaArr">
+                                <Checkbox-group v-model="areaArr" @on-change="checkArea">
                                     <Checkbox v-for="item in cityItem" :label="JSON.stringify(item)" :key="item">{{ item.label }}</Checkbox>
                                 </Checkbox-group>
                             </Card>
@@ -65,7 +85,7 @@
                             </Card>            
                         </Form-item>   
                         <Form-item label="执行时间:">
-                            <Date-picker v-model="planTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期和时间" placement="top-start" style="width: 100%"></Date-picker>
+                            <Date-picker v-model="planTime" type="datetime" :editable="dateEditable" format="yyyy-MM-dd HH:mm:ss" :options="disableDate" placeholder="选择日期和时间" placement="top-start" style="width: 100%"></Date-picker>
                         </Form-item>   
                         <Form-item>
                             <Button type="primary" @click="save">保存</Button>
@@ -73,7 +93,32 @@
                         </Form-item> 
                     </Col>
                     <Col span="8" offset="1">
-                        <Button type="primary">点击上传</Button>
+                        <label>
+                            <p class="ivu-btn ivu-btn-primary">导入CSV</p>
+                            <input type="file" ref="inputFile" value="" style="display:none" @change="importCsv">
+                        </label>
+                        <span class="csvhint">
+                            <Poptip trigger="hover" placement="top">
+                                <p><Icon type="ios-help-outline"></Icon>&nbsp格式</p> 
+                                <div slot="title"><i>导入CSV格式如下！</i></div>
+                                <div class="api" slot="content">
+                                    <table class="csvFormat">
+                                        <tbody>
+                                            <tr v-for="n in 7">
+                                                <td>012345</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>更多...</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Poptip> 
+                        </span>
                     </Col>
                 </Row>
             </Form>
@@ -102,8 +147,16 @@ export default {
     },
     data () {	
         return {
+            disableDate: {
+                disabledDate (date) {
+                    return date && date.valueOf() < Date.now()-86400000;
+                }					
+            },
+            labelValue: true, 
+            slectDisabled: false,
+            dateEditable: false,          
             cardPadding: 0,
-            ProvinceCode: 'all',
+            ProvinceCode: '100000',
             provinceItme: [],
             cityItem: [],
             areaArr: [],
@@ -134,8 +187,12 @@ export default {
                 this.planTime = DateFormat.formatToDate(newVal.val.time);
                 this.areaArr = newVal.val.area;
                 this.isEditState = true;
+                if(newVal.val.areaStr == '中国'){
+                    this.checkArea (['{"label":"全国","value":100000}'])
+                }
             }
-        }
+        },
+
     },
     created () {
         this.loadAreaInfo();
@@ -146,9 +203,13 @@ export default {
         }),
         // 保存
         save () {
-            if(this.userList == '' || this.planTime == '' || this.areaArr == []){
-                this.$Message.warning('请填写完整更新计划信息');
+            if(this.planTime == '' || this.areaArr.length==0){
+                this.$Message.warning('请填写完整更新计划信息！');
                 return
+            }
+            if(DateFormat.compareDate(this.planTime,new Date())<1){
+                this.$Message.warning('执行时间不得小于当前时间！');
+                return                
             }
             let area = {}, arrStr = [],arrVal = [];
             for(let item in this.selectedArea){
@@ -158,7 +219,7 @@ export default {
             area.str = arrStr.join(',');
             area.val = arrVal.join(',');
             let plan = {
-                user: this.userList,
+                user: (this.userList=='')?'全部':this.userList,
                 area: this.selectedArea,
                 areaStr: area.str,
                 time: DateFormat.format(this.planTime, 'yyyy-MM-dd hh:mm:ss'),
@@ -179,16 +240,10 @@ export default {
                     this.isEditState = false;     
                 });   
             }
-
             else{
                 this.sendAddPlan(param).then((res)=>{
-                    this.updatePlan.push({
-                        id: res.data.data,
-                        user: this.userList,
-                        area: this.selectedArea,
-                        areaStr: area.str,
-                        time: DateFormat.format(this.planTime, 'yyyy-MM-dd hh:mm:ss'),                       
-                    });
+                    plan.id = res.data.data;
+                    this.updatePlan.push(plan);
                     this.planIdArr.push(res.data.data);
                     this.$store.commit('SET_PLAN_ID',this.planIdArr);
                     this.$store.commit('SET_ADDPLAN_ADD',this.updatePlan);
@@ -201,28 +256,70 @@ export default {
             this.userList = '',
             this.planTime = '',
             this.areaArr = [];
-            this.isEditState = false;        
-        },            
+            this.isEditState = false;
+            this.$refs.inputFile.value = '';   
+            this.ProvinceCode = '100000';
+            this.cancelSelect();
+        }, 
+        //加载地区信息           
         loadAreaInfo() {
             this.getProvinceList().then((res)=>{
                 let data = Object.assign([], res.data.data);
-                this.cityItem = Object.assign([], data);
-                data.unshift({label:'全国',value:'all'});
+                data.unshift({label:'全国',value:'100000'});
+                this.cityItem = Object.assign([], data)
                 this.provinceItme = data;
             });
         },
+        //导入csv文件并解析
+        importCsv (e) {
+            let file = e.target.files[0] || undefined;
+            if (!file || file.name.slice(file.name.lastIndexOf('.'))!=='.csv') {
+                this.$Message.warning('请导入CSV文件!');
+                return
+            }
+            this.userList = '';
+            let reader = new FileReader();  
+            reader.readAsText(file);
+            reader.onload = (e)=> {
+                this.userList = e.target.result.replace(/(\r\n)+/g,',').replace(/,$/m,'');
+            };
+            reader.onerror = (e)=> {
+                this.$Message.warning('读取文件失败!');
+            };
+        },
+        //勾选地区
+        checkArea (val) {
+            let data =(val.length>0)?JSON.parse(val[(val.length-1)]):[];
+            if(data.value && data.value=='100000'){
+                this.cityItem = [{label:'全国',value:'100000'}];
+                this.areaArr = [JSON.stringify({label:'全国',value:'100000'})];
+                this.slectDisabled = true;
+            }
+            if(val.length==0){
+                this.ProvinceCode = '100000';
+                this.slectDisabled = false;
+                this.cityItem = Object.assign([], this.provinceItme)               
+            }
+        },
         // 取消已选择的地区 
         cancelSelect (value) {
-            this.areaArr.splice(value, 1);
+            if(value||value==0){
+                let data = JSON.parse(this.areaArr[value]);
+                this.areaArr.splice(value, 1);
+                if(data.value == '100000'){
+                    this.slectDisabled = false;
+                    this.cityItem = Object.assign([], this.provinceItme)
+                }                
+            }
         },
         closeAdd () {
             this.$store.commit('SET_ADDPLAN_SHOW',false);
         },          
         selectProvince(value) {
-            if(value !=='all'){
-                this.getCityList({levelType:'2',parent:value});
+            if(value =='100000'){
+                this.cityItem = this.provinceItme;
             } else {
-                this.cityItem = this.provinceList;
+                this.getCityList({levelType:'2',parent:value});
             }
         },	
         //获取城市列表	
@@ -234,15 +331,15 @@ export default {
                 }; 
                 this.cityItem = res.data.data;
             });                         
-        },
+        },// 发送添加计划请求
         sendAddPlan (params) {
             let param = {info:JSON.stringify(params)}
             return operationService.addUpdatePlan(param).then(res => {
-                if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
-                    this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
-                    return;
-                }; 
-                return res
+                if (res.status ==200 && res.data.message=='ok') {
+                    return res;
+                } else{
+                    this.$Message.error(res.data.message);
+                }
             });    
         },
         sendUpdatePlan (params) {
@@ -251,12 +348,13 @@ export default {
                     val:{info:JSON.stringify(params.val)}
             };
             return operationService.updatePlan(param).then(res => {
-                if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
-                    this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
-                    return;
-                }; 
+                if(res.status ==200 && res.data.message=='ok'){
+                    return res
+                } else{
+                    this.$Message.error(res.data.message);
+                }
             });    
-        }        
+        },     
     }
 }
 </script>

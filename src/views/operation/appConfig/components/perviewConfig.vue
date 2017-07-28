@@ -12,6 +12,9 @@
     .planTable tr{  
         border: 1px solid #dddee1;  
     }
+    .planTable td{  
+        line-height: normal;  
+    }    
     .planTable .area{  
         max-width: 200px;  
         overflow: hidden;
@@ -35,15 +38,23 @@
     } 
     .filename{
         line-height: 32px;
-    }     
+        white-space: nowrap;
+    }   
+    .planStr{
+        max-width: 300px;
+        white-space: normal;
+    }
+    .ivu-form-item-content{
+        line-height: inherit;
+    }    
 </style>
 <template>
     <div>
         <Form label-position="right" :label-width="120">
             <Row>
                 <Col span="5" offset="1">
-                    <Form-item label="更新包路径:">
-                        <span>{{info.filename}}</span>
+                    <Form-item label="更新包:">
+                        <span class="filename">{{info.filename}}</span>
                     </Form-item>
                 </Col>
             </Row>
@@ -81,14 +92,30 @@
                 <Col span="20" offset="1">
                     <Form-item label="更新计划:">
                         <table class="planTable">
-                            <tr v-for="(item, index) in updatePlan" track-by="$index" :key="index">
+                            <tr v-for="(item, index) in updatePlan" :key="index">
                                 <td class="time">{{item.time}}</td>
-                                <td class="area">向{{item.areaStr}}</td>
-                                <td>的用户</td>
-                                <td class="user">{{item.user}}</td>
+                                <td>
+                                    <Tooltip placement="top">
+                                        <p class="area">向{{item.areaStr}}</p>
+                                        <div class="planStr" slot="content">
+                                            <p>{{item.areaStr}}</p>
+                                        </div>
+                                    </Tooltip>
+                                </td>
+                                <td>的用户:</td>
+                                <td>
+                                    <Tooltip placement="top">
+                                        <p class="user">{{item.user}}</p>
+                                        <div class="planStr" slot="content">
+                                            <p>{{item.user}}</p>
+                                        </div>
+                                    </Tooltip>
+                                </td>
                                 <td>推荐更新</td>
+                                <td><span class="edit" @click="editPlan({idx:index,val:item,id:item.id})">修改</span></td>
+                                <td><span class="delete" @click="deletePlan({idx:index,id:item.id})">删除</span></td>
                             </tr>															
-                        </table>
+                        </table>	
                     </Form-item>
                 </Col>
             </Row>
@@ -99,6 +126,7 @@
                     </Form-item>     
                     <Form-item>
                         <Button type="primary" @click="close">确定</Button>
+                        <Button type="ghost" @click="cancel" style="margin-left: 15px">取消编辑</Button>
                     </Form-item>    
                 </Col>
             </Row>                     
@@ -137,13 +165,8 @@ export default {
         ...mapState({
             updatePlan: 'updatePlan',
             previewInfo: 'previewInfo',
-        }),
-        InfoData () {
-
-        },
-        uploadHeaders () {
-            return {token:sessionStorage.getItem('token')};
-        }	        
+            editConfigData: 'editConfigData'
+        }),        
     },  
     watch: {
         'previewInfo':{
@@ -155,7 +178,7 @@ export default {
                 version_max: newVal.val.version_max,
                 version_min: newVal.val.version_min,
                 md5: newVal.val.md5,
-                product_line: this.transitionList('productLine',newVal.val.product_line),
+                product_line: newVal.val.product_line,
                 update_type: this.transitionList('recomPolicy',newVal.val.update_type),
                 popup_type: this.transitionList('popup',newVal.val.popup_type),
                 update_content: newVal.val.update_content,
@@ -165,51 +188,8 @@ export default {
         }
     },          
     methods:{   
-        beforeUpload () {
-            this.upState = {
-                BtnText:'上传中',
-                Btnloading:true,
-                BtnDisabled:true                
-            }            
-        }, 
-        close () {
-            this.previewInfo.state = false;
-            this.$store.commit('SET_PREVIEW_STATE',this.previewInfo);
-        },
-        submit () {
-            for(let item in this.info) {
-                if(this.info[item].length == 0){
-                    this.$Message.warning('请填写完整信息！');
-                    return
-                }
-            }
-            this.info.version_max = parseInt(this.info.version_max);
-            this.info.version_min = parseInt(this.info.version_min);
-            this.info.md5 = this.info.md5;
-            this.info.product_line = parseInt(this.info.product_line);
-            this.info.update_type = parseInt(this.info.update_type);
-            this.info.popup_type = parseInt(this.info.popup_type);
-            if(this.isEditState){
-                this.updateAppConfig({id:this.editConfigData.id,val:this.info});  
-            }
-            else {
-                this.setAppConfig(this.info);  
-            }
-                    
-        },    
         transitionList (type,val) {
             switch (type) {
-                case 'productLine':
-                    if(val == 0) {
-                        return 'KOP'
-                    }
-                    if(val == 1) {
-                        return 'ECP'
-                    }
-                    if(val == 2) {
-                        return 'IOP'
-                    }
-                break;
                 case 'recomPolicy':
                     if(val == 0) {
                         return '推荐更新'
@@ -231,28 +211,19 @@ export default {
                 break;                                        
             }
 
-        },        
-        //添加配置信息  
-        setAppConfig (params) {
-            let param = {info:JSON.stringify(this.info),plan_ids:this.planId.join(',')}
-            return operationService.setAppConfig(param).then(res => {
-                if(res.status ==200 && res.data.message=='ok'){
-                    this.$Message.success('提交成功');
-                    this.reset();
-                } else{
-                    this.$Message.error(res.data.message);
-                }
-            });
-        },             
-        sendDeletePlan (params) {
-            return operationService.deletePlan(params).then(res => {
-                if(res.status ==200 && res.data.message=='ok'){
-                    return res;
-                } else{
-                    this.$Message.error(res.data.message);
-                }
-            });
-        },                    
+        }, 
+        close () {
+            this.previewInfo.state = false;
+            this.$store.commit('SET_PREVIEW_STATE',this.previewInfo);
+        },
+        cancel () {
+            this.close();
+            this.editConfigData.state = false;
+            this.editConfigData.val = {};
+            this.$store.commit('SET_EDIT_CONFIG_DATA',this.editConfigData); 
+            this.$store.commit('SET_ADDPLAN_ADD',[]);
+            this.$store.commit('SET_PLAN_ID',[]);
+        },                           
     },           
 }
 </script>

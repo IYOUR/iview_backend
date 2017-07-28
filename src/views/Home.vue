@@ -124,7 +124,7 @@
                         <Row>
                             <Col span="8">
                                 <div>
-                                    <span><i class="iconfont irain-yonghu"></i>用户名</span>
+                                    <span><i class="iconfont irain-yonghu"></i>{{nickname}}</span>
                                 </div>
                             </Col>
                             <Col span="10">
@@ -213,6 +213,9 @@
                     this.logoIsDisplay = false;
                     return 0;
                 }
+            },
+            nickname () {
+                return sessionStorage.getItem('nickname');
             }
         },
         methods: {

@@ -157,9 +157,10 @@
                     if(res.data.message == 'ok'){
                         this.$Message.success('登录成功!');
                         sessionStorage.setItem('token', res.data.data.token);
+                        sessionStorage.setItem('nickname', res.data.data.nickname);
                         this.$router.push({ path: '/situation' });
                     } else {
-                        this.$Message.error('登录失败!');
+                        this.$Message.error('登录失败,请检查用户名密码是否正确!');
                     }
 
                 })

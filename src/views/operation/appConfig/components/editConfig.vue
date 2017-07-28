@@ -7,10 +7,14 @@
         width: 100%; 
         min-height:32px;
         margin-bottom: 15px;  
-        white-space: nowrap;   
+        white-space: nowrap;  
+        text-align: left;
     }
     .planTable tr{  
-        border: 1px solid #dddee1;  
+        border: 1px solid #dddee1;
+    }
+    .planTable td{  
+        line-height: normal;  
     }
     .planTable .area{  
         max-width: 200px;  
@@ -35,6 +39,20 @@
     } 
     .filename{
         line-height: 32px;
+        white-space: nowrap;
+    }
+    .planPop{
+        max-width: 300px;
+        white-space: normal;
+        word-break: break-all;
+        max-height: 250px;
+        overflow-y: scroll;
+    }
+    .planPop::-webkit-scrollbar {
+        display: none;
+    }
+    .ivu-form-item-content{
+        line-height: inherit;
     }     
 </style>
 <template>
@@ -42,10 +60,13 @@
         <Form label-position="right" :label-width="120">
             <Row>
                 <Col span="5" offset="1">
-                    <Form-item label="更新包路径:">
-                        <Upload action="api/app/uploadfile" accept=".apk" :headers="uploadHeaders" name="upload" :show-upload-list="uploadList" :before-upload="beforeUpload" :on-success="UploadSuccess">
-                            <Button type="primary":loading="upState.Btnloading">{{upState.BtnText}}</Button>
+                    <Form-item label="更新包:">
+                        <Upload v-show="!upState.BtnDisabled" action="api/app/uploadfile" :format="appFormat" :headers="uploadHeaders"
+                        name="upload" :on-format-error="appFormatError" :show-upload-list="uploadList" :before-upload="beforeUpload"
+                         :on-success="UploadSuccess" :on-error="uploadError">
+                            <Button type="primary" :loading="upState.Btnloading">{{upState.BtnText}}</Button>
                         </Upload>
+                        <Button v-show="upState.BtnDisabled" type="primary" :loading="upState.Btnloading">{{upState.BtnText}}</Button>
                     </Form-item>
                 </Col>
                 <Col span="2">
@@ -61,22 +82,18 @@
                         <Input v-model="info.versioncode" readonly></Input>
                     </Form-item>
                     <Form-item label="覆盖版本号上限:">
-                        <Input v-model="info.version_max"></Input>
+                        <Input v-model="info.version_max" :number="isNumber" @on-change="numAbsolute('max')" :maxlength="(md5length-22)"></Input>
                     </Form-item>
                     <Form-item label="覆盖版本号下限:">
-                        <Input v-model="info.version_min"></Input>
+                        <Input v-model="info.version_min" :number="isNumber" @on-change="numAbsolute('min')" :maxlength="(md5length-22)"></Input>
                     </Form-item>
                 </Col>
                 <Col span="9" offset="1">
                     <Form-item label="MD5值:">
-                        <Input v-model="info.md5"></Input>
+                        <Input v-model="info.md5" :maxlength="md5length" @on-change="lowerCase"></Input>
                     </Form-item> 
                     <Form-item label="产品线:">
-                        <Radio-group v-model="info.product_line">
-                            <Radio label="0">KOP</Radio>
-                            <Radio label="1">ECP</Radio>
-                            <Radio label="2">IOP</Radio>
-                        </Radio-group>
+                        <Input v-model="info.product_line" readonly></Input>
                     </Form-item>
                     <Form-item label="推荐策略:">
                         <Radio-group v-model="info.update_type">
@@ -95,13 +112,27 @@
             </Row>
             <Row>
                 <Col span="20" offset="1">
-                    <Form-item label="更新计划:">
+                    <Form-item class="planForm" label="更新计划:">
                         <table class="planTable">
-                            <tr v-for="(item, index) in updatePlan" track-by="$index" :key="index">
+                            <tr v-for="(item, index) in updatePlanSort" :key="index">
                                 <td class="time">{{item.time}}</td>
-                                <td class="area">向{{item.areaStr}}</td>
-                                <td>的用户</td>
-                                <td class="user">{{item.user}}</td>
+                                <td>
+                                    <Tooltip placement="top">
+                                        <p class="area">向{{item.areaStr}}</p>
+                                        <div class="planPop" slot="content">
+                                            <p>{{item.areaStr}}</p>
+                                        </div>
+                                    </Tooltip>
+                                </td>
+                                <td>的用户:</td>
+                                <td>
+                                    <Tooltip placement="top">
+                                        <p class="area">{{item.user}}</p>
+                                        <div class="planPop" slot="content">
+                                            <p>{{item.user}}</p>
+                                        </div>
+                                    </Tooltip>
+                                </td>
                                 <td>推荐更新</td>
                                 <td><span class="edit" @click="editPlan({idx:index,val:item,id:item.id})">修改</span></td>
                                 <td><span class="delete" @click="deletePlan({idx:index,id:item.id})">删除</span></td>
@@ -117,7 +148,7 @@
             <Row class="layoutBetween"> 
                 <Col span="9" offset="1">            
                     <Form-item label="更新内容:" prop="update_content">
-                        <Input v-model="info.update_content" type="textarea" @on-change="processtext" :maxlength="contentlength" :rows="6" placeholder="45字以内"></Input>
+                        <Input v-model.trim="info.update_content" @on-change="processtext" @keyup.native="textKeyUp" type="textarea" :maxlength="contentlength" :rows="6" placeholder="45字以内"></Input>
                     </Form-item>     
                     <Form-item>
                         <Button type="primary" @click="submit">提交</Button>
@@ -133,7 +164,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
 import * as operationService from '../../../../api/operation';
 import CONSTANT from '../../../../commons/utils/code';
 import updatePlan from './updatePlan.vue'
-
+import DateFormat from '../../../../commons/utils/formatDate';
 export default {
     data () {
         return {           
@@ -147,9 +178,17 @@ export default {
                 update_type:'',
                 popup_type:'',
                 update_content:'',
-                filename: ''
-            },  
-            contentlength: 45,
+                filename: '',
+                filesize:'',
+                url:'',
+            },
+            iTime: null,  
+            textAreaState: false,
+            appFormat: ['apk'],
+            appMD5: '',
+            contentlength: 47,
+            md5length: 32,
+            isNumber: true,
             changePlan: {},
             uploadList: false,
             upState:{
@@ -168,21 +207,27 @@ export default {
         }),
         uploadHeaders () {
             return {token:sessionStorage.getItem('token')};
+        },
+        updatePlanSort () {
+            return this.updatePlan.sort((first,second)=>{
+                return DateFormat.compareDate(DateFormat.formatToDate(first.time),DateFormat.formatToDate(second.time))
+            })
         }	        
     },  
     watch: {
         'editConfigData.val':{
             deep:true,
             handler:function(newVal,oldVal){
-                this.SetEditConfig(newVal);
-                this.getUpdatePlan(newVal.id)
-                this.editConfigData.state = true;
+                if(this.editConfigData.state) {
+                    this.SetEditConfig(newVal);
+                    this.getUpdatePlan(newVal.id)
+                }
+                else {
+                    this.reset();
+                }
             },
-        },     
-    },      
-    created () {
-
-    },         
+        },
+    },            
     methods:{   
         beforeUpload () {
             this.upState = {
@@ -192,15 +237,39 @@ export default {
             }            
         },       
         UploadSuccess (res, file) {
-            this.info.versionname = res.data.VersionName;
-            this.info.md5 = res.data.MD5;
-            this.info.versioncode = res.data.VersionCode;
-            this.info.filename = res.data.Filename;
             this.upState = {
                 BtnText:'重新上传',
                 Btnloading:false,   
                 BtnDisabled:false            
+            }            
+            if(res.message!=='ok' && res.data.upload2CDN!=='ok'){
+               this.$Message.warning(res.message); 
+               return
             }
+            this.info.versionname = res.data.versionname;
+            this.appMD5 = res.data.md5;
+            this.info.versioncode = res.data.versioncode;
+            this.info.filename = res.data.filename;
+            this.info.filesize = res.data.filesize;
+            this.info.product_line = res.data.packagename;
+            this.info.url = res.data.url;
+        },
+        //文件上传失败
+        uploadError (error) {
+            this.upState = {
+                BtnText:'点击上传',
+                Btnloading:false,   
+                BtnDisabled:false            
+            }               
+            this.$Message.warning('上传失败，请重试！');
+        },
+        appFormatError (res,file) {
+            this.$Message.warning('请上传apk文件！');
+            this.upState = {
+                BtnText:'点击上传',
+                Btnloading:false,   
+                BtnDisabled:false            
+            }  
         },
         submit () {
             for(let item in this.info) {
@@ -209,12 +278,17 @@ export default {
                     return
                 }
             }
+            if(this.info.md5 !== this.appMD5){
+                this.$Message.warning('填写MD5值与上传App的MD5值不一致！');
+                return                
+            }
             this.info.version_max = parseInt(this.info.version_max);
             this.info.version_min = parseInt(this.info.version_min);
             this.info.md5 = this.info.md5;
-            this.info.product_line = parseInt(this.info.product_line);
             this.info.update_type = parseInt(this.info.update_type);
             this.info.popup_type = parseInt(this.info.popup_type);
+            this.info.filesize = parseInt(this.info.filesize);
+            //判断提交状态为编辑或添加
             if(this.editConfigData.state){
                 this.updateAppConfig({id:this.editConfigData.val.id,val:this.info});  
             }
@@ -225,17 +299,20 @@ export default {
         },
         SetEditConfig (value) {
             this.upState.BtnText = '重新上传';
+            this.appMD5 = value.md5;
             this.info = {
                 versionname: value.versionname,
                 versioncode: value.versioncode,
                 version_max: value.version_max,
                 version_min: value.version_min,
                 md5: value.md5,
+                filesize: value.filesize,
                 product_line: value.product_line,
                 update_type: value.update_type,
                 popup_type: value.popup_type,
                 update_content: value.update_content,
-                filename:  value.filename
+                filename:  value.filename,
+                url: value.url,
             } 
         },      
         //添加配置信息  
@@ -245,7 +322,8 @@ export default {
                 if(res.status ==200 && res.data.message=='ok'){
                     this.$Message.success('提交成功');
                     this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
-                    this.$store.commit('SET_ADDPLAN_ADD',{});
+                    this.$store.commit('SET_ADDPLAN_ADD',[]);
+                    this.$store.commit('SET_ADDPLAN_SHOW',false);
                     this.reset();
                 } else{
                     this.$Message.error(res.data.message);
@@ -259,9 +337,10 @@ export default {
                 if(res.status ==200 && res.data.message=='ok'){
                     this.$Message.success('提交成功');
                     this.editConfigData.state = false;
-                    this.$store.commit('SET_ADDPLAN_ADD',{});
+                    this.$store.commit('SET_ADDPLAN_ADD',[]);
                      this.$store.commit('SET_EDIT_CONFIG_DATA',this.editConfigData);
                     this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
+                    this.$store.commit('SET_ADDPLAN_SHOW',false);
                     this.reset();
                 } else{
                     this.$Message.error(res.data.message);
@@ -287,10 +366,13 @@ export default {
                     let singePlan={},arrStr = [];
                     singePlan.id = data[item].id;
                     singePlan.time = data[item].time;
-                    singePlan.user = data[item].white_list;
+                    singePlan.user = (data[item].white_list=='')?'全部':data[item].white_list;
                     singePlan.area = res;
                     for(let item in res){
                         arrStr.push(res[item].label);
+                        if(res[item].value == '100000'){
+                            arrStr=['全国']; 
+                        }                        
                     }
                     singePlan.areaStr = arrStr.join(',');
                     plan.push(singePlan)
@@ -318,7 +400,7 @@ export default {
                 } else{
                     this.$Message.error(res.data.message);
                 }
-            });
+            });              
         }, 
         //重置
         reset () {
@@ -355,28 +437,88 @@ export default {
         },
         // 删除计划
         deletePlan (value) {
-            this.sendDeletePlan(value.id).then((res)=>{
-                if(res.status ==200 && res.data.message=='ok'){
-                    this.updatePlan.splice(value.idx, 1);
-                    for(let i in this.planId){
-                        if(value.id == this.planId[i]){
-                            this.planId.splice(i, 1);
+            this.$Modal.confirm({
+                title: '确认删除',
+                content: '<p>确认要删除此条更新计划么?</p>',
+                onOk: () => {
+                    this.sendDeletePlan(value.id).then((res)=>{
+                        if(res.status ==200 && res.data.message=='ok'){
+                            this.updatePlan.splice(value.idx, 1);
+                            for(let i in this.planId){
+                                if(value.id == this.planId[i]){
+                                    this.planId.splice(i, 1);
+                                }
+                            }
+                            this.$store.commit('SET_PLAN_ID',this.planId);
+                            this.$store.commit('SET_ADDPLAN_ADD',this.updatePlan);
+                        } else{
+                            this.$Message.error(res.data.message);
                         }
-                    }
-                    this.$store.commit('SET_PLAN_ID',this.planId);
-                    this.$store.commit('SET_ADDPLAN_ADD',this.updatePlan);
-                } else{
-                    this.$Message.error(res.data.message);
+                    })                    
+                },
+                onCancel: () => {
+                    return
                 }
-            })
+            }); 
         },
         processtext () {
-            console.log(this.info.update_content.length)
-            let reg=new RegExp("\r\n","g");
-            let text = this.info.update_content.replace(reg,'').replace(/(^\s*)|(\s*$)/g,''); 
+            let text = this.info.update_content.replace(/(\r\n|\n|\r)/gm,'').trim(); 
+           
+            if((text.length%15)==0&&text.length>0&&text.length<45) {
+                this.info.update_content = this.info.update_content+'\r\n';
+                
+            }  
             
-            if((text.length%15)==0) {
-                 this.info.update_content = this.info.update_content+'\r\n';
+        },
+        textKeyUp () {
+            // clearTimeout(this.iTime)
+            // this.iTime = setTimeout(()=> {
+            //     console.warn('keyup')
+            //     this.textAreaState = true;
+            //     this.processtext()
+            // }, 800);   
+        },
+        //转为小写
+        lowerCase () {
+            this.info.md5 = this.info.md5.toLowerCase();
+        },
+        //转为绝对值
+        numAbsolute (type) {
+            if (type=='max' && this.info.version_max<0) {
+                this.info.version_max = Math.abs(this.info.version_max);
+            }
+            if (type=='min'&& this.info.version_min<0) {
+                this.info.version_min = Math.abs(this.info.version_min);
+            }            
+        }
+    },
+    directives: {
+        compositionend: {
+            params: ['textAreaState'],
+            inserted: function (el) {
+                let text='',state=false,str='';
+                el.addEventListener('input',(e)=>{
+                    text = e.target.value  
+                    if(state){
+                        text = text + str
+                        console.log(text)
+                    }     
+                    else{
+                        console.log(text)
+                    }            
+                    //console.log(text)
+                    //this.params.textAreaState = true;
+                });                
+                el.addEventListener('compositionstart',(e)=>{
+                    console.log(e)
+                    state = true
+                    //this.params.textAreaState = true;
+                });
+                el.addEventListener('compositionend',(e)=>{
+                    str = e.data
+                    state = false
+                    //this.params.textAreaState = true;
+                })                
             }
         }
     },

@@ -6,20 +6,122 @@
     .modelfoot{
         display: none !important;
     }
+    .defaultBtn{
+        color: #2d8cf0;
+        padding: 0;
+    }
+    .deleteBtn{
+        color: #ed3f14;
+        padding: 0;
+    }
+    .deleteBtn:hover{
+        color: #ed3f14;
+    }
+    table.gridtable {
+        font-family: verdana,arial,sans-serif;
+        font-size:11px;
+        width: 100%;
+        color:#333333;
+        border-width: 1px;
+        border-color: #e9eaec;
+        border-collapse: collapse;
+    }
+    table.gridtable th {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #e9eaec;
+        background-color: #f8f8f9;
+        white-space: nowrap;
+    }
+    table.gridtable td {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: #e9eaec;
+        background-color: #ffffff;
+    }    
+    .action {
+        min-width: 200px;
+        text-align: center;
+    }
+    .action .api{
+        max-height: 500px;
+    }
+    .planTable{
+        border: 1px solid #dddee1;
+        border-collapse: collapse;   
+        border-radius: 4px; 
+        padding: 5px;
+        width: 100%;
+        text-align:left;  
+    } 
+    .tableHit {
+        text-align: center;
+        padding-top: 5px;
+        border: 1px solid #e9eaec;
+    }     
 </style>
 <template>
 <div>
     <Row type="flex" justify="center">
         <Col span="23">
-            <Table border :columns="configTable.columns" :data="configTable.data"></Table>
+            <table class="gridtable">
+                <thead>
+                    <tr>
+                        <th v-for="(item,index) in configTable.columns">{{item.title}}</th>                                            
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item,index) in configTable.data">
+                        <td>{{item.name}}</td>
+                        <td>{{item.productLine}}</td>
+                        <td>{{item.version}}</td>
+                        <td>{{item.versionRange}}</td>
+                        <td>{{item.md5}}</td>
+                        <td>{{item.recomPolicy}}</td>
+                        <td>{{item.popup}}</td>
+                        <td>{{item.addTimes}}</td>
+                        <td>
+                            <span @click.capture="statusConfirm($event,item,index)">
+                                <i-switch :value="item.status">
+                                    <span slot="open">开</span>
+                                    <span slot="close">关</span>
+                                </i-switch>  
+                            </span>                      
+                        </td>
+                        <td class="action">
+                            <Poptip placement="bottom-end" width="600">
+                                <Button class="defaultBtn" @click="getUpdatePlan(item.id)" type="text">更新计划</Button>
+                                <div class="api" slot="content">
+                                    <table class="planTable" v-if="planTable">
+                                        <th v-for="(item,index) in updatePlan.columns">{{item.title}}</th>      
+                                        <tr v-for="(items,idx) in updatePlanSort">
+                                            <td class="time">{{items.time}}</td>
+                                            <td class="area">{{items.areaStr}}</td>
+                                            <td class="user">{{items.user}}</td>
+                                        </tr>															
+                                    </table>
+                                    <p v-if="!planTable">暂无更新计划...</p>	
+                                </div>
+                            </Poptip> 
+                            <Button class="defaultBtn" @click="editConfig({state:true,val:item})" type="text">编辑</Button>
+                            <Button class="defaultBtn" @click="showEidtHistory(item.id)"type="text">修改日志</Button>
+                            <Button class="deleteBtn" @click="deleteConfig({id:item.id,idx:index})" type="text">删除</Button>                       
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p v-if="configTable.data.length==0" class="tableHit">暂无数据...</p>           
             <div class="page">
                 <Page :total="totalPage" @on-change="nextPage"></Page>
             </div>
         </Col>
 
     </Row>
-    <Modal v-model="editHistory.state">
-        <Table border :columns="editHistory.columns" :data="editHistory.data"></Table>
+    <Modal title="修改日志" v-model="editHistory.state">
+       
+        <Table border height="300" :columns="editHistory.columns" :data="editHistory.data"></Table>
         <div slot="footer"></div>
     </Modal>
 </div>
@@ -36,6 +138,24 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 page: {
                    pagenum: 1,
                    size: 5 
+                },
+                updatePlan: {
+                    ellipsis: true,
+                    columns: [
+                        {
+                            title: '时间',
+                            key: 'time'
+                        },
+                        {
+                            title: '地区',
+                            key: 'areaStr'
+                        },
+                        {
+                            title: '用户',
+                            key: 'user'
+                        }                       
+                    ],
+                    data:[]                    
                 },
                 editHistory: {
                     scroll: true,
@@ -102,9 +222,6 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         {
                             title: '操作',
                             key: 'action',
-                            width: 200,
-                            align: 'center',
-                            render: this.operation
                         }
                     ],
                     data: []
@@ -126,18 +243,20 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 editConfigData: 'editConfigData',
                 configEditTime: 'configEditTime',
             }),	
+            planTable () {
+                return (this.updatePlan.data.length==0)?false:true;
+            },
+            updatePlanSort () {
+                return this.updatePlan.data.sort((first,second)=>{
+                    return DateFormat.compareDate(DateFormat.formatToDate(first.time),DateFormat.formatToDate(second.time))
+                })
+            },	              
         },
         methods: {
             nextPage (value) {
                 this.page.pagenum = value;
                 this.getAppConfig(this.page);
-            },
-            show(value) {
-               console.log(value) 
-            },
-            ok () {
-                this.$Message.info('点击了确定');
-            },            
+            },         
             //获取配置信息
             getAppConfig (params) {
                 return operationService.getAppConfig(params).then((res) => {
@@ -148,20 +267,58 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         this.$Message.error(res.data.message);
                     }
                 });
-            }, 
+            },
+            // 获取更新计划信息 
+            getUpdatePlan (params) {
+                let param = {app_info_id:params};
+                return operationService.getUpdatePlan(param).then(res => {
+                    if(res.status ==200 && res.data.message=='ok'){
+                        if(res.data.data.length>0){
+                            this.showEditPlan(res.data.data)
+                        }else
+                        this.updatePlan.data = [];
+                    } else{
+                        this.$Message.error(res.data.message);
+                    }
+                });
+            },   
+            //展示编辑状态下的更新计划
+            showEditPlan (data) {
+                let plan = [];
+                for(let item in data) {
+                    this.getAreaName(data[item].region).then((res)=>{
+                        let singePlan={},arrStr = [];
+                        singePlan.id = data[item].id;
+                        singePlan.time = data[item].time;
+                        singePlan.user = (data[item].white_list=='')?'全部':data[item].white_list;
+                        singePlan.area = res;
+                        for(let item in res){
+                            arrStr.push(res[item].label);
+                            if(res[item].value == '100000'){
+                                arrStr=['全国']; 
+                            }   
+                        }
+                        singePlan.areaStr = arrStr.join(',');
+                        plan.push(singePlan)
+                        this.updatePlan.data = plan;
+                    });
+                }
+            
+            },
+            //根据地区value值获取对应名称        
+            getAreaName (params) {
+                let param = {ids:params};
+                return operationService.getAreaName(param).then(res => {
+                    if(res.status ==200 && res.data.message=='ok'){
+                        return res.data.data;          
+                    } 
+                    else{
+                        this.$Message.error(res.data.message);
+                    }
+                });
+            },                           
             transitionList (type,val) {
                 switch (type) {
-                    case 'productLine':
-                        if(val == 0) {
-                            return 'KOP'
-                        }
-                        if(val == 1) {
-                            return 'ECP'
-                        }
-                        if(val == 2) {
-                            return 'IOP'
-                        }
-                    break;
                     case 'recomPolicy':
                         if(val == 0) {
                             return '推荐更新'
@@ -206,15 +363,34 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         appInfo:'配置信息',updatePlan:'更新计划',versionname:'版本名',
                         versioncode:'版本号',version_max:'覆盖版本上限',version_min:'覆盖版本下限',
                         md5:'md5',product_line:'产品线',update_type:'更新类型',popup_type:'弹窗类型',
-                        update_content:'更新内容',status:'状态',filename:'文件名'
+                        update_content:'更新内容',status:'状态',filename:'文件名',
                 }
                 for(let i in arr){
-                    str.push(content[arr[i]])
+                    if(arr[i]!=='filesize' && arr[i]!=='url'){
+                        str.push(content[arr[i]])
+                    }
                 }
                 return str.join(',');
-            },                     
-            setConfigStatus (params) {
-               let param = {id:parseInt(params.id),status:Number(params.status)}
+            },   
+            statusConfirm (e,params,idx) {
+                e.stopImmediatePropagation();
+                this.$Modal.confirm({
+                    title: '确认更改状态',
+                    content: '<p>确认要更改此条配置信息状态么?</p>',
+                    onOk: () => {
+                        this.setConfigStatus (params,idx);
+                    },
+                    onCancel: () => {
+                        return
+                    }
+                });                  
+            }, 
+            //状态切换                 
+            setConfigStatus (params,idx) {
+                let data = Object.assign({}, params);
+                data.status = !data.status
+                this.configTable.data.splice(idx, 1, data);
+                let param = {id:parseInt(params.id),status:Number(data.status)}
                 return operationService.setConfigStatus(param).then(res => {
                     if(res.status ==200 && res.data.message=='ok'){
                         this.$Message.success('状态更改成功');
@@ -222,19 +398,34 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         this.$Message.error(res.data.message);
                     }
                 });
-            },       
+            },  
+            //编辑 
+            editConfig (val) {
+                this.$store.commit('SET_EDIT_CONFIG_DATA',val); 
+            }, 
+            //删除   
             deleteConfig (params) {  
-                return operationService.deleteConfig(params.id).then(res => {
-                    if(res.status ==200 && res.data.message=='ok'){
-                        this.configTable.data.splice(params.idx, 1);
-                        this.$Message.success('删除成功');
-                    } else{
-                        this.$Message.error(res.data.message);
+                if(this.editConfigData.state && this.editConfigData.val.id==params.id){
+                    this.$Message.warning('此条配置信息正处于编辑状态，请提交或取消后重试！');
+                    return
+                }
+                this.$Modal.confirm({
+                    title: '确认删除',
+                    content: '<p>确认要删除此条配置信息么?</p>',
+                    onOk: () => {
+                        return operationService.deleteConfig(params.id).then(res => {
+                            if(res.status ==200 && res.data.message=='ok'){
+                                this.configTable.data.splice(params.idx, 1);
+                                this.$Message.success('删除成功');
+                            } else{
+                                this.$Message.error(res.data.message);
+                            }
+                        });
+                    },
+                    onCancel: () => {
+                        return
                     }
-                });
-            },              
-            remove(index) {
-                this.data6.splice(index, 1);
+                });  
             },
             showEidtHistory (params) {
                 let param = {app_info_id:params};
@@ -253,7 +444,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 for(let item in tableShowData) {
                     let raw = {
                         name: tableShowData[item].versionname,
-                        productLine: this.transitionList('productLine',tableShowData[item].product_line),
+                        productLine: tableShowData[item].product_line,
                         version: tableShowData[item].versioncode,
                         versionRange: `${tableShowData[item].version_min}~${tableShowData[item].version_max}`,
                         md5: tableShowData[item].md5,
@@ -268,15 +459,18 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         update_type: tableShowData[item].update_type,
                         popup_type: tableShowData[item].popup_type,
                         filename: tableShowData[item].filename,
+                        filesize: tableShowData[item].filesize,
                         versionname: tableShowData[item].versionname,
                         versioncode: tableShowData[item].versioncode,
                         update_content: tableShowData[item].update_content,
                         id: tableShowData[item].id,
+                        url: tableShowData[item].url,
                     }
                     rowData.push(raw);
                 }
                 this.configTable.data = rowData;
             },
+            //处理修改日志数据
             showEditHistoryData (res) {
                 let tableShowData = Object.assign({}, res),rowData = [];
                 for(let item in tableShowData) {
@@ -289,96 +483,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                     rowData.push(raw);
                 }
                 this.editHistory.data = rowData;
-            },            
-            switchState(h, params) {
-                return h('div', [
-                            h('i-switch', {
-                                props: {
-                                    value: params.row.status,
-                                },
-                                style: {
-                                    'text-align': 'center'
-                                },                                
-                                on: {
-                                    'on-change': (value) => {
-                                        this.setConfigStatus({id:params.row.id,status:value})
-                                    }
-                                }
-                            }, )
-                        ]);
-            },
-            operation (h, params) {
-                return h('div', [
-                    h('Button', {
-                        props: {
-                            type: 'text',
-                            size: 'small'
-                        },
-                        style: {
-                            'color': '#2d8cf0'
-                        },                          
-                        on: {
-                            click: () => {
-                                this.$store.commit('SET_EDIT_CONFIG_DATA',{state:true,val:params.row});
-                            }
-                        }
-                    }, '编辑'),
-                    // h('Button', {
-                    //     props: {
-                    //         type: 'text',
-                    //         size: 'small',
-                    //     },
-                    //     style: {
-                    //         'color': '#2d8cf0'
-                    //     },                          
-                    //     on: {
-                    //         click: () => {
-                                
-                    //         }
-                    //     }
-                    // }, '更新计划'),
-                    h('Button', {
-                        props: {
-                            type: 'text',
-                            size: 'small',
-                        },
-                        style: {
-                            'color': '#2d8cf0'
-                        },                          
-                        on: {
-                            click: () => {
-                                this.showEidtHistory(params.row.id)
-                            }
-                        }
-                    }, '修改日志'),
-                    h('Button', {
-                        props: {
-                            type: 'text',
-                            size: 'small',
-                        },
-                        style: {
-                            'color': '#ed3f14'
-                        },                          
-                        on: {
-                            click: () => {
-                                this.$Modal.confirm({
-                                    title: '确认要删除',
-                                    content: '<p>确认要删除此条配置信息么?</p>',
-                                    onOk: () => {
-                                         this.deleteConfig({id:params.row.id,idx:params.index})
-                                    },
-                                    onCancel: () => {
-                                        return
-                                    }
-                                });     
-                            }
-                        }
-                    }, '删除'),                                        
-                ]);
-            },            
-            getSelect(value) {
-                console.log(value)
-            }
+            }, 
         }
     }
 </script>

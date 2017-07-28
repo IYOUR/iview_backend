@@ -103,36 +103,33 @@
                 })
             },
             //处理返回数据
-            handleResultData(index,array,res,item) {				
+            handleResultData(index,array,res,item) {	
+                let toDay,lastDay,toDayLth=res.toDay.data.length,
+                    lastDayLth=res.lastDay.data.length;			
                 if (item === 'charge'){
-                    let toDay,lastDay;
-                    toDay = (res.toDay.data.length>0) ? (this.counter(res.toDay.data,item)/100).toFixed(2):'暂无';
-                    lastDay =  (res.toDay.data.length>0 && res.lastDay.data.length>=res.toDay.data.length) ? (this.counter(res.lastDay.data,item)/100).toFixed(2):'暂无';
+                    toDay = (toDayLth>0) ? (this.counter(res.toDay.data,item,toDayLth)/100).toFixed(2):'暂无';
+                    lastDay =  (toDayLth>0 && lastDayLth>=toDayLth) ? (this.counter(res.lastDay.data,item,toDayLth)/100).toFixed(2):'暂无';
                     
                     array[index].num = isNaN(toDay)?toDay:`￥${toDay}`;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];	
                 }
                 else if (item === 'new') {
-                    let toDay,lastDay;
-                    
-                    toDay = (res.toDay.data.length>0) ? this.counter(res.toDay.data,item):'暂无';
-                    lastDay =  (res.toDay.data.length>0 && res.lastDay.data.length>=res.toDay.data.length) ? this.counter(res.lastDay.data,item):'暂无';
+                    toDay = (toDayLth>0) ? this.counter(res.toDay.data,item,toDayLth):'暂无';
+                    lastDay =  (toDayLth>0 && lastDayLth>=toDayLth) ? this.counter(res.lastDay.data,item,toDayLth):'暂无';
 
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
                 }
                 else if (item === 'in_parks') {
-                    let toDay,lastDay;
-                    toDay = (res.toDay.data.length>0) ? res.toDay.data[res.toDay.data.length-1][item]:'暂无';
-                    lastDay =  (res.toDay.data.length>0 && res.lastDay.data.length>=res.toDay.data.length) ? res.lastDay.data[res.toDay.data.length-1][item]:'暂无';
+                    toDay = (toDayLth>0) ? res.toDay.data[toDayLth-1][item]:'暂无';
+                    lastDay =  (toDayLth>0 && lastDayLth>=toDayLth) ? res.lastDay.data[toDayLth-1][item]:'暂无';
                     
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
                 }                
                 else{
-                    let toDay,lastDay;
-                    toDay = (res.toDay.data.length>0) ? this.counter(res.toDay.data,item):'暂无';
-                    lastDay =  (res.toDay.data.length>0 && res.lastDay.data.length>=res.toDay.data.length) ? this.counter(res.lastDay.data,item):'暂无';
+                    toDay = (toDayLth>0) ? this.counter(res.toDay.data,item,toDayLth):'暂无';
+                    lastDay =  (toDayLth>0 && lastDayLth>=toDayLth) ? this.counter(res.lastDay.data,item,toDayLth):'暂无';
                     
                     array[index].num = toDay;
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];
@@ -155,9 +152,9 @@
                 }
             },
             //累加计算
-            counter(arr,item) {
+            counter(arr,item,length) {
                 let num = 0;
-                for(let i=0;i<arr.length;i++) {
+                for(let i=0;i<length;i++) {
                     num = num +arr[i][item]
                 }
                 return num;
