@@ -71,7 +71,7 @@
     }
     .userinfo{
         height: 60px;
-        width: 250px;
+        width: 25%;
         font-size: 14px;
         line-height: 60px;
         text-align: center;
@@ -84,6 +84,9 @@
     }
     .userinfo span{
         cursor: pointer;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;        
     }
     .userinfo i{
         padding-right: 3px;
@@ -122,12 +125,12 @@
                     <span class="header-title">iData经营分析平台</span>
                     <div class="userinfo">
                         <Row>
-                            <Col span="8">
+                            <Col span="10">
                                 <div>
-                                    <span><i class="iconfont irain-yonghu"></i>{{nickname}}</span>
+                                    <span><i class="iconfont irain-yonghu"></i>{{userInfo.nickName}}</span>
                                 </div>
                             </Col>
-                            <Col span="10">
+                            <Col span="8">
                                 <div>
                                     <span @click="modifyPassWord"><i class="iconfont irain-shezhi2"></i>修改密码</span>
                                 </div>
@@ -152,16 +155,19 @@
             </i-col>
         </Row>
 
-          <Modal v-model="modal1" title="修改密码" @on-ok="comfirmModifyPS"  @on-cancel="cancel" >
+          <Modal v-model="passwordModel" title="修改密码或昵称" :loading="loading" @on-ok="comfirmModify"  @on-cancel="cancel" >
             <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="100">
+                <Form-item label="昵称" prop="nickName">
+                    <Input v-model="formValidate.nickName" placeholder="请输入昵称"></Input>
+                </Form-item>            
                 <Form-item label="原密码" prop="oldPassword">
-                    <Input v-model="formValidate.oldPassword" placeholder="请输入原始密码"></Input>
+                    <Input v-model="formValidate.oldPassword" type="password" placeholder="请输入原始密码"></Input>
                 </Form-item>
                 <Form-item label="新密码" prop="newPassword">
-                    <Input v-model="formValidate.newPassword" placeholder="请输入新密码"></Input>
+                    <Input v-model="formValidate.newPassword" type="password" placeholder="请输入新密码"></Input>
                 </Form-item>
                  <Form-item label="确认新密码" prop="resetPassword">
-                    <Input v-model="formValidate.resetPassword" placeholder="请再次输入新密码"></Input>
+                    <Input v-model="formValidate.resetPassword" type="password" placeholder="请再次输入新密码"></Input>
                 </Form-item>
             </Form>
         </Modal>
@@ -172,8 +178,10 @@
 </template>
 
 <script>
+import * as userService from '../api/user';
     export default {
         data () {
+            
             return {
                 openNames: [this.$route.matched[0].name],
                 curUserName : sessionStorage.getItem('user').replace(/\"/g, ""),
@@ -182,21 +190,28 @@
                 spanRight: 21,
                 logoIsDisplay: false,
                 loading: true,
-                modal1: false,
+                passwordModel: false,
                 formValidate: {
+                    nickName: '',
                     oldPassword: '',
                     newPassword: '',
                     resetPassword:''
-                },
+                },             
                 ruleValidate: {
+                    nickName: [
+                        { required: true, message: '昵称不能为空', trigger: 'blur' },
+                        { type: 'string', min: 2, message: '昵称长度不能小于2位', trigger: 'blur' },
+                        { type: 'string', max: 10, message: '昵称长度不能大于10位', trigger: 'blur' }
+                    ],                    
                     oldPassword: [
                         { required: true, message: '密码不能为空', trigger: 'blur' }
                     ],
                     newPassword: [
-                        { required: true, message: '密码不能为空', trigger: 'blur' }
+                        { required: true, message: '密码不能为空', trigger: 'blur' },
+                        { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
                     ],
                     resetPassword: [
-                        { required: true, message: '密码不能为空', trigger: 'blur' }
+                        { validator: this.validatePassCheck, trigger: 'blur' }
                     ],
                 }
             }
@@ -214,36 +229,65 @@
                     return 0;
                 }
             },
-            nickname () {
-                return sessionStorage.getItem('nickname');
+            userInfo () {
+                return JSON.parse(sessionStorage.getItem('userInfo'));
             }
         },
         methods: {
+            validatePassCheck (rule, value, callback) {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.formValidate.newPassword) {
+                    callback(new Error('两次输入密码不一致!'));
+                } else {
+                    callback();
+                }
+            },               
             modifyPassWord() {
-                this.modal1 = true;    
+                this.formValidate.nickName = this.userInfo.nickName;
+                this.passwordModel = true;    
             },
             logout() {
                 this.$router.push('/login');
             },
-            comfirmModifyPS() {
-                return false;
+            comfirmModify() {
                 this.$refs.formValidate.validate((valid) => {
                     if (valid) {
-                         this.modal1 = false;
-                //         this.loading = false;
-                        this.$Message.success('提交成功!');
+                        let param = {
+                            userName: this.userInfo.userName,
+                            val:{
+                                nickname: this.formValidate.nickName,
+                                password: this.formValidate.newPassword,
+                                oldpassword: this.formValidate.oldPassword
+                            }
+                        };
+                        this.setPassword(param);
                     } else {
                         this.$Message.error('表单验证失败!');
-                        return false;
+                        this.passwordModel = false;
                     }
                 })    
             },
             cancel(){
-                this.modal1 = false;
+                this.passwordModel = false;
+                this.$refs.formValidate.resetFields();
             },
             menuSelect(name) {
                  this.$router.push({ path: name });
-            }
+            },
+            setPassword (params) {
+                return userService.setPassword(params).then(res => {
+                    if(res.status ==200 && res.data.message=='ok'){
+                        this.$Message.success('修改成功!');
+                        this.userInfo.nickName = params.val.nickname;
+                        sessionStorage.setItem('user', JSON.stringify(this.userInfo));
+                        this.cancel();
+                    } else{
+                        this.passwordModel = false;
+                        this.$Message.error(res.data.message);
+                    }
+                });
+            },                
           
         },
         mounted(){

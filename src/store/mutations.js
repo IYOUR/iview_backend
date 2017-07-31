@@ -6,7 +6,7 @@
 
 
 export default {
-
+    //停车场数据
     SET_PROVINCE_LIST: (state, data) => {
       state.provinceList = data
     },
@@ -47,6 +47,7 @@ export default {
       state.rankData = data
     }, 
 
+    //app更新配置
     SET_ADDPLAN_SHOW : (state, data) => {
       state.showAddPlan = data
     },     
@@ -63,6 +64,9 @@ export default {
       state.configEditTime = data
     },    
     SET_PREVIEW_STATE : (state, data) => {
-      state.previewInfo = data
-    },       
+      state.previewInfo = data 
+    },   
+    SET_CONFIRM_EDIT : (state, data) => {
+      state.confirmEdit = data 
+    },         
 }

@@ -120,7 +120,7 @@ export default {
     },    
 
 
-
+    //实时数据
     currentPageName: '',
     realTimeTabs:{
         tabOption:[
@@ -198,7 +198,7 @@ export default {
         data: []
     }, 
 
-
+    //停车数据详情
     parkDetailData: {
         tableSection: [],
         paySection:[]        
@@ -265,7 +265,7 @@ export default {
 
 
 
-
+    //支付数据详情
     paymentDetailData: {
         tableSection: [],
         paySection:[]
@@ -326,7 +326,7 @@ export default {
     }, 
     
     
-
+    //app更新配置
     showAddPlan: false,
     updatePlan: [],
     planId: [],
@@ -350,4 +350,5 @@ export default {
             filename: ''            
         }
     },
+    confirmEdit: false,
 };

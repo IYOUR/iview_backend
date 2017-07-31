@@ -112,8 +112,6 @@
                                     </Tooltip>
                                 </td>
                                 <td>推荐更新</td>
-                                <td><span class="edit" @click="editPlan({idx:index,val:item,id:item.id})">修改</span></td>
-                                <td><span class="delete" @click="deletePlan({idx:index,id:item.id})">删除</span></td>
                             </tr>															
                         </table>	
                     </Form-item>
@@ -125,8 +123,8 @@
                         <span>{{info.update_content}}</span>
                     </Form-item>     
                     <Form-item>
-                        <Button type="primary" @click="close">确定</Button>
-                        <Button type="ghost" @click="cancel" style="margin-left: 15px">取消编辑</Button>
+                        <Button type="primary" @click="submit">确定</Button>
+                        <Button type="ghost" @click="cancel" style="margin-left: 15px">返回编辑</Button>
                     </Form-item>    
                 </Col>
             </Row>                     
@@ -212,17 +210,13 @@ export default {
             }
 
         }, 
-        close () {
-            this.previewInfo.state = false;
-            this.$store.commit('SET_PREVIEW_STATE',this.previewInfo);
+        submit () {
+            this.$store.commit('SET_CONFIRM_EDIT',true);
+            this.cancel();
         },
         cancel () {
-            this.close();
-            this.editConfigData.state = false;
-            this.editConfigData.val = {};
-            this.$store.commit('SET_EDIT_CONFIG_DATA',this.editConfigData); 
-            this.$store.commit('SET_ADDPLAN_ADD',[]);
-            this.$store.commit('SET_PLAN_ID',[]);
+            this.previewInfo.state = false;
+            this.$store.commit('SET_PREVIEW_STATE',this.previewInfo);
         },                           
     },           
 }

@@ -96,7 +96,7 @@
                         <Input v-model="info.product_line" readonly></Input>
                     </Form-item>
                     <Form-item label="推荐策略:">
-                        <Radio-group v-model="info.update_type">
+                        <Radio-group v-model="info.update_type" @on-change="selectUpType">
                             <Radio label="0">推荐更新</Radio>
                             <Radio label="1">强制更新</Radio>
                         </Radio-group>
@@ -104,8 +104,8 @@
                     <Form-item label="弹窗策略:">
                         <Radio-group v-model="info.popup_type">
                             <Radio label="0">每次启动弹窗</Radio>
-                            <Radio label="1">每天弹窗一次</Radio>
-                            <Radio label="2">不弹窗</Radio>
+                            <Radio :disabled="update_type" label="1">每天弹窗一次</Radio>
+                            <Radio :disabled="!update_type" label="2">不弹窗</Radio>
                         </Radio-group>
                     </Form-item>
                 </Col>
@@ -148,7 +148,8 @@
             <Row class="layoutBetween"> 
                 <Col span="9" offset="1">            
                     <Form-item label="更新内容:" prop="update_content">
-                        <Input v-model.trim="info.update_content" @on-change="processtext" @keyup.native="textKeyUp" type="textarea" :maxlength="contentlength" :rows="6" placeholder="45字以内"></Input>
+                    
+                        <Input v-model.trim="info.update_content" @on-change="processtext" @keyup.enter.native="textKeyUp" type="textarea" :maxlength="contentlength" :rows="6" placeholder="45字以内"></Input>
                     </Form-item>     
                     <Form-item>
                         <Button type="primary" @click="submit">提交</Button>
@@ -175,13 +176,14 @@ export default {
                 version_min:'',
                 md5:'',
                 product_line:'',
-                update_type:'',
+                update_type:'0',
                 popup_type:'',
                 update_content:'',
                 filename: '',
                 filesize:'',
                 url:'',
             },
+            textLength: 0,
             iTime: null,  
             textAreaState: false,
             appFormat: ['apk'],
@@ -204,6 +206,7 @@ export default {
             updatePlan: 'updatePlan',
             planId: 'planId',
             editConfigData: 'editConfigData',
+            confirmEdit: 'confirmEdit',
         }),
         uploadHeaders () {
             return {token:sessionStorage.getItem('token')};
@@ -212,6 +215,9 @@ export default {
             return this.updatePlan.sort((first,second)=>{
                 return DateFormat.compareDate(DateFormat.formatToDate(first.time),DateFormat.formatToDate(second.time))
             })
+        },
+        update_type () {
+            return Boolean(parseInt(this.info.update_type));
         }	        
     },  
     watch: {
@@ -227,6 +233,13 @@ export default {
                 }
             },
         },
+        'confirmEdit':{
+            handler:function(newVal,oldVal) {
+                if(newVal) {
+                    this.submit();
+                }
+            } 
+        }
     },            
     methods:{   
         beforeUpload () {
@@ -324,6 +337,7 @@ export default {
                     this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
                     this.$store.commit('SET_ADDPLAN_ADD',[]);
                     this.$store.commit('SET_ADDPLAN_SHOW',false);
+                    this.$store.commit('SET_CONFIRM_EDIT',false);
                     this.reset();
                 } else{
                     this.$Message.error(res.data.message);
@@ -341,6 +355,7 @@ export default {
                      this.$store.commit('SET_EDIT_CONFIG_DATA',this.editConfigData);
                     this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
                     this.$store.commit('SET_ADDPLAN_SHOW',false);
+                    this.$store.commit('SET_CONFIRM_EDIT',false);
                     this.reset();
                 } else{
                     this.$Message.error(res.data.message);
@@ -461,16 +476,24 @@ export default {
                 }
             }); 
         },
+        //选择推荐策略
+        selectUpType () {
+            this.info.popup_type = '';
+        },
         processtext () {
-            let text = this.info.update_content.replace(/(\r\n|\n|\r)/gm,'').trim(); 
-           
-            if((text.length%15)==0&&text.length>0&&text.length<45) {
-                this.info.update_content = this.info.update_content+'\r\n';
-                
-            }  
+        
+                let text = this.info.update_content.replace(/(\r\n|\n|\r)/gm,'').trim(); 
+            
+                if((text.length%15)==0&&text.length>0&&text.length<45) {
+                    this.info.update_content = this.info.update_content+'\r\n';
+                    
+                } 
+ 
+
             
         },
         textKeyUp () {
+            this.textLength = 0;
             // clearTimeout(this.iTime)
             // this.iTime = setTimeout(()=> {
             //     console.warn('keyup')
