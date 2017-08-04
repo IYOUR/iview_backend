@@ -32,7 +32,11 @@ export default {
         'editConfigData':{
             deep:true,
             handler:function(newVal,oldVal){
-                this.activeTab = 'editconfig';
+                if(newVal.state){
+                    this.activeTab = 'editconfig';
+                }else{
+                    this.activeTab = 'editconlist';
+                }
             },
         }
     },        
@@ -45,6 +49,7 @@ export default {
     created () {
         this.$store.commit('SET_ADDPLAN_ADD',[]);
         this.$store.commit('SET_PLAN_ID',[]);
+        this.$store.commit('SET_PREVIEW_STATE',{state:false,val:{}});
     },       
     methods:{
     },

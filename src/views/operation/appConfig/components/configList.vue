@@ -137,7 +137,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 totalPage: 0,
                 page: {
                    pagenum: 1,
-                   size: 5 
+                   size: 10 
                 },
                 updatePlan: {
                     ellipsis: true,
@@ -167,7 +167,8 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         },
                         {
                             title: '操作时间',
-                            key: 'time'
+                            key: 'time',
+                            width:'160'
                         },
                         {
                             title: '操作方式',
@@ -242,6 +243,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
             ...mapState({
                 editConfigData: 'editConfigData',
                 configEditTime: 'configEditTime',
+                previewInfo: 'previewInfo',
             }),	
             planTable () {
                 return (this.updatePlan.data.length==0)?false:true;
@@ -402,6 +404,8 @@ import {mapState, mapActions, mapGetters} from 'vuex';
             //编辑 
             editConfig (val) {
                 this.$store.commit('SET_EDIT_CONFIG_DATA',val); 
+                this.previewInfo.state = false;
+                this.$store.commit('SET_PREVIEW_STATE',this.previewInfo);
             }, 
             //删除   
             deleteConfig (params) {  
@@ -417,6 +421,9 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                             if(res.status ==200 && res.data.message=='ok'){
                                 this.configTable.data.splice(params.idx, 1);
                                 this.$Message.success('删除成功');
+                                if(this.configTable.data.length==0){
+                                    this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
+                                }
                             } else{
                                 this.$Message.error(res.data.message);
                             }

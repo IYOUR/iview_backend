@@ -62,8 +62,8 @@
                 <Col span="5" offset="1">
                     <Form-item label="更新包:">
                         <Upload v-show="!upState.BtnDisabled" action="api/app/uploadfile" :format="appFormat" :headers="uploadHeaders"
-                        name="upload" :on-format-error="appFormatError" :show-upload-list="uploadList" :before-upload="beforeUpload"
-                         :on-success="UploadSuccess" :on-error="uploadError">
+                        name="upload" :on-format-error="appFormatError" :before-upload="beforeUpload"
+                         :on-success="UploadSuccess" :on-error="uploadError" :show-upload-list="uploadList">
                             <Button type="primary" :loading="upState.Btnloading">{{upState.BtnText}}</Button>
                         </Upload>
                         <Button v-show="upState.BtnDisabled" type="primary" :loading="upState.Btnloading">{{upState.BtnText}}</Button>
@@ -148,8 +148,7 @@
             <Row class="layoutBetween"> 
                 <Col span="9" offset="1">            
                     <Form-item label="更新内容:" prop="update_content">
-                    
-                        <Input v-model.trim="info.update_content" @on-change="processtext" @keyup.enter.native="textKeyUp" type="textarea" :maxlength="contentlength" :rows="6" placeholder="45字以内"></Input>
+                        <Input v-model.trim="info.update_content" :maxlength="contentlength" @on-blur="processtext" placeholder="45字以内" type="textarea" :rows="6"></Input>
                     </Form-item>     
                     <Form-item>
                         <Button type="primary" @click="submit">提交</Button>
@@ -166,6 +165,7 @@ import * as operationService from '../../../../api/operation';
 import CONSTANT from '../../../../commons/utils/code';
 import updatePlan from './updatePlan.vue'
 import DateFormat from '../../../../commons/utils/formatDate';
+import Vue from 'vue'
 export default {
     data () {
         return {           
@@ -183,12 +183,12 @@ export default {
                 filesize:'',
                 url:'',
             },
-            textLength: 0,
+            textContent: '',
             iTime: null,  
             textAreaState: false,
             appFormat: ['apk'],
             appMD5: '',
-            contentlength: 47,
+            contentlength: 45,
             md5length: 32,
             isNumber: true,
             changePlan: {},
@@ -218,7 +218,7 @@ export default {
         },
         update_type () {
             return Boolean(parseInt(this.info.update_type));
-        }	        
+        },	        
     },  
     watch: {
         'editConfigData.val':{
@@ -267,6 +267,9 @@ export default {
             this.info.product_line = res.data.packagename;
             this.info.url = res.data.url;
         },
+        upProgress (event, file, fileList) {
+            console.log(file)
+        },
         //文件上传失败
         uploadError (error) {
             this.upState = {
@@ -285,16 +288,20 @@ export default {
             }  
         },
         submit () {
+            
             for(let item in this.info) {
                 if(this.info[item].length == 0){
                     this.$Message.warning('请填写完整信息！');
+                    this.$store.commit('SET_CONFIRM_EDIT',false);
                     return
                 }
             }
             if(this.info.md5 !== this.appMD5){
                 this.$Message.warning('填写MD5值与上传App的MD5值不一致！');
+                this.$store.commit('SET_CONFIRM_EDIT',false);
                 return                
             }
+            this.processtext();
             this.info.version_max = parseInt(this.info.version_max);
             this.info.version_min = parseInt(this.info.version_min);
             this.info.md5 = this.info.md5;
@@ -334,10 +341,6 @@ export default {
             return operationService.setAppConfig(param).then(res => {
                 if(res.status ==200 && res.data.message=='ok'){
                     this.$Message.success('提交成功');
-                    this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
-                    this.$store.commit('SET_ADDPLAN_ADD',[]);
-                    this.$store.commit('SET_ADDPLAN_SHOW',false);
-                    this.$store.commit('SET_CONFIRM_EDIT',false);
                     this.reset();
                 } else{
                     this.$Message.error(res.data.message);
@@ -350,12 +353,6 @@ export default {
             return operationService.updateAppConfig(param).then(res => {
                 if(res.status ==200 && res.data.message=='ok'){
                     this.$Message.success('提交成功');
-                    this.editConfigData.state = false;
-                    this.$store.commit('SET_ADDPLAN_ADD',[]);
-                     this.$store.commit('SET_EDIT_CONFIG_DATA',this.editConfigData);
-                    this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
-                    this.$store.commit('SET_ADDPLAN_SHOW',false);
-                    this.$store.commit('SET_CONFIRM_EDIT',false);
                     this.reset();
                 } else{
                     this.$Message.error(res.data.message);
@@ -427,14 +424,28 @@ export default {
                 version_min:'',
                 md5:'',
                 product_line:'',
-                update_type:'',
+                update_type:'0',
                 popup_type:'',
                 update_content:'',
                 filename: ''
-            } 
+            };
+            this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
+            this.$store.commit('SET_ADDPLAN_SHOW',false);
+            this.$store.commit('SET_CONFIRM_EDIT',false); 
+            this.$store.commit('SET_ADDPLAN_ADD',[]);       
+            this.$store.commit('SET_PLAN_ID',[]); 
+            this.editConfigData.state = false;
+            this.$store.commit('SET_EDIT_CONFIG_DATA',this.editConfigData);   
+            this.$store.commit('SET_PREVIEW_STATE',{state:false,val:{}});                  
         },
         //预览
         preview () {
+            for(let item in this.info) {
+                if(this.info[item].length == 0){
+                    this.$Message.warning('请填写完整信息！');
+                    return
+                }
+            }
             this.$store.commit('SET_PREVIEW_STATE',{state:true,val:this.info});
         },
         addPlan () {
@@ -444,8 +455,12 @@ export default {
         editPlan (value) {
             let option = Object.assign({}, value.val),arr=[];
             for(let idx in option.area){
+                if(option.area[0].value == '100000'){
+                   option.area[0].label = '全国';
+                } 
                 arr.push(JSON.stringify(option.area[idx]))
             }
+            option.user = (option.user=='全部')?'':option.user;
             option.area = arr;
             this.changePlan = {idx:value.idx,val:option,id:value.id};
             this.$store.commit('SET_ADDPLAN_SHOW',true);
@@ -480,26 +495,26 @@ export default {
         selectUpType () {
             this.info.popup_type = '';
         },
-        processtext () {
-        
-                let text = this.info.update_content.replace(/(\r\n|\n|\r)/gm,'').trim(); 
-            
-                if((text.length%15)==0&&text.length>0&&text.length<45) {
-                    this.info.update_content = this.info.update_content+'\r\n';
-                    
-                } 
- 
-
-            
-        },
-        textKeyUp () {
-            this.textLength = 0;
-            // clearTimeout(this.iTime)
-            // this.iTime = setTimeout(()=> {
-            //     console.warn('keyup')
-            //     this.textAreaState = true;
-            //     this.processtext()
-            // }, 800);   
+        processtext () {  
+                let textArr = this.info.update_content.replace(/(\r\n|\n|\r)/gm,'\r\n').split('\r\n');
+                let strInsert = (str)=>{
+                    let arr = str.split('');
+                    const arrCopy = str.split('');
+                    for(let i in arrCopy){
+                        if((i%15==0)&&i>0){
+                            if(i==15){arr.splice(15,0,'\r\n');}   
+                            if(i==30){arr.splice(31,0,'\r\n');}
+                            if(i==45){arr.splice(46,0,'\r\n');}                                                  
+                        }
+                    }
+                    return arr.join('')
+                }
+                for(let i in textArr){
+                    if(textArr[i].length>15){
+                        textArr[i] = strInsert(textArr[i])
+                    }
+                }
+                this.info.update_content = textArr.join('\r\n');
         },
         //转为小写
         lowerCase () {
@@ -513,37 +528,7 @@ export default {
             if (type=='min'&& this.info.version_min<0) {
                 this.info.version_min = Math.abs(this.info.version_min);
             }            
-        }
-    },
-    directives: {
-        compositionend: {
-            params: ['textAreaState'],
-            inserted: function (el) {
-                let text='',state=false,str='';
-                el.addEventListener('input',(e)=>{
-                    text = e.target.value  
-                    if(state){
-                        text = text + str
-                        console.log(text)
-                    }     
-                    else{
-                        console.log(text)
-                    }            
-                    //console.log(text)
-                    //this.params.textAreaState = true;
-                });                
-                el.addEventListener('compositionstart',(e)=>{
-                    console.log(e)
-                    state = true
-                    //this.params.textAreaState = true;
-                });
-                el.addEventListener('compositionend',(e)=>{
-                    str = e.data
-                    state = false
-                    //this.params.textAreaState = true;
-                })                
-            }
-        }
+        },
     },
     components: {
         'update-plan': updatePlan,

@@ -88,9 +88,6 @@
             }
         },        
         methods: {
-            showCharts(name) {
-                console.log("as")
-            },
             createCharts() {
                 for (let item in this.chartLine){
                     this.chartLine[item].val.hideLoading();  

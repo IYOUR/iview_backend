@@ -163,7 +163,6 @@ export default {
             userList: '',
             planTime: '',
             isEeditState: false,
-            planIdArr: [],
         }
     },
     computed: {
@@ -187,8 +186,10 @@ export default {
                 this.planTime = DateFormat.formatToDate(newVal.val.time);
                 this.areaArr = newVal.val.area;
                 this.isEditState = true;
-                if(newVal.val.areaStr == '中国'){
-                    this.checkArea (['{"label":"全国","value":100000}'])
+                if(newVal.val.areaStr == '全国'){
+                    this.checkArea (['{"label":"全国","value":100000}']);            
+                }else{
+                    this.checkArea ([]);
                 }
             }
         },
@@ -244,8 +245,8 @@ export default {
                 this.sendAddPlan(param).then((res)=>{
                     plan.id = res.data.data;
                     this.updatePlan.push(plan);
-                    this.planIdArr.push(res.data.data);
-                    this.$store.commit('SET_PLAN_ID',this.planIdArr);
+                    this.planId.push(res.data.data);
+                    this.$store.commit('SET_PLAN_ID',this.planId);
                     this.$store.commit('SET_ADDPLAN_ADD',this.updatePlan);
                     this.reset();
                 });
@@ -253,13 +254,13 @@ export default {
         },
         // 重置
         reset () {
+            this.cancelSelect('0');
             this.userList = '',
             this.planTime = '',
             this.areaArr = [];
             this.isEditState = false;
             this.$refs.inputFile.value = '';   
             this.ProvinceCode = '100000';
-            this.cancelSelect();
         }, 
         //加载地区信息           
         loadAreaInfo() {
@@ -303,7 +304,7 @@ export default {
         },
         // 取消已选择的地区 
         cancelSelect (value) {
-            if(value||value==0){
+            if(this.areaArr.length>0){
                 let data = JSON.parse(this.areaArr[value]);
                 this.areaArr.splice(value, 1);
                 if(data.value == '100000'){
@@ -313,6 +314,7 @@ export default {
             }
         },
         closeAdd () {
+            this.reset ();
             this.$store.commit('SET_ADDPLAN_SHOW',false);
         },          
         selectProvince(value) {

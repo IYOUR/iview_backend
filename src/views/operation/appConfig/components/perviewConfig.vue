@@ -120,11 +120,11 @@
             <Row class="layoutBetween"> 
                 <Col span="9" offset="1">            
                     <Form-item label="更新内容:" prop="update_content">
-                        <span>{{info.update_content}}</span>
+                        <Input v-model="info.update_content" type="textarea" :rows="6" readonly></Input>
                     </Form-item>     
                     <Form-item>
-                        <Button type="primary" @click="submit">确定</Button>
-                        <Button type="ghost" @click="cancel" style="margin-left: 15px">返回编辑</Button>
+                        <Button type="primary" @click="submit">提交保存</Button>
+                        <Button type="ghost" @click="cancel" style="margin-left: 15px">返回修改</Button>
                     </Form-item>    
                 </Col>
             </Row>                     
@@ -212,7 +212,7 @@ export default {
         }, 
         submit () {
             this.$store.commit('SET_CONFIRM_EDIT',true);
-            this.cancel();
+            //this.cancel();
         },
         cancel () {
             this.previewInfo.state = false;
