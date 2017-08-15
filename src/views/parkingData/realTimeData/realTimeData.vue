@@ -116,10 +116,9 @@ export default {
 		'situation-panel':situationPanel
 	},
 	mounted () {
-	this.$store.commit('SET_CURRENT_PAGNAME',this.currentPage);
-		 this.interval= setInterval(() => {
-				this.$store.dispatch('getCurrentResult',this.queryParam)
-		 }, 600000);
+		this.interval= setInterval(() => {
+			this.$store.dispatch('getCurrentResult',this.queryParam)
+		}, 600000);
 	 },
 	beforeDestroy () {
 		clearInterval(this.interval)

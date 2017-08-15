@@ -150,7 +150,7 @@
                     </Breadcrumb>
                 </div> -->
                 <div class="layout-content">
-                        <router-view></router-view>
+                    <router-view></router-view>
                 </div>
             </i-col>
         </Row>

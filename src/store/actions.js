@@ -102,7 +102,13 @@ export default {
             return res;
         });
     },  
-
+    //获取进场车辆类型数据
+    getCarType: function({commit},params){
+        return situationService.getCarType(params).then(res => {
+            commit('SET_CAR_TYPE', res.data.data);
+            return res;
+        });
+    },  
 
     //获取支付数据详情
     getPaymentDetail: function({commit},params){

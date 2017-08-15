@@ -10,7 +10,10 @@ export default {
     //省份列表
     provinceList: [],
 
-    //省份列表
+    //城市列表
+    cityList: [],
+
+    //集团列表
     companyList: [],
 
     //车场列表
@@ -26,6 +29,13 @@ export default {
     },
 
     //查询参数
+    queryData: {
+        province: '',
+        park_code: '',
+        city: '',
+        date: [],
+        company: ''
+    },
     queryParam: {},
 
     //排行数据
@@ -121,7 +131,6 @@ export default {
 
 
     //实时数据
-    currentPageName: '',
     realTimeTabs:{
         tabOption:[
             {label:'实时进车次数',id:'currentIns',hint:'截止当前时间点，实时进车次数'}, 
@@ -201,7 +210,7 @@ export default {
     //停车数据详情
     parkDetailData: {
         tableSection: [],
-        paySection:[]        
+        carTypeInfo:[]        
     },
     parkDetailTabs:{
         tabOption:[

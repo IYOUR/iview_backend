@@ -42,10 +42,7 @@
         computed: {
             ...mapState({
                 paymentDetailData: 'paymentDetailData'
-            }),	
-            ...mapGetters({
-                exportDate: 'exportCSVdate'
-            })                             
+            }),                          
         },
         mounted:function(){
             this.chartPie = echarts.init(document.getElementById('payWayPie'));
@@ -187,7 +184,7 @@
             //导出数据
             exportData () {
                 this.$refs.table.exportCsv({
-                    filename: `支付渠道金额${this.exportDate}`
+                    filename: '支付渠道金额'
                 });
             },            
         }

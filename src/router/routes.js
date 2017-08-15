@@ -31,9 +31,9 @@ let routes = [{
         name: '停车场数据',
         children: [
             { path: '/situation', component: Situation, name: '停车场数据概况' },
-            { path: '/realTimeData', component: RealTimeData, name: '实时数据' },
-            { path: '/parkingDetail', component: ParkingDetail, name: '停车数据详情' },
-            { path: '/paymentDetail', component: PaymentDetail, name: '支付数据详情' }
+            { path: '/realtime', component: RealTimeData, name: '实时数据' },
+            { path: '/parkingdetail', component: ParkingDetail, name: '停车数据详情' },
+            { path: '/paymentdetail', component: PaymentDetail, name: '支付数据详情' }
         ]
     },
     {
@@ -58,7 +58,7 @@ let routes = [{
         component: Home,
         name: '运营功能',
         children: [
-           { path: '/appConfig', component: AppConfig, name: 'App更新配置' },
+           { path: '/appconfig', component: AppConfig, name: 'App更新配置' },
         ]
     },
     {
@@ -70,7 +70,7 @@ let routes = [{
 
 Vue.use(VueRouter)
 const router = new VueRouter({
-    routes
+    routes,   
 })
 
 export default router;

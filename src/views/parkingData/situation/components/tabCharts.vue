@@ -104,7 +104,8 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                             data: this.filterChartData(['date','date'])
                         },
                         yAxis: {
-                            type: 'value'
+                            type: 'value',
+                            scale: true
                         },
                         series: [
                             {

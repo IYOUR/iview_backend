@@ -15,28 +15,34 @@ export default {
     }, 
     SET_PARK_LIST: (state, data) => {
       state.parkList = data
-    },     
+    },   
+    SET_CITY_LIST: (state, data) => {
+      state.cityList = data
+    },        
     SET_QUERY_RESULT: (state, data) => {
       state.queryResult = data
     },  
+    SET_QUERY_DATA: (state, data) => {
+      state.queryData = data
+    }, 
     SET_QUERY_PARAM: (state, data) => {
       state.queryParam = data
-    },
-    SET_TABLE_DATA: (state, data) => {
-      state.tableData = data
-    },
+    }, 
+    //实时数据
     SET_CURRENT_ALLDATA: (state, data) => {
       state.currentResult.allResult = data
     },
     SET_CURRENT_DATEDATA: (state, data) => {
       state.currentResult.dateResult = data
     },
-    SET_CURRENT_PAGNAME: (state, data) => {
-      state.currentPageName = data
-    },  
+    //停车数据详情
     SET_PARK_DETAIL: (state, data) => {
       state.parkDetailData.tableSection = data
+    },
+    SET_CAR_TYPE: (state, data) => {
+      state.parkDetailData.carTypeInfo = data
     },    
+    //支付数据详情
     SET_PAYMENT_TABLESECTION: (state, data) => {
       state.paymentDetailData.tableSection = data
     },  

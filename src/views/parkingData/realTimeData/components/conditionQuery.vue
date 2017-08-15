@@ -15,42 +15,41 @@
 </style>
 <template>
 	<div class="layout-content-filtrate">
-		<Form :model="queryParam" label-position="right" :label-width="100">
+		<Form :model="queryData" label-position="right" :label-width="100">
 			<row>
 				<Col span="2" class="filtrate-title">
 					<span>条件选择:</span>
 				</col>
 				<Col span="7">
 					<Form-item label="省份:">
-						<Select v-model="queryParam.province" @on-change="selectProvince" clearable placeholder="请选择">
-							<Option v-for="item in provinceList" :value="item.value" :key="item">{{ item.label }}</Option>
+						<Select v-model="queryData.province" @on-change="selectProvince" clearable placeholder="请选择">
+							<Option v-for="item in provinceList" :value="item.value" :key="item.value">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
-					<!-- 实时页面显示 -->
-					<Form-item label="集团:" v-if="currentPage">
-						<Select v-model="queryParam.company" @on-change="selectCompany" filterable clearable placeholder="请选择">
-							<Option v-for="item in companyList" :value="item.value" :key="item">{{ item.label }}</Option>
+					<Form-item label="集团:">
+						<Select v-model="queryData.company" @on-change="selectCompany" filterable clearable placeholder="请选择">
+							<Option v-for="item in companyList" :value="item.value" :key="item.value">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
 				</col>
 				<Col span="7">
 					<Form-item label="城市:">
-						<Select v-model="queryParam.city" @on-change="selectCity" clearable placeholder="请选择">
+						<Select v-model="queryData.city" @on-change="selectCity" clearable placeholder="请选择">
 							<Option value="null" v-if="!showCity" disabled>暂无数据</Option>
-							<Option v-if="showCity" v-for="item in cityList" :value="item.value" :key="item">{{ item.label }}</Option>
+							<Option v-if="showCity" v-for="item in cityList" :value="item.value" :key="item.value">{{ item.label }}</Option>
 						</Select>
 					</Form-item>
 					<!-- 实时页面显示 -->
-					<Form-item label="停车场:" v-if="currentPage">
-						<Select v-model="queryParam.park_code" filterable clearable placeholder="请选择">
+					<Form-item label="停车场:">
+						<Select v-model="queryData.park_code" filterable clearable placeholder="请选择">
 							<Option value="null" v-if="!showPark" disabled>暂无数据</Option>
-							<Option v-if="showPark" v-for="item in parkList" :value="item.value" :key="item">{{ item.label }}</Option>
+							<Option v-if="showPark" v-for="item in parkList" :value="item.value" :key="item.value">{{ item.label }}</Option>
 						</Select>
 					</Form-item>								
 				</col>
 				<Col span="7">
 					<!-- 实时页面显示 -->
-					<Form-item v-if="currentPage">
+					<Form-item>
 						<p class="currentDate">{{currentDate}}</p>
 					</Form-item>					
 					<Form-item>
@@ -77,29 +76,18 @@
 		data() {
 			return {
 				currentDate: '2017-01-01 00:00:00',
-				queryParam: {
-					province: '',
-					park_code: '',
-					city: '',
-					date: [],
-					company: ''
-				},
 				showCity:false,
-				showPark:false,				
-                cityList: [],
-				parkList: [],
+				showPark:false,	
 				resultData: {}
 			}
 		},
 		computed: {
-			//判断当前页面 
-			currentPage () {
-				return this.$route.path==='/realTimeData'?true:false;
-			},
             ...mapState({
                 provinceList: 'provinceList',
                 companyList: 'companyList',
-				//parkList: 'parkList'
+				parkList: 'parkList',
+				cityList: 'cityList',
+				queryData: 'queryData'
             }),			
 		},
         created () {
@@ -108,6 +96,7 @@
         },
         watch: {
             'cityList':{
+				immediate: true,
                 handler(newVal,oldVal){
 					if(newVal.length>0) {
 						this.showCity = true;
@@ -116,13 +105,20 @@
                 },
             },
             'parkList':{
+				immediate: true,
                 handler(newVal,oldVal){
 					if(newVal.length>0) {
 						this.showPark = true;
 					} else 
 					this.showPark = false;
                 },
-            },			
+            },
+			'queryData':{
+				deep:true,
+                handler(newVal,oldVal){
+					this.$store.commit('SET_QUERY_DATA',this.queryData);
+                },			
+			}							
         },		
 		methods: {
             ...mapActions({
@@ -143,7 +139,7 @@
 			},
 			selectCompany(value) {
 				if(value !== ''){
-					this.getparkbycompany({id:value});	
+					this.getParkList({company:value});	
 				}
 			},								
 			//点击查询
@@ -153,13 +149,16 @@
 			},
 			//点击重置
             reset() {
-				this.queryParam = {
+				let data = {
 					province: '',
 					park_code: '',
 					city: '',
 					date: [],
 					company: ''
-				}
+				};
+				this.$store.commit('SET_QUERY_DATA',data);
+				this.$store.commit('SET_CITY_LIST',[]);
+				this.$store.commit('SET_PARK_LIST',[])
             },
 			//加载查询条件信息
 			loadAreaInfo() {
@@ -171,7 +170,7 @@
 			},
             //参数处理
             paramsProcess(type){
-                let queryParam = Object.assign({}, this.queryParam), request = {url:'',param:{}},queryDate;
+                let queryParam = Object.assign({}, this.queryData), request = {url:'',param:{}},queryDate;
 				request.url = 'province/0/day';
 				switch (type) {
 					case 'toDay':
@@ -220,7 +219,8 @@
                         this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
                         return;
                     }; 
-					this.cityList = res.data.data;
+					this.cityList = res.data.data; 
+					this.$store.commit('SET_CITY_LIST',res.data.data)
                 });
             },
 			getParkList(params) {
@@ -230,30 +230,17 @@
                         return;
                     }; 
 					this.parkList = res.data.data;
-				});
-			},
-			getparkbycompany (params) {
-				return situationService.getparkbycompany(params).then(res => {
-                    if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
-                        this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
-                        return;
-                    }; 
-					this.parkList = res.data.data;
+					this.$store.commit('SET_PARK_LIST',res.data.data);
 				});
 			},																												
 		},
 		mounted () {
-			if(this.currentPage) {
-				this.interval= setInterval(() => {
-						this.currentDate = DateFormat.format(new Date(), 'yyyy-MM-dd hh:mm:ss');
-				}, 1000);
-			}
-
+			this.interval= setInterval(() => {
+					this.currentDate = DateFormat.format(new Date(), 'yyyy-MM-dd hh:mm:ss');
+			}, 1000);
 		},
 		beforeDestroy () {
-			if(this.currentPage) {
-				clearInterval(this.interval)
-			}
+			clearInterval(this.interval);
 		}	  		
     }
 </script>

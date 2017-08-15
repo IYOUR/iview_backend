@@ -30,9 +30,11 @@ router.beforeEach((to, from, next) => {
     }
 })
 
-//router.afterEach(transition => {
-//NProgress.done();
-//});
+// router.afterEach(transition => {
+//     setTimeout(()=>{
+//         document.getElementsByClassName("layout-content")[0].scrollTop = 0;
+//     },200)
+// });
 
 new Vue({
     el: '#app',

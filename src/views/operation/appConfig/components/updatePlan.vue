@@ -71,11 +71,11 @@
                         </Form-item>
                         <Form-item label="推送地域:">
                             <Select v-model="ProvinceCode" @on-change="selectProvince" :disabled="slectDisabled" filterable>
-                                <Option v-for="item in provinceItme" :value="item.value" :key="item">{{ item.label }}</Option>
+                                <Option v-for="item in provinceItme" :value="item.value" :key="item.value">{{ item.label }}</Option>
                             </Select>
                             <Card class="areaList" :padding="cardPadding" dis-hover>
                                 <Checkbox-group v-model="areaArr" @on-change="checkArea">
-                                    <Checkbox v-for="item in cityItem" :label="JSON.stringify(item)" :key="item">{{ item.label }}</Checkbox>
+                                    <Checkbox v-for="item in cityItem" :label="JSON.stringify(item)" :key="item.value">{{ item.label }}</Checkbox>
                                 </Checkbox-group>
                             </Card>
                         </Form-item>             

@@ -63,7 +63,7 @@ axios.interceptors.response.use(response => {
         //消息防抖
         clearTimeout(iTime);
         iTime = setTimeout(function () {
-            Message.error('服务器开小差了，请重稍后再试!')
+            Message.error('服务器开小差了，请稍后再试!')
         }, 300);
 
         return Promise.reject(error)

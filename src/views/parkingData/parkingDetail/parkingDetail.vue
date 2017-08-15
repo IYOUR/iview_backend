@@ -52,19 +52,19 @@
 	<div class="layout-content-table">
 		<parking-table></parking-table>
 	</div>
-<!--	<div class="divisionLine"></div>
+	<div class="divisionLine"></div>
 	<div class="layout-content-tablePie">
 		<Row :gutter="16">
 			<Col span="12">
 				<p>进场车辆类型分布</p>
-				<table-pie></table-pie>
+				<cartype-pie></cartype-pie>
 			</Col>
 			<Col span="12">
 				<p>停车时长分布</p>
-				<table-pie></table-pie>
+				<parktimes-pie></parktimes-pie>
 			</Col>
 		</Row>	
-	</div> -->
+	</div>
 	<div class="divisionLine"></div>
 	<div class="layout-content-rankList">
 		<Row :gutter="16">
@@ -81,7 +81,8 @@
 import tabCharts from './components/tabCharts.vue'
 import conditionQuery from '../../../components/parkingData/conditionQuery.vue'
 import parkingTable from './components/parkingTable.vue'
-import tablePie from './components/tablePie.vue'
+import carTypePie from './components/carTypePie.vue'
+import parkTimesPie from './components/parkTimesPie.vue'
 import {mapState, mapActions, mapGetters} from 'vuex';
 export default {
 
@@ -165,9 +166,14 @@ export default {
 		'queryParam':{
 			deep:true,
 			handler:function(newVal,oldVal){
+				newVal.carType = {
+					url : newVal.pastWeek.url.match(/(\S*)\/range/)[1],
+					param : newVal.pastWeek.param
+				}				
 				let rankParam = newVal.defaultDay;
 				rankParam.param.sdate = newVal.defaultDay.param.edate;
 				this.$store.dispatch('getParkDetail',newVal.pastWeek);
+				this.$store.dispatch('getCarType',newVal.carType);
 				this.$store.dispatch('getRankResult',this.packQueryParams(rankParam));
 			}
 		},
@@ -261,7 +267,8 @@ export default {
 		'tab-charts': tabCharts,
 		'condition-query': conditionQuery,
 		'parking-table': parkingTable,
-		'table-pie': tablePie
+		'cartype-pie': carTypePie,
+		'parktimes-pie': parkTimesPie
 	}  
 }
 </script>
