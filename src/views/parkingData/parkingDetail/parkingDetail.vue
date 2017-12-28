@@ -95,7 +95,8 @@ export default {
 					columns: [
 						{
 							title: '名次',
-							key: 'order'
+							key: 'order',
+							width: '70'
 						},
 						{
 							title: '停车场名称',
@@ -118,7 +119,8 @@ export default {
 					columns: [
 						{
 							title: '名次',
-							key: 'order'
+							key: 'order',
+							width: '70'
 						},
 						{
 							title: '停车场名称',
@@ -136,12 +138,13 @@ export default {
 					data: []
 				},
 				{
-					title: '单位时间内进出车数量排行',
+					title: '每小时平均车辆进出数',
 					name: 'finish',
 					columns: [
 						{
 							title: '名次',
-							key: 'order'
+							key: 'order',
+							width: '70'
 						},
 						{
 							title: '停车场名称',
@@ -239,10 +242,10 @@ export default {
 					let data = {};
 						data.num = res[i].data;
 						if(item == 'space_ratio') {
-							data.num = `${(res[i].data/100).toFixed(2)}%`;
+							data.num = `${Math.round(res[i].data/100)}%`;
 						}
 						if(item == 'ins_outs') {
-							data.num = (res[i].data/24).toFixed(2);
+							data.num = Math.round(res[i].data/24);
 						}						
 						data.order = i+1;
 						data.parkName = res[i].parkcode;

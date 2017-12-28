@@ -89,93 +89,109 @@
 </div>
 </template>
 <script>
-    import axios from 'axios';
-    import * as userService from '../api/user';
-    import CONSTANT from '../commons/utils/code';
-    export default {
-        data () {
-            return {
-                formLogin: {
-                    username: '',
-                    password: '',
-                    remember: []
-                },
-                formLoginRules: {
-                    username: [
-                        { required: true, message: '请填写用户名', trigger: 'blur' }
-                    ],
-                    password: [
-                        { required: true, message: '请填写密码', trigger: 'blur' },
-                        { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
-                    ]
-                },
-                pwdVisibility: false
-            }
-        },
-        methods: {
-            handleSubmit(name) {
-                this.$refs[name].validate((valid) => {
-                    sessionStorage.setItem('user', JSON.stringify(this.formLogin.username));
-                    if (valid) {
-                        this.loginNow('abcdef123455667dfdfgahoiajnasjbh')
-                        
-                    } else {
-                        this.$Message.error('表单验证失败!');
-                    }
-                     if(this.formLogin.remember[0] == "记住密码"){
-                        sessionStorage.setItem('username', JSON.stringify(this.formLogin.username));
-                        sessionStorage.setItem('password', JSON.stringify(this.formLogin.password));
-                    }else{
-                        sessionStorage.removeItem('username');
-                        sessionStorage.removeItem('password');
-                    }
-                })
+import md5 from 'md5';
+import axios from 'axios';
+import * as userService from '../api/user';
+import CONSTANT from '../commons/utils/code';
+export default {
+    data () {
+        return {
+            formLogin: {
+                username: '',
+                password: '',
+                remember: []
             },
-            formLoginReset(name){
-                this.$refs[name].resetFields();
+            formLoginRules: {
+                username: [
+                    { required: true, message: '请填写用户名', trigger: 'blur' }
+                ],
+                password: [
+                    { required: true, message: '请填写密码', trigger: 'blur' },
+                    { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+                ]
             },
-            loginNow(params) {
-                axios({
-                url: 'api/token',
-                method: 'post',
-                data: {
-                    key: 'abcdef123455667dfdfgahoiajnasjbh',
-                    username: this.formLogin.username,
-                    password: this.formLogin.password,
-                },
-                transformRequest: [function (data) {
-                    let ret = ''
-                    for (let it in data) {
-                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-                    }
-                    return ret
-                }],
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+            pwdVisibility: false
+        }
+    },
+    methods: {
+        handleSubmit(name) {
+            this.$refs[name].validate((valid) => {
+                if (valid) {
+                    this.loginNow('abcdef123455667dfdfgahoiajnasjbh')
+                    
+                } else {
+                    this.$Message.error('表单验证失败!');
                 }
-                }).then(res=>{
-                    if(res.data.message == 'ok'){
-                        this.$Message.success('登录成功!');
-                        sessionStorage.setItem('token', res.data.data.token);
-                        sessionStorage.setItem('userInfo', JSON.stringify({userName:this.formLogin.username,nickName:res.data.data.nickname}));
-                        this.$router.push({ path: '/situation' });
-                    } else {
-                        this.$Message.error('登录失败,请检查用户名密码是否正确!');
-                    }
-
-                })
-            }
-            
+                    if(this.formLogin.remember[0] == "记住密码"){
+                    sessionStorage.setItem('username', JSON.stringify(this.formLogin.username));
+                    sessionStorage.setItem('password', JSON.stringify(this.formLogin.password));
+                }else{
+                    sessionStorage.removeItem('username');
+                    sessionStorage.removeItem('password');
+                }
+            })
         },
-        mounted() {
-            if(sessionStorage.getItem('username')){
-                this.formLogin.username = JSON.parse(sessionStorage.getItem('username'));
+        formLoginReset(name){
+            this.$refs[name].resetFields();
+        },
+        loginNow(params) {
+            axios({
+            url: 'api/token',
+            method: 'post',
+            data: {
+                key: 'abcdef123455667dfdfgahoiajnasjbh',
+                username: this.formLogin.username,
+                password: this.formLogin.password,
+            },
+            transformRequest: [function (data) {
+                let ret = ''
+                for (let it in data) {
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                }
+                return ret
+            }],
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
-            if(sessionStorage.getItem('password')){
-                this.formLogin.password = JSON.parse(sessionStorage.getItem('password'));
-            }
+            }).then(res=>{
+                if(res.data.message == 'ok'){
+                    //计算服务器时间与本地时间的差值
+                    let timeDiff = res.data.data.time-(Date.parse(new Date())/1000);
+                    let userInfo = JSON.stringify({
+                        userName:this.formLogin.username,
+                        nickName:res.data.data.nickname,
+                        timeDiff:timeDiff,
+                        token: res.data.data.token,
+                        adder: res.data.data.adder,
+                        router: res.data.data.auth,
+                        auth_cid: res.data.data.auth,
+                        auth_park_code: res.data.data.auth_park_code,
+                    });                        //this.$Message.success('登录成功!');
+                    sessionStorage.setItem('token', escape(res.data.data.token));
+                    sessionStorage.setItem('userInfo',escape(userInfo));
+                    if(res.data.data.adder===0){
+                        this.$router.push({ name: 'parksituation'});
+                    }else{
+                        let currentRouter = JSON.parse(res.data.data.auth)
+                        this.$router.push({ name: currentRouter[0].children[0].name});
+                    }
+                } else {
+                    this.$Message.error('登录失败,请检查用户名密码是否正确!');
+                }
+
+            })
+        }
+        
+    },
+    mounted() {
+        if(sessionStorage.getItem('username')){
+            this.formLogin.username = JSON.parse(sessionStorage.getItem('username'));
+        }
+        if(sessionStorage.getItem('password')){
+            this.formLogin.password = JSON.parse(sessionStorage.getItem('password'));
         }
     }
+}
 </script>
 
 

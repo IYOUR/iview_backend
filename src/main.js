@@ -11,8 +11,6 @@ import 'iview/dist/styles/iview.css'
 //import VueClipboard from 'vue-clipboard2'
 import '../static/iconfont/iconfont.css';//iconfont
 
-// Mock.bootstrap();
-
 //Vue.use(VueClipboard)
 Vue.use(Vuex)
 Vue.use(iview)
@@ -20,21 +18,40 @@ Vue.use(iview)
 
 router.beforeEach((to, from, next) => {
     if (to.path == '/login') {
-        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('userInfo');
+        sessionStorage.removeItem('companyList');
+        sessionStorage.removeItem('parkList');
     }
-    let user = JSON.parse(sessionStorage.getItem('user'));
-    if (!user && to.path != '/login') {
-        next({ path: '/login' })
+    let user = JSON.parse(unescape(sessionStorage.getItem('userInfo')));
+    if (user && to.path != '/login') {
+        let router = JSON.parse(user.router) || [];
+        let isExist = (val)=>{
+            return router.some((item)=>{
+                return item.children.some((ele)=>{
+                    return ele.name == val
+                })
+            })
+        }
+        if(user.adder==0){
+            next()
+        } else{
+            if(to.name=='404'){
+                next()
+            }else{
+                (isExist(to.name))? next():next({ path: '/404' });
+            }
+        }   
     } else {
-        next()
+        (to.path == '/login')? next():next({ path: '/login' })
     }
 })
 
-// router.afterEach(transition => {
-//     setTimeout(()=>{
-//         document.getElementsByClassName("layout-content")[0].scrollTop = 0;
-//     },200)
-// });
+router.afterEach(transition => {
+    setTimeout(()=>{
+        if(document.getElementsByClassName("layout-content")[0])
+            document.getElementsByClassName("layout-content")[0].scrollTop = 0;
+    },200)
+});
 
 new Vue({
     el: '#app',

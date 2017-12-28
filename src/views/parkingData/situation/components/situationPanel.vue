@@ -144,10 +144,10 @@
                     array[index].lastMonth = [lastMonth,this.checkResultData(defaultDay,lastMonth)];			
                 }
                 else if (item === 'average') {
-                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[defaultDayLength-1].charge/res.defaultDay.data[defaultDayLength-1].dedup_finish/100):'暂无';
-                    lastDay =  (res.lastDay.data.length>0) ? this.isInvaild(res.lastDay.data[lastDayLength-1].charge/res.lastDay.data[lastDayLength-1].dedup_finish/100):'暂无';
-                    lastWeek =  (res.lastWeek.data.length>0) ? this.isInvaild(res.lastWeek.data[lastWeekLength-1].charge/res.lastWeek.data[lastWeekLength-1].dedup_finish/100):'暂无';
-                    lastMonth =  (res.lastMonth.data.length>0) ? this.isInvaild(res.lastMonth.data[lastMonthLength-1].charge/res.lastMonth.data[lastMonthLength-1].dedup_finish/100):'暂无';
+                    defaultDay = (res.defaultDay.data.length>0) ? this.isInvaild(res.defaultDay.data[defaultDayLength-1].charge/res.defaultDay.data[defaultDayLength-1].dedup_charge_outs/100):'暂无';
+                    lastDay =  (res.lastDay.data.length>0) ? this.isInvaild(res.lastDay.data[lastDayLength-1].charge/res.lastDay.data[lastDayLength-1].dedup_charge_outs/100):'暂无';
+                    lastWeek =  (res.lastWeek.data.length>0) ? this.isInvaild(res.lastWeek.data[lastWeekLength-1].charge/res.lastWeek.data[lastWeekLength-1].dedup_charge_outs/100):'暂无';
+                    lastMonth =  (res.lastMonth.data.length>0) ? this.isInvaild(res.lastMonth.data[lastMonthLength-1].charge/res.lastMonth.data[lastMonthLength-1].dedup_charge_outs/100):'暂无';
                     
                     array[index].num = isNaN(defaultDay)?defaultDay:`￥${defaultDay}`;
                     array[index].lastDay = [lastDay,this.checkResultData(defaultDay,lastDay)];
@@ -184,10 +184,12 @@
             },
             isInvaild(val) {
                 if(!isFinite(val)) {
-                    return "0.00"
+                    return "0"
                 }
-                return val.toFixed(2)
-            }                
+                //let data = Math.round(val).toString().replace(/(?=(?!(\b))(\d{3})+$)/g,",")
+                let data = Math.round(val)
+                return `￥${data}`;
+            },              
         }
                
     }

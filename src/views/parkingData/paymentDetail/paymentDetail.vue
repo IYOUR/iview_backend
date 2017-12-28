@@ -82,13 +82,13 @@
 </template>
 
 <script>
-	import tabCharts from './components/tabCharts.vue'
-	import tabPayCharts from './components/tabPayCharts.vue'	
-	import conditionQuery from '../../../components/parkingData/conditionQuery.vue'
-	import parkingTable from './components/parkingTable.vue'
-	import payTimesPie from './components/payTimesPie.vue'
-	import payWayPie from './components/payWayPie.vue'	
-	import {mapState, mapActions, mapGetters} from 'vuex';	
+import tabCharts from './components/tabCharts.vue'
+import tabPayCharts from './components/tabPayCharts.vue'	
+import conditionQuery from '../../../components/parkingData/conditionQuery.vue'
+import parkingTable from './components/parkingTable.vue'
+import payTimesPie from './components/payTimesPie.vue'
+import payWayPie from './components/payWayPie.vue'	
+import {mapState, mapActions, mapGetters} from 'vuex';	
 export default {
 
 	data (){
@@ -99,7 +99,8 @@ export default {
 					columns: [
 						{
 							title: '名次',
-							key: 'order'
+							key: 'order',
+							width: '70'
 						},
 						{
 							title: '停车场名称',
@@ -121,7 +122,8 @@ export default {
 					columns: [
 						{
 							title: '名次',
-							key: 'order'
+							key: 'order',
+							width: '70'
 						},
 						{
 							title: '停车场名称',
@@ -216,7 +218,7 @@ export default {
 				parkList = JSON.parse(sessionStorage.getItem('parkList'));
 				for(let i=0;i<res.length;i++) {
 					let data = {};
-						data.num = `￥${(res[i].data/100).toFixed(2)}`;
+						data.num = `￥${Math.round(res[i].data/100)}`;
 						data.order = i+1;
 						data.parkName = res[i].parkcode;
 						data.group = res[i].companycode;

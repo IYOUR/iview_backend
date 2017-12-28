@@ -81,10 +81,12 @@
             },
             isInvaild(val) {
                 if(!isFinite(val)) {
-                    return '￥0.00'
+                    return "0"
                 }
-                return `￥${val.toFixed(2)}`
-            }                                  
+                //let data = Math.round(val).toString().replace(/(?=(?!(\b))(\d{3})+$)/g,",")
+                let data = Math.round(val)
+                return `￥${data}`;
+            },                                
         }        
     }
 </script>

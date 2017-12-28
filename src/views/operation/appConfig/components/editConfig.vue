@@ -53,7 +53,10 @@
     }
     .ivu-form-item-content{
         line-height: inherit;
-    }     
+    }   
+    .appPackge{
+        width:100px;
+    }    
 </style>
 <template>
     <div>
@@ -64,11 +67,14 @@
                         <Upload v-show="!upState.BtnDisabled" action="api/app/uploadfile" :format="appFormat" :headers="uploadHeaders"
                         name="upload" :on-format-error="appFormatError" :before-upload="beforeUpload"
                          :on-success="UploadSuccess" :on-error="uploadError" :show-upload-list="uploadList">
-                            <Button type="primary" :loading="upState.Btnloading">{{upState.BtnText}}</Button>
+                            <Button @click="choicePackge('0')" class="appPackge" size="large" icon="social-android" :type="(info.app_type=='0'?'primary':'ghost')" :loading="upState.Btnloading">{{upState.BtnText}}</Button>
                         </Upload>
-                        <Button v-show="upState.BtnDisabled" type="primary" :loading="upState.Btnloading">{{upState.BtnText}}</Button>
+                        <Button class="appPackge" v-show="upState.BtnDisabled" type="ghost" size="large" :loading="upState.Btnloading">{{upState.BtnText}}</Button>
                     </Form-item>
                 </Col>
+                <Col span="3" offset="1">
+                    <Button @click="choicePackge('1')" class="appPackge" type="ghost" size="large" icon="social-apple" :type="(info.app_type=='1'?'primary':'ghost')">IOS</Button>
+                </Col>                
                 <Col span="2">
                     <span class="filename">{{info.filename}}</span>
                 </Col>
@@ -76,13 +82,20 @@
             <Row>
                 <Col span="9" offset="1">
                     <Form-item label="版本名称:">
-                        <Input v-model="info.versionname" readonly></Input>
+                        <Input v-model="info.versionname" :disabled="info.app_type=='0'"></Input>
                     </Form-item>
                     <Form-item label="版本号:">
-                        <Input v-model="info.versioncode" readonly></Input>
+                        <Input v-model="info.versioncode" :disabled="info.app_type=='0'"></Input>
                     </Form-item>
                     <Form-item label="覆盖版本号上限:">
-                        <Input v-model="info.version_max" :number="isNumber" @on-change="numAbsolute('max')" :maxlength="(md5length-22)"></Input>
+                        <Input v-model="info.version_max" :number="isNumber" @on-change="numAbsolute('max')" :maxlength="(md5length-22)" style="float: left;"></Input>
+                        <Tooltip placement="top" style="position:absolute;font-size:16px;margin-left:20px;">
+                            <Icon type="ios-help-outline"></Icon>
+                            <div slot="content">
+                                <p>版本号填写格式:</p>
+                                <p><i>2.3.1=20301</i></p>
+                            </div>                            
+                        </Tooltip>
                     </Form-item>
                     <Form-item label="覆盖版本号下限:">
                         <Input v-model="info.version_min" :number="isNumber" @on-change="numAbsolute('min')" :maxlength="(md5length-22)"></Input>
@@ -90,24 +103,43 @@
                 </Col>
                 <Col span="9" offset="1">
                     <Form-item label="MD5值:">
-                        <Input v-model="info.md5" :maxlength="md5length" @on-change="lowerCase"></Input>
+                        <Input v-model="info.md5" :maxlength="md5length" @on-change="lowerCase" :disabled="info.app_type=='1'"></Input>
                     </Form-item> 
                     <Form-item label="产品线:">
-                        <Input v-model="info.product_line" readonly></Input>
+                        <Input v-model="info.product_line" :disabled="info.app_type=='0'" style="float: left;"></Input>
+                        <Tooltip placement="top" style="position:absolute;font-size:16px;margin-left:20px;">
+                            <Icon type="ios-help-outline"></Icon>
+                            <div slot="content">
+                                <p>产品线填写格式:</p>
+                                <p><i>iop,kop或ecp</i></p>
+                            </div>                            
+                        </Tooltip>                        
                     </Form-item>
-                    <Form-item label="推荐策略:">
+                    <Form-item label="推荐策略:" style="margin-bottom: 0px;">
                         <Radio-group v-model="info.update_type" @on-change="selectUpType">
                             <Radio label="0">推荐更新</Radio>
-                            <Radio label="1">强制更新</Radio>
+                            <Radio :disabled="info.app_type=='1'" label="1">强制更新</Radio>
                         </Radio-group>
                     </Form-item>
-                    <Form-item label="弹窗策略:">
+                    <Form-item label="弹窗策略:" style="margin-bottom: 0px;">
                         <Radio-group v-model="info.popup_type">
                             <Radio label="0">每次启动弹窗</Radio>
                             <Radio :disabled="update_type" label="1">每天弹窗一次</Radio>
                             <Radio :disabled="!update_type" label="2">不弹窗</Radio>
                         </Radio-group>
                     </Form-item>
+                    <Form-item label="推荐网络环境:" style="margin-bottom: 0px;">
+                        <Radio-group v-model="info.network_type">
+                            <Radio label="0">移动网络</Radio>
+                            <Radio label="1">WIFI</Radio>
+                            <Radio label="2">移动网络和WIFI</Radio>
+                        </Radio-group>
+                    </Form-item>                    
+                </Col>
+                <Col span="4">
+                    <p style="height:32px;">
+                        <a style="line-height:32px;margin-left:20px;" href="http://parkingwangupgrade-1253776691.file.myqcloud.com/Hash.exe">校验工具下载</a>
+                    </p>
                 </Col>
             </Row>
             <Row>
@@ -148,7 +180,7 @@
             <Row class="layoutBetween"> 
                 <Col span="9" offset="1">            
                     <Form-item label="更新内容:" prop="update_content">
-                        <Input v-model.trim="info.update_content" :maxlength="contentlength" @on-blur="processtext" placeholder="45字以内" type="textarea" :rows="6"></Input>
+                        <Input v-model.trim="info.update_content" :maxlength="contentlength" @on-blur="processtext" placeholder="45字以内" type="textarea" :autosize="{minRows: 3,minRows: 6}"></Input>
                     </Form-item>     
                     <Form-item>
                         <Button type="primary" @click="submit">提交</Button>
@@ -170,6 +202,7 @@ export default {
     data () {
         return {           
             info:{
+                app_type:'',
                 versionname:'',
                 versioncode:'',
                 version_max:'',
@@ -178,6 +211,7 @@ export default {
                 product_line:'',
                 update_type:'0',
                 popup_type:'',
+                network_type:'',
                 update_content:'',
                 filename: '',
                 filesize:'',
@@ -194,10 +228,10 @@ export default {
             changePlan: {},
             uploadList: false,
             upState:{
-                BtnText:'点击上传',
+                BtnText:'Android',
                 Btnloading:false, 
                 BtnDisabled:false
-            }, 
+            },
         }
     },
     computed: {	
@@ -229,7 +263,7 @@ export default {
                     this.getUpdatePlan(newVal.id)
                 }
                 else {
-                    this.reset();
+                    this.reset('submit');
                 }
             },
         },
@@ -242,6 +276,11 @@ export default {
         }
     },            
     methods:{   
+        choicePackge (type) {
+            this.reset('switch')
+            this.info.app_type=type;
+            
+        },
         beforeUpload () {
             this.upState = {
                 BtnText:'上传中',
@@ -251,7 +290,7 @@ export default {
         },       
         UploadSuccess (res, file) {
             this.upState = {
-                BtnText:'重新上传',
+                BtnText:'Android',
                 Btnloading:false,   
                 BtnDisabled:false            
             }            
@@ -273,7 +312,7 @@ export default {
         //文件上传失败
         uploadError (error) {
             this.upState = {
-                BtnText:'点击上传',
+                BtnText:'Android',
                 Btnloading:false,   
                 BtnDisabled:false            
             }               
@@ -282,32 +321,25 @@ export default {
         appFormatError (res,file) {
             this.$Message.warning('请上传apk文件！');
             this.upState = {
-                BtnText:'点击上传',
+                BtnText:'Android',
                 Btnloading:false,   
                 BtnDisabled:false            
             }  
         },
         submit () {
-            
-            for(let item in this.info) {
-                if(this.info[item].length == 0){
-                    this.$Message.warning('请填写完整信息！');
-                    this.$store.commit('SET_CONFIRM_EDIT',false);
-                    return
-                }
-            }
-            if(this.info.md5 !== this.appMD5){
-                this.$Message.warning('填写MD5值与上传App的MD5值不一致！');
-                this.$store.commit('SET_CONFIRM_EDIT',false);
-                return                
+            if(!this.checkInfo()){
+                return
             }
             this.processtext();
+            this.info.app_type = parseInt(this.info.app_type);
+            this.info.versioncode = parseInt(this.info.versioncode);
             this.info.version_max = parseInt(this.info.version_max);
             this.info.version_min = parseInt(this.info.version_min);
             this.info.md5 = this.info.md5;
             this.info.update_type = parseInt(this.info.update_type);
             this.info.popup_type = parseInt(this.info.popup_type);
-            this.info.filesize = parseInt(this.info.filesize);
+            this.info.network_type = parseInt(this.info.network_type);
+            this.info.filesize = (this.info.app_type==='0')?parseInt(this.info.filesize):0;
             //判断提交状态为编辑或添加
             if(this.editConfigData.state){
                 this.updateAppConfig({id:this.editConfigData.val.id,val:this.info});  
@@ -317,10 +349,41 @@ export default {
             }
                     
         },
+        checkInfo () {
+            if(this.info.app_type.length == 0){
+                this.$Message.warning('请填写完整信息！');
+                return false
+            }
+            if(this.info.app_type=='0'){
+                for(let item in this.info) {
+                    if(this.info[item].length == 0){
+                        this.$Message.warning('请填写完整信息！');
+                        this.$store.commit('SET_CONFIRM_EDIT',false);
+                        return false
+                    }
+                }
+                if(this.info.md5 !== this.appMD5){
+                    this.$Message.warning('填写MD5值与上传App的MD5值不一致！');
+                    this.$store.commit('SET_CONFIRM_EDIT',false);
+                    return false              
+                }
+            }
+            if(this.info.app_type=='1'){
+                for(let item in this.info) {
+                    if(this.info[item].length == 0 && item!='md5' && item!='filename' && item!='url'){
+                        this.$Message.warning('请填写完整信息！');
+                        this.$store.commit('SET_CONFIRM_EDIT',false);
+                        return false
+                    }
+                }  
+            }
+            return true
+        },
         SetEditConfig (value) {
-            this.upState.BtnText = '重新上传';
+            this.upState.BtnText = 'Android';
             this.appMD5 = value.md5;
             this.info = {
+                app_type: value.app_type,
                 versionname: value.versionname,
                 versioncode: value.versioncode,
                 version_max: value.version_max,
@@ -330,8 +393,9 @@ export default {
                 product_line: value.product_line,
                 update_type: value.update_type,
                 popup_type: value.popup_type,
+                network_type: value.network_type,
                 update_content: value.update_content,
-                filename:  value.filename,
+                filename: value.filename,
                 url: value.url,
             } 
         },      
@@ -341,7 +405,7 @@ export default {
             return operationService.setAppConfig(param).then(res => {
                 if(res.status ==200 && res.data.message=='ok'){
                     this.$Message.success('提交成功');
-                    this.reset();
+                    this.reset('submit');
                 } else{
                     this.$Message.error(res.data.message);
                 }
@@ -353,7 +417,7 @@ export default {
             return operationService.updateAppConfig(param).then(res => {
                 if(res.status ==200 && res.data.message=='ok'){
                     this.$Message.success('提交成功');
-                    this.reset();
+                    this.reset('submit');
                 } else{
                     this.$Message.error(res.data.message);
                 }
@@ -415,9 +479,9 @@ export default {
             });              
         }, 
         //重置
-        reset () {
-            this.upState.BtnText = '点击上传';
+        reset (type) {
             this.info = {
+                app_type: this.info.app_type,
                 versionname:'',
                 versioncode:'',
                 version_max:'',
@@ -426,27 +490,27 @@ export default {
                 product_line:'',
                 update_type:'0',
                 popup_type:'',
-                update_content:'',
+                network_type:'',
+                //update_content:'',
                 filename: ''
             };
-            this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
+            if(type=='submit'){
+                this.editConfigData.state = false;
+                this.$store.commit('SET_EDIT_CONFIG_DATA',this.editConfigData);                   
+                this.$store.commit('SET_CONFIG_CONFIG_TIME',new Date());
+                this.$store.commit('SET_ADDPLAN_ADD',[]);       
+                this.$store.commit('SET_PLAN_ID',[]);   
+                this.info.update_content = '';              
+            }
             this.$store.commit('SET_ADDPLAN_SHOW',false);
             this.$store.commit('SET_CONFIRM_EDIT',false); 
-            this.$store.commit('SET_ADDPLAN_ADD',[]);       
-            this.$store.commit('SET_PLAN_ID',[]); 
-            this.editConfigData.state = false;
-            this.$store.commit('SET_EDIT_CONFIG_DATA',this.editConfigData);   
             this.$store.commit('SET_PREVIEW_STATE',{state:false,val:{}});                  
         },
         //预览
         preview () {
-            for(let item in this.info) {
-                if(this.info[item].length == 0){
-                    this.$Message.warning('请填写完整信息！');
-                    return
-                }
+            if(this.checkInfo()){
+                this.$store.commit('SET_PREVIEW_STATE',{state:true,val:this.info});
             }
-            this.$store.commit('SET_PREVIEW_STATE',{state:true,val:this.info});
         },
         addPlan () {
             this.$store.commit('SET_ADDPLAN_SHOW',true);
@@ -495,7 +559,11 @@ export default {
         selectUpType () {
             this.info.popup_type = '';
         },
+        //处理更新内容 每十五字自动换行
         processtext () {  
+                if(!this.info.update_content){
+                    return ""
+                }
                 let textArr = this.info.update_content.replace(/(\r\n|\n|\r)/gm,'\r\n').split('\r\n');
                 let strInsert = (str)=>{
                     let arr = str.split('');

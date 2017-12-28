@@ -78,10 +78,14 @@
 				currentDate: '2017-01-01 00:00:00',
 				showCity:false,
 				showPark:false,	
-				resultData: {}
+				companyPark: [],
+				cityPark: []
 			}
 		},
 		computed: {
+			timeDiff() {
+				return JSON.parse(unescape(sessionStorage.getItem('userInfo'))).timeDiff;
+			},			
             ...mapState({
                 provinceList: 'provinceList',
                 companyList: 'companyList',
@@ -158,14 +162,13 @@
 				};
 				this.$store.commit('SET_QUERY_DATA',data);
 				this.$store.commit('SET_CITY_LIST',[]);
-				this.$store.commit('SET_PARK_LIST',[])
+				this.$store.commit('SET_PARK_LIST',[]);
+				this.query();
             },
 			//加载查询条件信息
 			loadAreaInfo() {
 				if(this.provinceList.length === 0){
 					this.getProvinceList();
-					this.getCompanyList();
-					this.getParkLists();
 				}
 			},
             //参数处理
@@ -229,14 +232,38 @@
                         this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
                         return;
                     }; 
-					this.parkList = res.data.data;
-					this.$store.commit('SET_PARK_LIST',res.data.data);
+					if(params.company){
+						this.companyPark = res.data.data;
+					} else{
+						this.cityPark = res.data.data;
+					}
+					//判断是否为地区和集团的双筛选条件
+					if(this.queryData.company.length !== 0&&(this.queryData.province.length !== 0||this.queryData.city.length !== 0)){
+						this.$store.commit('SET_PARK_LIST',this.progressParkList ());
+					} else{
+						let delay = setTimeout(()=>{
+							this.$store.commit('SET_PARK_LIST',res.data.data)
+						},100);
+					}
 				});
-			},																												
+			},
+			//筛选出地区和集团共有的车场
+			progressParkList () {
+				let arr = [];
+				for(let i in this.cityPark){
+					for(let j in this.companyPark) {
+						if(JSON.stringify(this.cityPark[i])===JSON.stringify(this.companyPark[j])){
+							arr.push(this.cityPark[i])
+						}
+					}
+				}
+				return arr;
+			}																																
 		},
 		mounted () {
 			this.interval= setInterval(() => {
-					this.currentDate = DateFormat.format(new Date(), 'yyyy-MM-dd hh:mm:ss');
+					//本地时间加上和服务器的时间差为线上时间
+					this.currentDate = DateFormat.format(new Date((Date.parse(new Date())/1000+this.timeDiff)*1000), 'yyyy-MM-dd hh:mm:ss');
 			}, 1000);
 		},
 		beforeDestroy () {

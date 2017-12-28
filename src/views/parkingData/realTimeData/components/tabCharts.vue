@@ -29,7 +29,7 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Tooltip placement="left">
+                        <Tooltip :transfer="Boolean(1)" placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                             <div style="white-space: normal" slot="content">
                                 <span>{{item.hint}}</span>
@@ -37,7 +37,7 @@
                         </Tooltip>    
                     </div>
                     <div class="hint">
-                        <Date-picker v-if="datePicker" class="datePicker" v-model="queryDate" :options="disableDate" placement="bottom-end" placeholder="选择日期"></Date-picker> 
+                        <Date-picker class="datePicker" v-model="queryDate" :options="disableDate" placement="bottom-end" placeholder="选择日期"></Date-picker> 
                     </div>
                 </Col>
             </Row>
@@ -72,9 +72,6 @@
             }
         },  
         computed: {
-            datePicker: function() {
-                return this.$route.path==='/realTimeData'?true:false;
-            },
             ...mapState({
                 currentResult: 'currentResult',
                 realTimeTabs: 'realTimeTabs',
@@ -164,7 +161,7 @@
                 return chartLine.data.map((ele)=> {
                     switch (item[1]) {
  						case 'charge':
-                            return (ele.charge/100).toFixed(2);
+                            return Math.round(ele.charge/100);
 							break;   
  						case 'eachCarPay':
                             return (ele.charge/ele.dedup_finish/100).toFixed(2);

@@ -36,7 +36,6 @@ dateformat.format = function (date, fmt) {
 	return fmt;
 };
 
-
 dateformat.formatToDate = function (dateStr) {
 	if (this.isNotEmpty(dateStr)) {
 		return new Date(Date.parse(dateStr.replace(/-/g, '/')));

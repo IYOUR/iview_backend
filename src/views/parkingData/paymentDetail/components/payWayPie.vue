@@ -75,7 +75,7 @@
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                        data: ['停车王钱包','支付宝','微信','现金','银联','其他']
+                        data: ['停车王钱包','支付宝','微信','现金','银联']
                     },
                     series : [
                         {
@@ -119,17 +119,16 @@
                 //计算校验
                 let isInvaild = function (val) {
                     if(!isFinite(val)) {
-                        return 0.00
+                        return 0
                     }
-                    return (val/100).toFixed(2)
+                    return Math.round(val/100)
                 }  
                 let pieData = [
                     {value:isInvaild(add(extract('wallet',res))), name:'停车王钱包'},
                     {value:isInvaild(add(extract('alipay',res))), name:'支付宝'},
                     {value:isInvaild(add(extract('weixin',res))), name:'微信'},
                     {value:isInvaild(add(extract('cash',res))), name:'现金'},
-                    {value:isInvaild(add(extract('uniopay',res))), name:'银联'},
-                    {value:isInvaild(add(extract('unkown',res))), name:'其他'}
+                    {value:isInvaild(add(extract('uniopay',res))), name:'银联'}
                 ];
                 return pieData;
 
@@ -165,12 +164,7 @@
                         type: '银联',
                         money: `￥${(data[4].value)}`,
                         ratio : (!isNaN(data[4].value/sum))? `${(data[4].value/sum*100).toFixed(2)}%`:0
-                    },   
-                    {
-                        type: '其他',
-                        money: `￥${(data[5].value)}`,
-                        ratio : (!isNaN(data[5].value/sum))? `${(data[5].value/sum*100).toFixed(2)}%`:0
-                    },                       
+                    }                     
                 ] 
             },
             getSum(arr) {

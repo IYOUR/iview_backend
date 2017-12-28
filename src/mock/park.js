@@ -9,7 +9,7 @@ import Mock from 'mockjs';
  * 首页列表
  */
 Mock.mock(
-  '/index.php/iop/parks', {
+  '/iop/parks', {
     "code": "1",
     "message": "success",
     "data": [

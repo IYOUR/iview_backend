@@ -30,7 +30,7 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Tooltip placement="left">
+                        <Tooltip :transfer="Boolean(1)" placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                             <div style="white-space: normal" slot="content">
                                 <span>{{item.hint}}</span>
@@ -49,7 +49,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
 
     export default {
         data (){
-            return {              
+            return {     
                 chartLine: {
                     dedup_finish:{val:null,data:['date','dedup_finish'],name:'每日完成停车数量'},
                     finish:{val:null,data:['date','finish'],name:'每日完成停车次数'},
@@ -105,7 +105,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         },
                         yAxis: {
                             type: 'value',
-                            scale: true
+                            // scale: true
                         },
                         series: [
                             {
@@ -127,7 +127,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                             return this.isInvaild(ele.charge/100);
 							break;   
  						case 'eachCarPay':
-                            return this.isInvaild(ele.charge/ele.dedup_finish/100);
+                            return this.isInvaild(ele.charge/ele.dedup_charge_outs/100);
 							break;  
  						case 'eachTimesPay':
                             return this.isInvaild(ele.charge/ele.finish/100);
@@ -143,7 +143,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 if(isNaN(val)) {
                     return 0
                 }
-                return val.toFixed(2)
+                return Math.round(val)
             }             
         }
     }

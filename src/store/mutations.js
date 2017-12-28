@@ -1,9 +1,3 @@
-/**
- * @file mutations
- * Created by haner on 2017/4/5.
- * @brief
- */
-
 
 export default {
     //停车场数据
@@ -74,5 +68,29 @@ export default {
     },   
     SET_CONFIRM_EDIT : (state, data) => {
       state.confirmEdit = data 
-    },         
+    },    
+    
+    //性能监控
+    SET_NETEWORY_DAYDATA: (state, data) => {
+      state.networkResultData.dayData = data
+    },  
+    SET_NETEWORY_RANGEDATA: (state, data) => {
+      state.networkResultData.rangeData = data
+    },  
+
+    //在线支付监控
+    SET_ONLINEPAY_DAYDATA: (state, data) => {
+      state.onlinePayData.dayData = data
+    },  
+    SET_ONLINEPAY_RANGEDATA: (state, data) => {
+      state.onlinePayData.rangeData = data
+    }, 
+    
+    //数据仓库
+    SET_USERCENTER_LIST: (state, data) => {
+      state.userCenter_list = data
+    },       
+    SET_PARKCENTER_LIST: (state, data) => {
+      state.parkCenter_list = data
+    },    
 }

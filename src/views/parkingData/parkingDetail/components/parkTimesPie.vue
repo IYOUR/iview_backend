@@ -91,35 +91,26 @@
             },
             //图表显示数据处理
             handlePieData(res) {
+                //提取为单个数据
                 let extract = function(item,res) {
                     if(res.length!=0){
                         let dataArr = [];
                         res.map((ele,index)=>{
                             dataArr.push(ele[item] || 0);
                         })
-                          return dataArr;
+                        return dataArr;
                     } 
                     else return 0;
                 };
-                //累加计算
-                let add = function(arr) {
-                    if(Array.isArray(arr)){
-                        return arr.reduce(function(x, y){
-                            return x + y;
-                        })
-                    }
-                    else return 0;
-                }
-                let pieData = [
-                    {value:add(extract('duration_10m',res)), name:'10分钟以内'},
-                    {value:add(extract('duration_30m',res)), name:'30分钟以内'},
-                    {value:add(extract('duration_60m',res)), name:'30分钟-60分钟'},
-                    {value:add(extract('duration_120m',res)), name:'60分钟-120分钟'},
-                    {value:add(extract('duration_360m',res)), name:'120分钟-360分钟'},
-                    {value:add(extract('duration_360m_up',res)), name:'360分钟以上'},
-                    {value:add(extract('duration_24h_up',res)), name:'24小时以上'}
-                ];
-                return pieData;
+                return [
+                        {value:this.getSum(extract('duration_10m',res)), name:'10分钟以内'},
+                        {value:this.getSum(extract('duration_30m',res)), name:'30分钟以内'},
+                        {value:this.getSum(extract('duration_60m',res)), name:'30分钟-60分钟'},
+                        {value:this.getSum(extract('duration_120m',res)), name:'60分钟-120分钟'},
+                        {value:this.getSum(extract('duration_360m',res)), name:'120分钟-360分钟'},
+                        {value:this.getSum(extract('duration_360m_up',res)), name:'360分钟以上'},
+                        {value:this.getSum(extract('duration_24h_up',res)), name:'24小时以上'}
+                       ];
 
             },
             showTableData(res) {

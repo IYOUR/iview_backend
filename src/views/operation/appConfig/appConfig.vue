@@ -34,6 +34,7 @@ export default {
             handler:function(newVal,oldVal){
                 if(newVal.state){
                     this.activeTab = 'editconfig';
+                    document.getElementsByClassName("layout-content")[0].scrollTop = 0
                 }else{
                     this.activeTab = 'editconlist';
                 }

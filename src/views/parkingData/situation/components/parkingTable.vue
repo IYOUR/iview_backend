@@ -66,7 +66,7 @@
                         dedup_finish:tableShowData[item].dedup_finish,
                         finish:tableShowData[item].finish,
                         charge:this.isInvaild(tableShowData[item].charge/100),
-                        averageCharge:this.isInvaild(tableShowData[item].charge/tableShowData[item].dedup_finish/100),
+                        averageCharge:this.isInvaild(tableShowData[item].charge/tableShowData[item].dedup_charge_outs/100),
                         eachCharge:this.isInvaild(tableShowData[item].charge/tableShowData[item].finish/100),
                         space:tableShowData[item].space,
                         parks:tableShowData[item].parks,
@@ -77,10 +77,12 @@
             },
             isInvaild(val) {
                 if(!isFinite(val)) {
-                    return '￥0.00'
+                    return "0"
                 }
-                return `￥${val.toFixed(2)}`
-            }                                  
+                //let data = Math.round(val).toString().replace(/(?=(?!(\b))(\d{3})+$)/g,",")
+                let data = Math.round(val)
+                return `￥${data}`;
+            },                                
         }      
     }
 </script>

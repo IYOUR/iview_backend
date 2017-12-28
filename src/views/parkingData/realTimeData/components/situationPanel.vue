@@ -110,7 +110,7 @@
                     toDay = (toDayLth>0) ? (this.counter(res.toDay.data,item,toDayLth)/100).toFixed(2):'暂无';
                     lastDay =  (toDayLth>0 && lastDayLth>=toDayLth) ? (this.counter(res.lastDay.data,item,toDayLth)/100).toFixed(2):'暂无';
                     
-                    array[index].num = isNaN(toDay)?toDay:`￥${toDay}`;
+                    array[index].num = isNaN(toDay)?toDay:this.formatMoney(toDay);
                     array[index].lastDay = [lastDay,this.checkResultData(toDay,lastDay)];	
                 }
                 else if (item === 'new') {
@@ -158,7 +158,12 @@
                     num = num +arr[i][item]
                 }
                 return num;
-            }
+            },
+            formatMoney(val) {
+                //let data = Math.round(val).toString().replace(/(?=(?!(\b))(\d{3})+$)/g,",")
+                let data = Math.round(val)
+                return `￥${data}`;
+            },                 
         }
                
     }

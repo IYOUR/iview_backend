@@ -1,11 +1,5 @@
-/**
- * @file commonState
- * Created by haner on 2017/5/15.
- * @brief
- */
 
 export default {
-
 
     //省份列表
     provinceList: [],
@@ -43,35 +37,35 @@ export default {
     
     situationData: [
         {
-            title:'车位数量',
+            title:'昨日车位数量',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
             lastWeek:['00',{val:'00',state:'no',icon:''}],
             lastMonth:['00',{val:'00',state:'no',icon:''}]
         },
         {
-            title:'停车场数量',
+            title:'昨日停车场数量',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
             lastWeek:['00',{val:'00',state:'no',icon:''}],
             lastMonth:['00',{val:'00',state:'no',icon:''}]
         },
         {
-            title:'完成停车辆数',
+            title:'昨日完成停车辆数',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
             lastWeek:['00',{val:'00',state:'no',icon:''}],
             lastMonth:['00',{val:'00',state:'no',icon:''}]
         },
         {
-            title:'总收入(元)',
+            title:'昨日总收入(元)',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
             lastWeek:['00',{val:'00',state:'no',icon:''}],
             lastMonth:['00',{val:'00',state:'no',icon:''}]
         },		
         {
-            title:'平均每辆车付费(元)',
+            title:'昨日平均每辆车付费(元)',
             num: '00000',
             lastDay:['00',{val:'00',state:'no',icon:''}],	
             lastWeek:['00',{val:'00',state:'no',icon:''}],
@@ -347,6 +341,7 @@ export default {
     previewInfo: {
         state: false,
         val: {
+            app_type:'',
             versionname:'',
             versioncode:'',
             version_max:'',
@@ -355,9 +350,26 @@ export default {
             product_line:'',
             update_type:'',
             popup_type:'',
+            network_type:'',
             update_content:'',
             filename: ''            
         }
     },
     confirmEdit: false,
+
+    //性能监控
+    networkResultData:{
+        dayData:[],
+        rangeData:[],
+    },
+
+    //在线支付监控
+    onlinePayData:{
+        dayData:[],
+        rangeData:[],
+    },
+
+    //数据仓库
+    userCenter_list:[],
+    parkCenter_list:[],
 };

@@ -30,7 +30,7 @@
                 </Col>
                 <Col span="5" offset="14">
                     <div class="hint">
-                        <Tooltip placement="left">
+                        <Tooltip :transfer="Boolean(1)" placement="left">
                             <Button><Icon type="ios-help-outline"></Icon>指标定义</Button>
                             <div style="white-space: normal" slot="content">
                                 <span>{{item.hint}}</span>
@@ -151,7 +151,7 @@
                 if(!isFinite(val) || !val) {
                     return "0.00"
                 }
-                return val.toFixed(2)
+                return parseInt(val)
             }             
         }
     }

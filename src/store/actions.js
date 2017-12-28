@@ -1,7 +1,3 @@
-/**
- * @file actions
- * Created by haner on 2017/3/27.
- */
 
 import * as situationService from '../api/situation';
 import {HTTP_STATUS} from '../commons/utils/code';
@@ -32,6 +28,7 @@ export default {
 
     //获取车场列表
     getParkLists: function({commit},params){
+        console.log(params)
         return situationService.getParkList(params).then(res => {
             //缓存全部车场数据
             if(!params && sessionStorage.getItem('parkList')==null) {
@@ -147,5 +144,49 @@ export default {
         ]).then(axios.spread((acct, perms) => {
             commit('SET_RANK_DATA', perms);
         }));
-    },      
+    },  
+    
+/* 性能监控 */
+    //网络性能    
+    getNetworkResult: function({commit},params){
+        return situationService.getNetworkResult(params.value).then(res => {
+            if(params.type==='day'){
+                commit('SET_NETEWORY_DAYDATA', res.data.data);
+            }
+            if(params.type==='range'){
+                commit('SET_NETEWORY_RANGEDATA', res.data.data);
+            }
+            return res;
+        });
+    },    
+    //在线支付性能    
+    getOnlinePay: function({commit},params){
+        return situationService.getOnlinePay(params.value).then(res => {
+            if(params.type==='day'){
+                commit('SET_ONLINEPAY_DAYDATA', res.data.data);
+            }
+            if(params.type==='range'){
+                commit('SET_ONLINEPAY_RANGEDATA', res.data.data);
+            }
+            return res;
+        });
+    }, 
+
+/* 性能监控 */
+    //用户列表    
+    getCarUserList: function({commit}){
+        return situationService.getCarUserList().then(res => {
+            commit('SET_USERCENTER_LIST', res.data.data);
+            return res;
+        });
+    }, 
+    //车场列表    
+    getParkCenterList: function({commit}){
+        return situationService.getParkCenterList().then(res => {
+            commit('SET_PARKCENTER_LIST', res.data.data);
+            return res;
+        });
+    },     
 }
+
+

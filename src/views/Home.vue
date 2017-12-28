@@ -9,12 +9,15 @@
         padding: 10px 15px 0;
     }
     .layout-content{
-        min-height: 200px;
-        margin: 15px;
+        position: absolute;
+        left: 0px;
+        top: 60px;
+        right: 0;
+        bottom: 0;
         overflow: auto;
+        margin: 15px;
         background: #fff;
         border-radius: 4px;
-        height: 87%;
     }
     .layout-content-main{
         padding: 10px;
@@ -48,13 +51,11 @@
     }
     .layout-logo-left{
         width: 100%;
-        height: 60px;
-        line-height: 60px;
-        font-size: 28px;
-        text-align: center;
+        height: auto;
     }
     .layout-logo-left img{
         max-width: 100%;
+        max-height: 100%;
         padding: 15px;
     }
     .layout-ceiling-main a{
@@ -71,7 +72,7 @@
     }
     .userinfo{
         height: 60px;
-        width: 25%;
+        width: 30%;
         font-size: 14px;
         line-height: 60px;
         text-align: center;
@@ -97,40 +98,46 @@
     .menu-item-child{
         font-size: 13px;
     }
- 
+    .permission{
+        color: #495060;
+    }
 </style>
 <template>
     <div class="layout">
         <Row type="flex">
             <i-col span="3" :xs="9" :sm="7" :md="5" :lg="3" class="layout-menu-left">
-                <Menu :mode="modeType" theme="dark" width="auto" :active-name="this.$route.path" :open-names="openNames" @on-select="menuSelect" accordion>
+                <Menu :mode="modeType" theme="dark" width="auto" :active-name="this.$route.name" :open-names="openNames" @on-select="menuSelect" accordion>
                      <div class="layout-logo-left">
                          <img src="../assets/images/IOP logo@3X.png" alt="图片无法正常加载。请刷新重试！">
                      </div>
-                   <template v-for="(item,index) in $router.options.routes" v-if="!item.hidden">  
-                        <Submenu :name="item.name" v-if="!item.leaf">
+                   <template v-for="(item,index) in Router" v-if="!item.hidden">  
+                        <Submenu :name="item.text" v-if="!item.leaf">
                             <template slot="title">
-                                <span class="layout-text" >{{item.name}}</span>
+                                <span class="layout-text" >{{item.text}}</span>
                             </template>
                             <template v-for="(child,childIndex) in item.children" v-if="!child.hidden">
-                                <Menu-item class="menu-item-child" :name="child.path">{{child.name}}</Menu-item>
+                                <Menu-item class="menu-item-child" :name="child.name">{{child.text}}</Menu-item>
                             </template>
                         </Submenu>
-                       
-                   </template>
+                   </template>                
                 </Menu>
             </i-col>
             <i-col span="21" :xs="15" :sm="17" :md="19" :lg="21" class="layout-container-right">
                 <div class="layout-header">
                     <span class="header-title">iData经营分析平台</span>
                     <div class="userinfo">
-                        <Row>
-                            <Col span="10">
+                        <Row type="flex" justify="end">
+                            <Col span="6">
+                                <div v-if="userInfo.adder==0">
+                                    <router-link to="/permission" class="permission"><span><Icon type="ios-locked-outline"></Icon>权限管理</span></router-link>
+                                </div>
+                            </Col>                        
+                            <Col span="6">
                                 <div>
                                     <span><i class="iconfont irain-yonghu"></i>{{userInfo.nickName}}</span>
                                 </div>
                             </Col>
-                            <Col span="8">
+                            <Col span="6">
                                 <div>
                                     <span @click="modifyPassWord"><i class="iconfont irain-shezhi2"></i>修改密码</span>
                                 </div>
@@ -150,7 +157,9 @@
                     </Breadcrumb>
                 </div> -->
                 <div class="layout-content">
-                    <router-view></router-view>
+                    <transition name="fade" mode="out-in">
+                        <router-view :key="key"></router-view>
+                    </transition>
                 </div>
             </i-col>
         </Row>
@@ -178,13 +187,13 @@
 </template>
 
 <script>
+import {mapState, mapActions, mapGetters} from 'vuex';
 import * as userService from '../api/user';
     export default {
         data () {
             
             return {
                 openNames: [this.$route.matched[0].name],
-                curUserName : sessionStorage.getItem('user').replace(/\"/g, ""),
                 modeType: "vertical",
                 spanLeft: 3,
                 spanRight: 21,
@@ -217,6 +226,12 @@ import * as userService from '../api/user';
             }
         },
         computed: {
+            ...mapState({
+                mainRouter:'mainRouter',
+            }),	            
+            key() {
+            return this.$route.name !== undefined ? this.$route.name + +new Date() : this.$route + +new Date()
+            },            
             iconSize () {
                 return this.spanLeft === 5 ? 14 : 24;
             },
@@ -230,7 +245,14 @@ import * as userService from '../api/user';
                 }
             },
             userInfo () {
-                return JSON.parse(sessionStorage.getItem('userInfo'));
+                return JSON.parse(unescape(sessionStorage.getItem('userInfo')));
+            },
+            Router () {
+                if(this.userInfo.adder==0){
+                    return this.$router.options.routes;
+                }else{
+                    return JSON.parse(this.userInfo.router);
+                }
             }
         },
         methods: {
@@ -248,7 +270,26 @@ import * as userService from '../api/user';
                 this.passwordModel = true;    
             },
             logout() {
-                this.$router.push('/login');
+                this.$Modal.confirm({
+                    title: '确认注销',
+                    content: '<p>确认要注销并退出登录么?</p>',
+                    onOk: () => {
+                        this.$router.push('/login');
+                        let data = {
+                            province: '',
+                            park_code: '',
+                            city: '',
+                            date: [],
+                            company: ''
+                        };
+                        this.$store.commit('SET_QUERY_DATA',data);
+                        this.$store.commit('SET_CITY_LIST',[]);
+                        this.$store.commit('SET_PARK_LIST',[]);                           
+                    },
+                    onCancel: () => {
+                        return
+                    } 
+                })
             },
             comfirmModify() {
                 this.$refs.formValidate.validate((valid) => {
@@ -290,7 +331,9 @@ import * as userService from '../api/user';
             },                
           
         },
-        mounted(){
+        created(){
+            this.$store.dispatch('getCompanyList');
+            this.$store.dispatch('getParkLists');
         }
     }
 </script>

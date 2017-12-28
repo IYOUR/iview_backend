@@ -80,7 +80,7 @@ import DateFormat from '../../../../commons/utils/formatDate.js';
                 if(!isFinite(val)) {
                     return '0'
                 }
-                return val.toFixed(2)
+                return Math.round(val)
             }                                   
         }        
     }

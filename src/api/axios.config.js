@@ -17,21 +17,13 @@ var iTime;
 axios.interceptors.request.use(config => {
         //LoadingBar.start();
         let method = config.method.toLocaleLowerCase();
-        if (method === 'post') {
-            // console.log(Storage.KEYS.userToken)
-            // 判断是否存在token，如果存在的话，则每个http header都加上token
-            // config.headers.token = Storage.KEYS.userToken;
-            // config.data = processParam(config.data);
-            // let user = getUser();
-            // user && user.token && (config.data['token'] = user.token);
-        }
 
         if (method === 'get') {
             if(config.url.indexOf('api')>=0) {
                 LoadingBar.start();
             }
         }
-        config.headers.token = sessionStorage.getItem('token');
+        config.headers.token = unescape(sessionStorage.getItem('token'));
         config.params = config.params || {};
         return config;
     },

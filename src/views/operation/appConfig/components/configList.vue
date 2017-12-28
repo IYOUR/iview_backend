@@ -2,6 +2,7 @@
     .page{
         float:right;
         margin-top:20px;
+        margin-bottom: 100px;
     }
     .modelfoot{
         display: none !important;
@@ -32,7 +33,6 @@
         border-style: solid;
         border-color: #e9eaec;
         background-color: #f8f8f9;
-        white-space: nowrap;
     }
     table.gridtable td {
         border-width: 1px;
@@ -79,8 +79,10 @@
                         <td>{{item.version}}</td>
                         <td>{{item.versionRange}}</td>
                         <td>{{item.md5}}</td>
+                        <td>{{item.appType}}</td>
                         <td>{{item.recomPolicy}}</td>
                         <td>{{item.popup}}</td>
+                        <td>{{item.networkType}}</td>
                         <td>{{item.addTimes}}</td>
                         <td>
                             <span @click.capture="statusConfirm($event,item,index)">
@@ -91,18 +93,21 @@
                             </span>                      
                         </td>
                         <td class="action">
-                            <Poptip placement="bottom-end" width="600">
+                            <Poptip placement="bottom-end" width="600" @on-popper-hide="changeShowPlan">
                                 <Button class="defaultBtn" @click="getUpdatePlan(item.id)" type="text">更新计划</Button>
                                 <div class="api" slot="content">
-                                    <table class="planTable" v-if="planTable">
-                                        <th v-for="(item,index) in updatePlan.columns">{{item.title}}</th>      
-                                        <tr v-for="(items,idx) in updatePlanSort">
-                                            <td class="time">{{items.time}}</td>
-                                            <td class="area">{{items.areaStr}}</td>
-                                            <td class="user">{{items.user}}</td>
-                                        </tr>															
-                                    </table>
-                                    <p v-if="!planTable">暂无更新计划...</p>	
+                                    <Spin v-show="!showPlan" fix>加载中...</Spin>
+                                    <div v-show="showPlan">
+                                        <table class="planTable" v-if="planTable">
+                                            <th v-for="(item,index) in updatePlan.columns">{{item.title}}</th>      
+                                            <tr v-for="(items,idx) in updatePlanSort">
+                                                <td class="time">{{items.time}}</td>
+                                                <td class="area">{{items.areaStr}}</td>
+                                                <td class="user">{{items.user}}</td>
+                                            </tr>															
+                                        </table>
+                                        <p v-if="!planTable">暂无更新计划...</p>	
+                                    </div>
                                 </div>
                             </Poptip> 
                             <Button class="defaultBtn" @click="editConfig({state:true,val:item})" type="text">编辑</Button>
@@ -139,6 +144,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                    pagenum: 1,
                    size: 10 
                 },
+                showPlan:false,
                 updatePlan: {
                     ellipsis: true,
                     columns: [
@@ -204,13 +210,21 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                             key: 'md5'
                         },  
                         {
+                            title: '终端',
+                            key: 'appType'
+                        },                          
+                        {
                             title: '推荐策略',
                             key: 'recomPolicy'
                         },  
                         {
                             title: '弹窗策略',
                             key: 'popup'
-                        },    
+                        }, 
+                        {
+                            title: '网络环境',
+                            key: 'networkType'
+                        },                            
                         {
                             title: '添加时间',
                             key: 'addTimes'
@@ -234,7 +248,13 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 handler:function(newVal,oldVal){
                     this.getAppConfig(this.page);
                 },
-            }
+            },
+            'updatePlan':{
+                deep:true,
+                handler:function(newVal,oldVal){
+                    this.showPlan = true;
+                },
+            },            
         },          
         created () {
             this.getAppConfig(this.page)
@@ -258,7 +278,10 @@ import {mapState, mapActions, mapGetters} from 'vuex';
             nextPage (value) {
                 this.page.pagenum = value;
                 this.getAppConfig(this.page);
-            },         
+            },   
+            changeShowPlan () {
+                this.showPlan = false;
+            },      
             //获取配置信息
             getAppConfig (params) {
                 return operationService.getAppConfig(params).then((res) => {
@@ -277,8 +300,9 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                     if(res.status ==200 && res.data.message=='ok'){
                         if(res.data.data.length>0){
                             this.showEditPlan(res.data.data)
-                        }else
-                        this.updatePlan.data = [];
+                        }else{
+                            this.updatePlan.data = [];
+                        }
                     } else{
                         this.$Message.error(res.data.message);
                     }
@@ -305,7 +329,6 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         this.updatePlan.data = plan;
                     });
                 }
-            
             },
             //根据地区value值获取对应名称        
             getAreaName (params) {
@@ -321,6 +344,25 @@ import {mapState, mapActions, mapGetters} from 'vuex';
             },                           
             transitionList (type,val) {
                 switch (type) {
+                    case 'appType':
+                        if(val == 0) {
+                            return 'Android'
+                        }
+                        if(val == 1) {
+                            return 'IOS'
+                        }
+                    break;     
+                    case 'networkType':
+                        if(val == 0) {
+                            return '移动网络'
+                        }
+                        if(val == 1) {
+                            return 'WIFI'
+                        }
+                        if(val == 2) {
+                            return '移动网络和WIFI'
+                        }                        
+                    break;                                      
                     case 'recomPolicy':
                         if(val == 0) {
                             return '推荐更新'
@@ -365,7 +407,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         appInfo:'配置信息',updatePlan:'更新计划',versionname:'版本名',
                         versioncode:'版本号',version_max:'覆盖版本上限',version_min:'覆盖版本下限',
                         md5:'md5',product_line:'产品线',update_type:'更新类型',popup_type:'弹窗类型',
-                        update_content:'更新内容',status:'状态',filename:'文件名',
+                        update_content:'更新内容',status:'状态',filename:'文件名',network_type:'网络类型',
                 }
                 for(let i in arr){
                     if(arr[i]!=='filesize' && arr[i]!=='url'){
@@ -450,13 +492,16 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                 let tableShowData = Object.assign({}, res),rowData = [];
                 for(let item in tableShowData) {
                     let raw = {
+                        app_type: tableShowData[item].app_type,
                         name: tableShowData[item].versionname,
                         productLine: tableShowData[item].product_line,
                         version: tableShowData[item].versioncode,
                         versionRange: `${tableShowData[item].version_min}~${tableShowData[item].version_max}`,
                         md5: tableShowData[item].md5,
+                        appType: this.transitionList('appType',tableShowData[item].app_type),
                         recomPolicy: this.transitionList('recomPolicy',tableShowData[item].update_type),
                         popup: this.transitionList('popup',tableShowData[item].popup_type),
+                        networkType:this.transitionList('networkType',tableShowData[item].network_type),
                         addTimes: tableShowData[item].ctime,
                         status: Boolean(tableShowData[item].status),
                         id: tableShowData[item].id,
@@ -465,6 +510,7 @@ import {mapState, mapActions, mapGetters} from 'vuex';
                         product_line: tableShowData[item].product_line,
                         update_type: tableShowData[item].update_type,
                         popup_type: tableShowData[item].popup_type,
+                        network_type: tableShowData[item].network_type,
                         filename: tableShowData[item].filename,
                         filesize: tableShowData[item].filesize,
                         versionname: tableShowData[item].versionname,

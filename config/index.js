@@ -8,7 +8,7 @@ module.exports = {
         assetsRoot: path.resolve(__dirname, '../dist'),
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
-        productionSourceMap: true,
+        productionSourceMap: false,
         github: {
             url: 'http://113.140.2.226:11080/duhan/iop-backend-web.git',
             branch: 'deploy'
@@ -32,8 +32,8 @@ module.exports = {
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
         proxyTable: {
-            '/api/**': 'http://180.97.81.222:8788',
-            '/site/**': 'http://180.97.80.42:8099'
+            '/api/**': 'http://180.97.80.42:8788',
+            '/site/**': 'http://180.97.80.42:8788'
         },
         // CSS Sourcemaps off by default because relative paths are "buggy"
         // with this option, according to the CSS-Loader README

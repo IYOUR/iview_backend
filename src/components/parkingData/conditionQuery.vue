@@ -83,7 +83,8 @@
 				},
 				showCity:false,
 				showPark:false,
-				resultData: {}
+				companyPark: [],
+				cityPark: []
 			}
 		},
 		computed: {
@@ -93,10 +94,19 @@
 				parkList: 'parkList',
 				cityList: 'cityList',
 				queryData: 'queryData'
-            }),					
+            }),	
+            userInfo () {
+                return JSON.parse(unescape(sessionStorage.getItem('userInfo')));
+            },							
 		},
         mounted () {
 			this.loadAreaInfo();
+			//当登陆账号为非管理员时默认选择一个集团
+			if(this.userInfo.adder!=0){
+				setTimeout(()=>{
+					this.queryData.company = this.companyList[0].value;
+				},300);
+			}
 			this.$store.commit('SET_QUERY_PARAM',this.packQueryParams());
         },
         watch: {
@@ -162,14 +172,13 @@
 				};
 				this.$store.commit('SET_QUERY_DATA',data);
 				this.$store.commit('SET_CITY_LIST',[]);
-				this.$store.commit('SET_PARK_LIST',[])
+				this.$store.commit('SET_PARK_LIST',[]);
+				this.query();
             },
 			//加载查询条件信息
 			loadAreaInfo() {
 				if(this.provinceList.length === 0){
 					this.getProvinceList();
-					this.getCompanyList();
-					this.getParkLists();
 				}
 			},
             //参数处理
@@ -263,15 +272,39 @@
                 });
             },
 			getParkList (params) {
-				return situationService.getParkList(params).then(res => {
+				let _this = this;
+				situationService.getParkList(params).then(res => {
                     if (res.status != CONSTANT.HTTP_STATUS.SUCCESS.CODE) {
                         this.$Message.error(res.message || CONSTANT.HTTP_STATUS.SERVER_ERROR.MSG);
                         return;
-                    }; 
-					this.parkList = res.data.data;
-					this.$store.commit('SET_PARK_LIST',res.data.data)
+                    };
+					if(params.company){
+						this.companyPark = res.data.data;
+					} else{
+						this.cityPark = res.data.data;
+					}
+					//判断是否为地区和集团的双筛选条件
+					if(this.queryData.company.length !== 0&&(this.queryData.province.length !== 0||this.queryData.city.length !== 0)){
+						this.$store.commit('SET_PARK_LIST',this.progressParkList ());
+					} else{
+						let delay = setTimeout(()=>{
+							this.$store.commit('SET_PARK_LIST',res.data.data)
+						},100);
+					}
 				});
-			},																										
+			},
+			//筛选出地区和集团共有的车场
+			progressParkList () {
+				let arr = [];
+				for(let i in this.cityPark){
+					for(let j in this.companyPark) {
+						if(JSON.stringify(this.cityPark[i])===JSON.stringify(this.companyPark[j])){
+							arr.push(this.cityPark[i])
+						}
+					}
+				}
+				return arr;
+			}																										
 		},  		
     }
 </script>

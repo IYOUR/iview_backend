@@ -3,12 +3,28 @@ import Vue from 'vue'
 import Login from '../views/Login.vue'
 import NotFound from '../views/404.vue'
 import Home from '../views/Home.vue'
-import Situation from '../views/parkingData/situation/situation.vue'
+import Parksituation from '../views/parkingData/situation/situation.vue'
 import RealTimeData from '../views/parkingData/realTimeData/realTimeData.vue'
 import ParkingDetail from '../views/parkingData/parkingDetail/parkingDetail.vue'
 import PaymentDetail from '../views/parkingData/paymentDetail/paymentDetail.vue'
-import AppConfig from '../views/operation/appConfig/appConfig.vue'
-let routes = [{
+//import AppConfig from '../views/operation/appConfig/appConfig.vue'
+//import Clientsituation from '../views/clientData/situation/situation.vue'
+
+// in development env not use Lazy Loading,because Lazy Loading large page will cause webpack hot update too slow.so only in production use Lazy Loading
+const _import = require('./_import_' + process.env.NODE_ENV);
+const Permission = _import('user/permission');
+const Clientsituation = _import('clientData/situation/situation');
+const AppConfig = _import('operation/appConfig/appConfig');
+const Network = _import('performance/network/network');
+const ErrorDetail = _import('performance/network/errorDetail');
+const OnlinePay = _import('performance/onlinePay/onlinePay');
+const UserCenter = _import('repository/userCenter/userCenter');
+const CarDetail = _import('repository/userCenter/carDetail');
+const ParkCenter = _import('repository/parkCenter/parkCenter');
+const ParkDetail = _import('repository/parkCenter/parkDetail');
+
+let routes = [
+    {
         path: '/login',
         component: Login,
         name: 'login',
@@ -17,50 +33,71 @@ let routes = [{
     {
         path: '/404',
         component: NotFound,
-        name: '',
+        name: '404',
         hidden: true
     },
     {
         path: '/',
         component: Home,
-        name: '汇总',
-    },
+        name: 'permission',
+        text: '权限管理',
+        hidden: true,
+        children: [
+            { path: '/permission', component: Permission, name: '权限管理',hidden: true},
+         ]        
+    },    
     {
         path: '/',
         component: Home,
-        name: '停车场数据',
+        name: 'parkingData',
+        text: '停车数据',
         children: [
-            { path: '/situation', component: Situation, name: '停车场数据概况' },
-            { path: '/realtime', component: RealTimeData, name: '实时数据' },
-            { path: '/parkingdetail', component: ParkingDetail, name: '停车数据详情' },
-            { path: '/paymentdetail', component: PaymentDetail, name: '支付数据详情' }
+            { path: '/parksituation', component: Parksituation, name: 'parksituation', text: '数据总览',hidden: false},
+            { path: '/realtime', component: RealTimeData, name: 'realtime',text: '实时数据',hidden: false},
+            { path: '/parkingdetail', component: ParkingDetail, name: 'parkingdetail', text: '停车统计',hidden: false},
+            { path: '/paymentdetail', component: PaymentDetail, name: 'paymentdetail', text: '支付统计',hidden: false},
         ]
     },
     {
         path: '/',
         component: Home,
-        name: 'C端数据',
-        // leaf: true, //只有一个节点
-        // children: [
-        //     { path: '/page6', component: Page6, name: '页面6' }
-        // ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: '优惠券数据',
-        // children: [
-        //     { path: '/echarts', component: echarts, name: 'echarts' }
-        // ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: '运营功能',
+        name: 'clientSituation',
+        text: '车主数据',
         children: [
-           { path: '/appconfig', component: AppConfig, name: 'App更新配置' },
         ]
     },
+    {
+        path: '/',
+        component: Home,
+        name: 'operation',
+        text: '平台运营',
+        children: [
+           { path: '/appconfig', component: AppConfig, name: 'appconfig', text: 'APP更新',hidden: false},
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: 'performance',
+        text: '性能监控',
+        children: [
+           { path: '/network', component: Network, name: 'network', text: '下发监控',hidden: false},
+           { path: '/onlinepay', component: OnlinePay, name: 'onlinepay', text: '在线支付监控',hidden: false},
+           { path: '/errordetail', component: ErrorDetail, name: 'errordetail', text: '下发失败详情',hidden: true},
+        ]
+    }, 
+    {
+        path: '/',
+        component: Home,
+        name: 'repository',
+        text: '数据仓库',
+        children: [
+            { path: '/usercenter', component: UserCenter, name: 'usercenter', text: '用户中心',hidden: false},  
+            { path: '/cardetail', component: CarDetail, name: 'cardetail', text: '用户详情',hidden: true},   
+            { path: '/parkcenter', component: ParkCenter, name: 'parkcenter', text: '车场中心',hidden: false},  
+            { path: '/parkdetail', component: ParkDetail, name: 'parkdetail', text: '车场详情',hidden: true},                                            
+        ]
+    },    
     {
         path: '*',
         hidden: true,
@@ -70,7 +107,9 @@ let routes = [{
 
 Vue.use(VueRouter)
 const router = new VueRouter({
-    routes,   
+  // mode: 'history', //后端支持可开
+  scrollBehavior: () => ({ y: 0 }),
+  routes: routes 
 })
 
 export default router;

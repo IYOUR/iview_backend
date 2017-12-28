@@ -77,15 +77,16 @@ import DateFormat from '../../../../commons/utils/formatDate.js';
             isInvaild(val,type) {
                 if(type == 'charge') {
                     if(!isFinite(val)) {
-                        return '￥0.00'
+                        return '0'
                     }
-                    return `￥${val.toFixed(2) }`               
+                    let data = Math.round(val).toString().replace(/(?=(?!(\b))(\d{3})+$)/g,",")
+                    return `￥${data}`;          
                 }
                 else {
                     if(!isFinite(val)) {
                         return '0'
                     }
-                    return val.toFixed(2)         
+                    return Math.round(val)        
                 }
             }                                
         }        

@@ -172,9 +172,9 @@
             },
             isInvaild(val) {
                 if(!isFinite(val) || !val) {
-                    return "0.00"
+                    return "0"
                 }
-                return val.toFixed(2)
+                return Math.round(val)
             }               
         }
     }
